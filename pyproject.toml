@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Jurisprudence divergence pipeline (STJ / dgsi.pt)"
 requires-python = ">=3.12"
 dependencies = [
-  "pydantic>=2",
+  "pydantic>=2.14.0",
   "httpx>=0.27",
   "selectolax>=0.3",
 ]
