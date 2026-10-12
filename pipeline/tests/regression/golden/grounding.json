@@ -1,0 +1,5 @@
+[
+  {"id": "exact", "text": "A mora não basta.", "quote": "A mora não basta.", "expected": true},
+  {"id": "newline-and-nbsp", "text": "A mora\n não basta.", "quote": "mora não basta", "expected": true},
+  {"id": "fabricated", "text": "A mora não basta.", "quote": "A mora basta.", "expected": false}
+]

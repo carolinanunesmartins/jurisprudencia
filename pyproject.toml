@@ -1,0 +1,36 @@
+[project]
+name = "juris"
+version = "0.1.0"
+description = "Jurisprudence divergence pipeline (STJ / dgsi.pt)"
+requires-python = ">=3.12"
+dependencies = [
+  "pydantic>=2",
+  "httpx>=0.27",
+  "selectolax>=0.3",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pipeline/juris"]
+
+[tool.ruff]
+line-length = 100
+src = ["pipeline"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["pipeline/tests"]
+pythonpath = ["pipeline"]
+addopts = "--strict-markers"
+markers = [
+  "unit: fast isolated tests of a single function/module",
+  "regression: golden-file / fixture tests that pin previously verified behaviour",
+]
