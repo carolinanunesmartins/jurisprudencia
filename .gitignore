@@ -1,0 +1,22 @@
+# data policy (AGENTS.md rule 3): never commit full texts or HTML cache
+data/raw/
+data/*.db
+.env
+.env.*
+!.env.example
+
+# python
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# node
+node_modules/
+web/dist/
+web/coverage/
+
+# agent/tool state
+.omc/
+BLOCKERS.md.local

@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* Brand/colour tokens live here as custom properties; never hardcode colours in components. */
+:root {
+  --color-bg: #ffffff;
+  --color-fg: #111827;
+  --color-muted: #4b5563;
+  --color-accent: #1d4ed8;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
