@@ -20,3 +20,11 @@ web/coverage/
 # agent/tool state
 .omc/
 BLOCKERS.md.local
+
+# browser "save page" leftovers next to HTML fixtures; only the .html files are fixtures
+pipeline/tests/fixtures/*_files/
+pipeline/tests/fixtures/.omc/
+pipeline/tests/fixtures/*.gif
+pipeline/tests/fixtures/0.508
+IGFEJ*
+pipeline/tests/fixtures/local_raw/

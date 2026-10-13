@@ -13,7 +13,8 @@ Scaffold done (T0.1, T0.2 except README stub/NOTA/IA; CI files written, not yet 
 - Accept: `make verify` green; CI green; empty page online.
 
 ## M1 — Index crawler and subset ★ (3 h) · doing · day 1 · deps: M0 (M0 stays open: push of `uv.lock`, first CI run, Pages and secret scanning pending; M1 work is unaffected)
-Done so far (branch `m1-crawler`): T1.1 fetcher core `pipeline/juris/crawl/client.py` with unit tests on a mock transport, SQLite schema `pipeline/juris/db/schema.py`. Blocked on HUMAN fixtures: T1.2 parser, `make index` (stub exits 2).
+Done so far (branch `m1-crawler`): T1.1 fetcher core `pipeline/juris/crawl/client.py` (mock-transport tests); SQLite schema `pipeline/juris/db/schema.py`; HUMAN fixtures saved (3 index pages, 4 judgments, descriptor list); T1.2 parsers `pipeline/juris/parse/{index,document,descritores}.py` with unit + golden regression tests. Committed judgment fixtures are trimmed by `pipeline/tools/trim_fixture.py` (rule 3); raw saves stay in gitignored `fixtures/local_raw/`. Still to do: wire `make index` (follow "Seguinte" links, dedupe, write `acordao` rows), then HUMAN `make index` and T1.3.
+Note: the saved judgments are not on the contrato-promessa theme (recent civil/penal cases); good for structure, not for the M1.5 spike.
 - T1.1 Crawler per SPEC §3 (rate limit, cache, resume, stop rules) with tests against saved HTML fixtures.
 - HUMAN: save 2 index pages and 3 judgment pages as fixtures (browser → save HTML) so agents can write parsers; check the real page size and encoding.
 - T1.2 Index parser → `acordao` rows (processo, secção, relator, date, descritores, URL).

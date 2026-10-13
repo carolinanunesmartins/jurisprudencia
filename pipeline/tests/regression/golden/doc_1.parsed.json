@@ -1,0 +1,35 @@
+{
+  "data_iso": "2026-10-01",
+  "decisao": "NEGADA",
+  "descritores": [
+    "DIVORCIO SEM CONSENTIMENTO",
+    "ATO PROCESSUAL",
+    "VÍCIOS DA VONTADE",
+    "CAPACIDADE JUDICIÁRIA",
+    "FALTA DE CONSCIÊNCIA",
+    "PETIÇÃO INICIAL",
+    "ABSOLVIÇÃO DA INSTÂNCIA",
+    "MAIOR ACOMPANHADO",
+    "VONTADE",
+    "DECLARAÇÃO NEGOCIAL",
+    "CAPACIDADE JURÍDICA",
+    "AUTONOMIA PRIVADA",
+    "DIREITOS DE PERSONALIDADE",
+    "PERÍCIA PSIQUIÁTRICA",
+    "INCAPACIDADE ACIDENTAL"
+  ],
+  "indicacoes_eventuais": "",
+  "meio_processual": "REVISTA",
+  "processo": "5306/20.0T8BRG.G3.S1",
+  "relator": "CATARINA SERRA",
+  "secao": "2.ª SECÇÃO",
+  "sumario": {
+    "head": "A falta e os vícios da vontade são suscetíveis de relevar no domínio dos actos p",
+    "len": 151
+  },
+  "texto": {
+    "len": 1488,
+    "sha256": "d31a4f3c43ddcb52675e4a5991c093eeaea3794ee59a3bbf20d1f3c1a15fe853"
+  },
+  "votacao": "UNANIMIDADE"
+}

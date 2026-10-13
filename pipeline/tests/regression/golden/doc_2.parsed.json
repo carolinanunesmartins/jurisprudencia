@@ -1,0 +1,35 @@
+{
+  "data_iso": "2026-10-01",
+  "decisao": "CONCEDIDA",
+  "descritores": [
+    "CONTRATO DE SEGURO",
+    "SEGURO MARÍTIMO",
+    "APÓLICE DE SEGURO",
+    "EMBARCAÇÃO",
+    "CLÁUSULA CONTRATUAL GERAL",
+    "INCÊNDIO",
+    "INTERPRETAÇÃO",
+    "DECLARAÇÃO NEGOCIAL",
+    "CLÁUSULA DE EXCLUSÃO",
+    "AVARIA",
+    "INSTALAÇÃO ELÉTRICA",
+    "DIREITO DA UNIÃO EUROPEIA",
+    "PRINCÍPIO DA INTERPRETAÇÃO CONFORME O DIREITO EUROPEU",
+    "TRIBUNAL DE JUSTIÇA DA UNIÃO EUROPEIA",
+    "TEORIA DA IMPRESSÃO DO DESTINATÁRIO"
+  ],
+  "indicacoes_eventuais": "",
+  "meio_processual": "REVISTA (MARÍTIMO)",
+  "processo": "9454/23.6T8LSB.L1.S1",
+  "relator": "EMÍDIO FRANCISCO SANTOS",
+  "secao": "2.ª SECÇÃO",
+  "sumario": {
+    "head": "Na cláusula contratual geral de um contrato de seguro marítimo que exclui do âmb",
+    "len": 536
+  },
+  "texto": {
+    "len": 731,
+    "sha256": "9f0f2ec2b5db9e6eacd101fe2f847ec89908fff545f65682db4d4e5070b41012"
+  },
+  "votacao": "UNANIMIDADE"
+}

@@ -1,0 +1,27 @@
+{
+  "data_iso": "2026-09-24",
+  "decisao": "NEGADO PROVIMENTO",
+  "descritores": [
+    "RECURSO PER SALTUM",
+    "ADMISSIBILIDADE",
+    "TEMPESTIVIDADE",
+    "INIMPUTABILIDADE",
+    "ANOMALIA PSÍQUICA",
+    "PERÍCIA PSIQUIÁTRICA",
+    "IMPROCEDÊNCIA"
+  ],
+  "indicacoes_eventuais": "",
+  "meio_processual": "RECURSO PENAL",
+  "processo": "586/20.3S5LSB.L1.S1",
+  "relator": "ERNESTO NASCIMENTO",
+  "secao": "5.ª SECÇÃO",
+  "sumario": {
+    "head": "I. Se o julgamento foi realizado na presença do arguido, tendo este apenas falta",
+    "len": 839
+  },
+  "texto": {
+    "len": 1008,
+    "sha256": "4e03d3a3b537c29acf1e3428e141a2a905c3544ec43fe0d604cb42761bcbe2ba"
+  },
+  "votacao": "UNANIMIDADE"
+}
