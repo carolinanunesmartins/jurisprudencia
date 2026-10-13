@@ -12,7 +12,8 @@ Scaffold done (T0.1, T0.2 except README stub/NOTA/IA; CI files written, not yet 
 - T0.3 CI workflow + GitHub Pages deploy of an empty page; secret scanning on.
 - Accept: `make verify` green; CI green; empty page online.
 
-## M1 — Index crawler and subset ★ (3 h) · todo · day 1 · deps: M0
+## M1 — Index crawler and subset ★ (3 h) · doing · day 1 · deps: M0 (M0 stays open: push of `uv.lock`, first CI run, Pages and secret scanning pending; M1 work is unaffected)
+Done so far (branch `m1-crawler`): T1.1 fetcher core `pipeline/juris/crawl/client.py` with unit tests on a mock transport, SQLite schema `pipeline/juris/db/schema.py`. Blocked on HUMAN fixtures: T1.2 parser, `make index` (stub exits 2).
 - T1.1 Crawler per SPEC §3 (rate limit, cache, resume, stop rules) with tests against saved HTML fixtures.
 - HUMAN: save 2 index pages and 3 judgment pages as fixtures (browser → save HTML) so agents can write parsers; check the real page size and encoding.
 - T1.2 Index parser → `acordao` rows (processo, secção, relator, date, descritores, URL).

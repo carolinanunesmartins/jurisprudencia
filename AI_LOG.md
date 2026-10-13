@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-13 — M1 crawler core and DB schema
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: SPEC §3 polite fetcher (delay, cache, stop rules, host allowlist, request cap) with tests on httpx.MockTransport; SQLite schema from SPEC §4.
+- What failed or needed correction: (1) a very long shell heredoc command failed to parse, nothing was written; (2) the first `canonical_url` re-encoded the query and turned `?OpenDocument` into `?OpenDocument=`, caught by a unit test.
+- How it was fixed: wrote files with the file tool; canonical_url now filters raw query segments. Added a regression golden file for it.
+- Human verification: pending. The fetcher has never run against the real site (agents must not); the owner should check the first live run against SPEC §3.
+
 ### 2026-10-12 — GitHub Pages deploy and README
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: switch deploy workflow from Cloudflare to GitHub Pages (SHA-pinned actions, CSP via meta tag), rewrite README in pt-PT.
