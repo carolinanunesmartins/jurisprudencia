@@ -22,14 +22,19 @@ def last_page() -> bytes:
     return (FIX / "index_2000.html").read_bytes().replace(b"Seguinte", b"Fim")
 
 
+def live_like(raw: bytes) -> bytes:
+    """The live site serves root-relative hrefs; browser-saved fixtures have them absolute."""
+    return raw.replace(b"https://www.dgsi.pt", b"")
+
+
 class Site:
     """Three chained pages: p1 -> p2 (Start=132) -> last (Start=235)."""
 
     def __init__(self, fail_on: dict[str, int] | None = None) -> None:
         self.pages = {
-            START_URL: (FIX / "index_p1.html").read_bytes(),
-            P2_URL: (FIX / "index_p2.html").read_bytes(),
-            P3_URL: last_page(),
+            START_URL: live_like((FIX / "index_p1.html").read_bytes()),
+            P2_URL: live_like((FIX / "index_p2.html").read_bytes()),
+            P3_URL: live_like(last_page()),
         }
         self.fail_on = fail_on or {}
         self.requested: list[str] = []

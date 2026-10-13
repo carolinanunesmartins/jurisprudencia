@@ -8,10 +8,11 @@ from juris.parse.index import parse_index
 pytestmark = pytest.mark.unit
 
 FIX = Path(__file__).parent.parent / "fixtures"
+BASE = "https://www.dgsi.pt/jstj.nsf?OpenDatabase"
 
 
 def load(name):
-    return parse_index((FIX / name).read_bytes())
+    return parse_index((FIX / name).read_bytes(), BASE)
 
 
 def test_first_page_rows_and_fields():
@@ -67,4 +68,13 @@ def test_us_date_conversion_and_rejection():
 
 def test_page_without_rows_is_a_parse_error():
     with pytest.raises(ParseError):
-        parse_index(b"<html><body>nothing</body></html>")
+        parse_index(b"<html><body>nothing</body></html>", BASE)
+
+
+def test_root_relative_links_as_served_live_are_resolved_against_the_page_url():
+    """Live regression: hrefs are '/jstj.nsf?...' (no host); a browser-saved copy hides this."""
+    raw = (FIX / "index_p1.html").read_bytes().replace(b"https://www.dgsi.pt", b"")
+    page = parse_index(raw, BASE)
+    assert page.next_url == "https://www.dgsi.pt/jstj.nsf?OpenDatabase&Start=132"
+    assert page.rows[0].url.startswith("https://www.dgsi.pt/jstj.nsf/954f0ce6")
+    assert page.rows[0].doc_id == "d2523b00ca3b3d3e80258e88003cc00d"

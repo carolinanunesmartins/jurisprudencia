@@ -70,7 +70,7 @@ def crawl_index(
         except CrawlStop as stop:
             stats.stopped = str(stop)
             return stats
-        page = parse_index(raw)
+        page = parse_index(raw, url)
         result = insert_index_rows(conn, page.rows)
         conn.commit()
         stats.pages += 1

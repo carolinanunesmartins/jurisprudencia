@@ -1,6 +1,7 @@
 """Parser for the 'Por Ano' index listing of jstj.nsf (SPEC §3, ROADMAP T1.2)."""
 
 from dataclasses import dataclass
+from urllib.parse import urljoin
 
 from juris.crawl.client import canonical_url
 from juris.parse.common import ParseError, cell_text, parse_html, us_date_to_iso
@@ -26,12 +27,15 @@ class IndexPage:
     next_url: str | None
 
 
-def parse_index(raw: bytes) -> IndexPage:
+def parse_index(raw: bytes, base_url: str) -> IndexPage:
     """Rows are the 4-cell table rows whose second cell links to an OpenDocument URL.
 
     Pagination: follow the 'Seguinte' link. `Start` values are Domino view positions and are
     not multiples of the page size, so they must not be computed. Consecutive pages can share
-    a row (last row of page N == first row of page N+1): callers must de-duplicate by `processo`.
+    a row (last row of page N == first row of page N+1): callers must de-duplicate by `doc_id`.
+
+    The live site serves root-relative hrefs (`/jstj.nsf?...`); browsers' "Save as" rewrites them
+    to absolute, so saved copies hide this. All links are resolved against `base_url`.
     """
     tree = parse_html(raw)
     rows: list[IndexRow] = []
@@ -45,7 +49,7 @@ def parse_index(raw: bytes) -> IndexPage:
         rows.append(
             IndexRow(
                 processo=cell_text(link),
-                url=canonical_url(link.attributes["href"] or ""),
+                url=canonical_url(urljoin(base_url, link.attributes["href"] or "")),
                 sessao_iso=us_date_to_iso(cell_text(cells[0])),
                 relator=cell_text(cells[2]),
                 descritores=tuple(cell_text(cells[3]).split("\n")) if cell_text(cells[3]) else (),
@@ -54,5 +58,5 @@ def parse_index(raw: bytes) -> IndexPage:
     if not rows:
         raise ParseError("no index rows found")
     next_links = [a for a in tree.css("a") if cell_text(a) == "Seguinte"]
-    next_url = next_links[0].attributes["href"] if next_links else None
+    next_url = urljoin(base_url, next_links[0].attributes["href"] or "") if next_links else None
     return IndexPage(rows=tuple(rows), next_url=next_url)
