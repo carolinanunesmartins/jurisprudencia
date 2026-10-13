@@ -4,15 +4,12 @@ Status: `todo | doing | done | blocked`. Capacity assumed: **3 h per working day
 
 Calendar: today Mon 12/10 = day 0 (≈2 h). Days 1–9 = Tue 13/10 → Fri 23/10 (target delivery). Mon 26/10 = reserve. Weekends are optional buffer (+6 h).
 
-## M0 — Foundation (2 h) · doing · day 0
-Scaffold done (T0.1, T0.2 except README stub/NOTA/IA; CI files written, not yet run on GitHub). Remaining: HUMAN install `uv` + `make` (or use the npm/uv commands directly), first CI run, secret scanning, enable Pages (Settings > Pages > Source = GitHub Actions; hosting decided: GitHub Pages) and empty page online.
-- HUMAN: `https://www.dgsi.pt/robots.txt` checked → none (done). Start `AI_LOG.md` today and keep it up to date.
-- T0.1 Scaffold: `pipeline/` (uv, ruff, pytest, pydantic, httpx, selectolax), `web/` (Vite, React, TS strict, Tailwind), `Makefile`.
-- T0.2 Files: README stub (pt-PT), LICENSE, AGENTS/SPEC/ROADMAP, CHANGELOG, `.gitignore` (`data/raw`, `data/*.db`, `.env`), PR template.
-- T0.3 CI workflow + GitHub Pages deploy of an empty page; secret scanning on.
-- Accept: `make verify` green; CI green; empty page online.
+## M0 — Foundation (2 h) · done · day 0
+- Done 2026-10-13: scaffold merged to `main` (PR #17), CI green (`ci-ok`), live page https://carolinanunesmartins.github.io/jurisprudencia/ (HTTP 200, `lang="pt-PT"`, CSP meta).
+- Owner settings confirmed done: Pages source = GitHub Actions, CI green. Secret scanning and the required `ci-ok` check: confirm in repo settings if not yet done.
+- Accept: `make verify` green; CI green; empty page online. ✔
 
-## M1 — Index crawler and subset ★ (3 h) · doing · day 1 · deps: M0 (M0 stays open: push of `uv.lock`, first CI run, Pages and secret scanning pending; M1 work is unaffected)
+## M1 — Index crawler and subset ★ (3 h) · doing · day 1 · deps: M0
 Done so far (branch `m1-crawler`): T1.1 fetcher core `pipeline/juris/crawl/client.py` (mock-transport tests); SQLite schema `pipeline/juris/db/schema.py`; HUMAN fixtures saved (3 index pages, 4 judgments, descriptor list); T1.2 parsers `pipeline/juris/parse/{index,document,descritores}.py` with unit + golden regression tests. Committed judgment fixtures are trimmed by `pipeline/tools/trim_fixture.py` (rule 3); raw saves stay in gitignored `fixtures/local_raw/`. Still to do: wire `make index` (follow "Seguinte" links, dedupe, write `acordao` rows), then HUMAN `make index` and T1.3.
 Note: the saved judgments are not on the contrato-promessa theme (recent civil/penal cases); good for structure, not for the M1.5 spike.
 - T1.1 Crawler per SPEC §3 (rate limit, cache, resume, stop rules) with tests against saved HTML fixtures.
