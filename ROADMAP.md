@@ -14,7 +14,7 @@ Done so far (branch `m1-crawler`): T1.1 fetcher core `pipeline/juris/crawl/clien
 Note: the saved judgments are not on the contrato-promessa theme (recent civil/penal cases); good for structure, not for the M1.5 spike.
 - T1.1 Crawler per SPEC §3 (rate limit, cache, resume, stop rules) with tests against saved HTML fixtures.
 - HUMAN: save 2 index pages and 3 judgment pages as fixtures (browser → save HTML) so agents can write parsers; check the real page size and encoding.
-- T1.2 Index parser → `acordao` rows (processo, secção, relator, date, descritores, URL).
+- T1.2 Index parser → `acordao` rows (doc_id, processo, relator, date, descritores, URL). Key is `doc_id`, not `processo` (SPEC §4).
 - HUMAN: `make index` (≈30 min, evening). Then T1.3: list descriptors, count candidates per descriptor and year, apply SPEC §2 decision rule, write `docs/adr/0005-subset.md` with the real numbers.
 - Accept: index of the whole STJ in SQLite; subset chosen with counts; ADR written.
 

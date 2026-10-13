@@ -5,7 +5,8 @@ from pathlib import Path
 
 DDL = """
 CREATE TABLE IF NOT EXISTS acordao (
-  processo TEXT PRIMARY KEY,
+  doc_id TEXT PRIMARY KEY,
+  processo TEXT NOT NULL,
   url TEXT NOT NULL,
   secao TEXT,
   relator TEXT,
@@ -19,7 +20,7 @@ CREATE TABLE IF NOT EXISTS acordao (
   fetched_at TEXT
 );
 CREATE TABLE IF NOT EXISTS classification (
-  processo TEXT NOT NULL,
+  doc_id TEXT NOT NULL,
   question_id TEXT NOT NULL,
   relevant INTEGER NOT NULL,
   position_id TEXT,
@@ -28,8 +29,9 @@ CREATE TABLE IF NOT EXISTS classification (
   model TEXT,
   prompt_version TEXT,
   created_at TEXT,
-  PRIMARY KEY (processo, question_id)
+  PRIMARY KEY (doc_id, question_id)
 );
+CREATE INDEX IF NOT EXISTS idx_acordao_processo ON acordao(processo);
 CREATE TABLE IF NOT EXISTS divergence (
   id INTEGER PRIMARY KEY,
   question_id TEXT NOT NULL,

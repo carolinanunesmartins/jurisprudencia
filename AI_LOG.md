@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-13 — `make index` and a key correction
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: implement the index crawl loop (follow "Seguinte", store rows per page, resume via cache, stop rules) and tests on the saved pages through a mock transport.
+- What failed or needed correction: my first test expected 298 rows but got 297 plus a "conflict": the real saved pages show one case number (`1748/25.2T8OAZ.P1.S1`) with two different judgments, so SPEC §4's `processo` primary key was wrong.
+- How it was fixed: `acordao` and `classification` are now keyed by `doc_id` (the id in the URL), `processo` is an indexed non-unique column; SPEC and ROADMAP updated; tests added for both cases. The SPEC request budget was also corrected (≈740 index requests).
+- Human verification: pending. The loop has only run against saved pages; the owner should do a `--max-pages 3` live run first and compare the stored rows with the browser.
+
 ### 2026-10-13 — M1 parsers on saved fixtures
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: write index, judgment and descriptor-list parsers from the 8 HTML pages the owner saved; trim fixtures for committing; unit and golden tests; correct SPEC §3 facts.

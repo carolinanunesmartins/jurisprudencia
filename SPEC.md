@@ -23,15 +23,16 @@ Normative. MUST/SHOULD per RFC 2119. Confidence tags: [Certain] verified in rese
 - Stop the run at the first HTTP 429/503 or after 3 consecutive errors. No retry loops, no workarounds. Resume manually later.
 - Per-run cap `--max-requests` (default 800). Run off-peak (evening/night).
 - Canonical URL form for documents: `https://www.dgsi.pt/jstj.nsf/<view-id>/<doc-id>?OpenDocument` (no `Highlight=`).
-- Index pages [Certain, verified on saved pages 2026-10-13]: the "Por Ano" listing `https://www.dgsi.pt/jstj.nsf?OpenDatabase`, about 100 rows per page, sorted by date descending. Pagination: follow the page's "Seguinte" link. `Start=<n>` values are Domino view positions (1, 132, 235, … 13299), not multiples of the page size, so they MUST NOT be computed. The last row of a page repeats as the first row of the next: de-duplicate by `processo`. Columns: sessão, processo (link), relator, descritor (one per line); dates mm/dd/yyyy.
+- Index pages [Certain, verified on saved pages 2026-10-13]: the "Por Ano" listing `https://www.dgsi.pt/jstj.nsf?OpenDatabase`, about 100 rows per page, sorted by date descending. Pagination: follow the page's "Seguinte" link. `Start=<n>` values are Domino view positions (1, 132, 235, … 13299), not multiples of the page size, so they MUST NOT be computed. The last row of a page repeats as the first row of the next: de-duplicate by `doc_id`, never by `processo`. Columns: sessão, processo (link), relator, descritor (one per line); dates mm/dd/yyyy.
 - Document pages [Certain]: key/value table; fields Processo, Nº Convencional (secção), Relator, Descritores, Data do Acordão, Votação, Texto Integral, Privacidade, Meio Processual, Decisão, Indicações Eventuais (optional), Sumário, Decisão Texto Integral. Footnotes are inline; some links carry `file:///` residues.
 - Descriptor list: `https://www.dgsi.pt/jstj.nsf/desc?OpenPage` (4 477 entries on the saved copy; dual spellings written "A / B *").
-- Budget: ≈ 535 index requests + 600–1 500 documents ≈ 1 100–2 000 requests ≈ 1.5–2 h [Guessing].
+- Budget: the index is ≈ 740 requests (73 682 judgments at ≈ 100 rows per page, +1 overlap row per page) ≈ 40 min at ≈ 3 s each, within the default cap of 800; plus 600–1 500 documents ≈ 1.3–2.5 h in total [Likely]. Runs stop at the cap; re-running resumes from the cache.
 - Encoding: windows-1252 (meta charset on all saved pages) [Certain]; decode with cp1252.
 
 ## 4. Data model (SQLite, `data/juris.db`, gitignored)
-- `acordao(processo PK, url, secao, relator, data_iso, descritores_json, meio_processual, decisao, sumario, texto, texto_sha256, fetched_at)`
-- `classification(processo, question_id, relevant, position_id NULL, quote, quote_ok, model, prompt_version, created_at, PK(processo, question_id))`
+- `acordao(doc_id PK, processo, url, secao, relator, data_iso, descritores_json, meio_processual, decisao, sumario, texto, texto_sha256, fetched_at)`
+- `classification(doc_id, question_id, relevant, position_id NULL, quote, quote_ok, model, prompt_version, created_at, PK(doc_id, question_id))`
+- `doc_id` is the 32-hex document id in the URL (`.../<view-id>/<doc_id>?OpenDocument`). `processo` is NOT unique: one case number can have several judgments (e.g. `1748/25.2T8OAZ.P1.S1`: 2026-07-13 and 2026-09-15, found on the saved index pages 2026-10-13), so it is an indexed column only.
 - `divergence(id PK, question_id, type, window_start, window_end, evidence_json, judge_json, rule_confidence)`
 Parsing rules: header table → key/value; "Sumário" and "Decisão Texto Integral" sections; footnotes kept; strip `file:///` residues and spacer images; normalise whitespace; keep text local only.
 

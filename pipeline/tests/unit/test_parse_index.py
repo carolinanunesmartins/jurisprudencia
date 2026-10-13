@@ -48,6 +48,17 @@ def test_all_row_urls_are_unique_canonical_document_urls():
     assert all("Highlight" not in r.url and r.url.endswith("?OpenDocument") for r in rows)
 
 
+def test_doc_id_is_the_url_document_segment_and_unique_per_page():
+    rows = load("index_p2.html").rows
+    assert rows[0].doc_id == "20d11c14734e9a1680258e80004f6fb7"
+    assert len({r.doc_id for r in rows}) == len(rows)
+
+
+def test_same_processo_can_have_two_documents_on_one_page():
+    rows = [r for r in load("index_p2.html").rows if r.processo == "1748/25.2T8OAZ.P1.S1"]
+    assert len(rows) == 2 and rows[0].doc_id != rows[1].doc_id
+
+
 def test_us_date_conversion_and_rejection():
     assert us_date_to_iso("09/24/2026") == "2026-09-24"
     with pytest.raises(ParseError):

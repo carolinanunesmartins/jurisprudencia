@@ -14,6 +14,11 @@ class IndexRow:
     relator: str
     descritores: tuple[str, ...]
 
+    @property
+    def doc_id(self) -> str:
+        """Last path segment of `.../<view-id>/<doc_id>?OpenDocument`; unique per judgment."""
+        return self.url.split("?")[0].rsplit("/", 1)[-1]
+
 
 @dataclass(frozen=True)
 class IndexPage:
