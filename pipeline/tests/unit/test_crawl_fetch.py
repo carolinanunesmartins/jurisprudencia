@@ -154,6 +154,14 @@ def test_pilot_is_stratified_by_year_and_deterministic(tmp_path):
     assert select_pilot(conn, 100, seed=1) != pilot
 
 
+def test_pilot_draws_only_from_the_given_population(tmp_path):
+    conn = connect(tmp_path / "t.db")
+    seed_years(conn, {"2010": 50, "2020": 50})
+    population = {f"2010-{i}" for i in range(50)}
+    pilot = select_pilot(conn, 10, population=population)
+    assert len(pilot) == 10 and set(pilot) <= population
+
+
 def test_pilot_keeps_small_years_and_caps_at_population(tmp_path):
     conn = connect(tmp_path / "t.db")
     seed_years(conn, {"2011": 3, "2012": 3})

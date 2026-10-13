@@ -9,6 +9,7 @@ Normative. MUST/SHOULD per RFC 2119. Confidence tags: [Certain] verified in rese
 ## 2. Subset (decision and criteria)
 - **Court:** Supremo Tribunal de Justiça (`jstj.nsf`, 73 682 documents [Certain]).
 - **Theme:** *contrato-promessa* (sinal, incumprimento, execução específica, tradição, cláusula penal), selected by DGSI **descritores** (exact strings taken from the court's descriptor list in M1) intersected with years **2000–2025**.
+- **Result (M1, ADR 0005):** the full index lists 71 760 judgments; the rule below gives **813** (descriptor regex in `pipeline/juris/db/subset.py`), so no restriction or widening was needed.
 - **Size target:** 600–1 500 judgments. If the filter yields more, restrict years to 2005–2025; if fewer than 400, widen descriptors to include "Sinal" and "Execução específica" explicitly.
 - **Why:** (1) one court, one document format, curated descriptors and summaries; (2) apex court, so divergences matter; (3) a published practitioner survey identifies concrete STJ splits on this theme (§5.2), which gives a head start and an independent check; (4) civil/contractual text, low in sensitive personal data; (5) volume fits a polite crawl of ~1–2 hours.
 - **Early spike (M1.5):** before the full crawl, a ~20-judgment LLM pass must show ≥ 2 positions on one seed question; otherwise switch subset early.

@@ -9,7 +9,8 @@ Calendar: today Mon 12/10 = day 0 (≈2 h). Days 1–9 = Tue 13/10 → Fri 23/10
 - Owner settings confirmed done: Pages source = GitHub Actions, CI green. Secret scanning and the required `ci-ok` check: confirm in repo settings if not yet done.
 - Accept: `make verify` green; CI green; empty page online. ✔
 
-## M1 — Index crawler and subset ★ (3 h) · doing · day 1 · deps: M0
+## M1 — Index crawler and subset ★ (3 h) · done · day 1 · deps: M0
+Done 2026-10-13: full index run by the owner (723 requests, 71 760 judgments, `Index complete`). Subset = 813 judgments (contrato-promessa descriptors, 2000–2025), see `docs/adr/0005-subset.md`. Open: push `m1-crawler` and merge the M1 PR.
 Done so far (branch `m1-crawler`): T1.1 fetcher core `pipeline/juris/crawl/client.py` (mock-transport tests); SQLite schema `pipeline/juris/db/schema.py`; HUMAN fixtures saved (3 index pages, 4 judgments, descriptor list); T1.2 parsers `pipeline/juris/parse/{index,document,descritores}.py` with unit + golden regression tests. Committed judgment fixtures are trimmed by `pipeline/tools/trim_fixture.py` (rule 3); raw saves stay in gitignored `fixtures/local_raw/`. Still to do: wire `make index` (follow "Seguinte" links, dedupe, write `acordao` rows), then HUMAN `make index` and T1.3.
 Note: the saved judgments are not on the contrato-promessa theme (recent civil/penal cases); good for structure, not for the M1.5 spike.
 - T1.1 Crawler per SPEC §3 (rate limit, cache, resume, stop rules) with tests against saved HTML fixtures.

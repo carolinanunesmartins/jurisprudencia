@@ -21,6 +21,7 @@ import httpx
 
 from juris.crawl.client import DEFAULT_MAX_REQUESTS, CrawlStop, FetchError, PoliteFetcher
 from juris.db.schema import connect
+from juris.db.subset import subset_ids
 from juris.parse.common import ParseError
 from juris.parse.document import parse_document
 
@@ -38,11 +39,20 @@ class FetchStats:
     finished: bool = False
 
 
-def select_pilot(conn: sqlite3.Connection, size: int, seed: int = DEFAULT_SEED) -> list[str]:
-    """Random sample of `size` doc_ids, proportional per year (largest remainder), deterministic."""
+def select_pilot(
+    conn: sqlite3.Connection,
+    size: int,
+    seed: int = DEFAULT_SEED,
+    population: set[str] | None = None,
+) -> list[str]:
+    """Random sample of `size` doc_ids, proportional per year (largest remainder), deterministic.
+
+    `population` restricts the draw (the thesis subset); None means every indexed row.
+    """
     by_year: dict[str, list[str]] = defaultdict(list)
     for doc_id, data_iso in conn.execute("SELECT doc_id, data_iso FROM acordao ORDER BY doc_id"):
-        by_year[(data_iso or "")[:4]].append(doc_id)
+        if population is None or doc_id in population:
+            by_year[(data_iso or "")[:4]].append(doc_id)
     total = sum(len(v) for v in by_year.values())
     if total == 0:
         return []
@@ -139,6 +149,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--max-requests", type=int, default=DEFAULT_MAX_REQUESTS)
     ap.add_argument("--pilot", type=int, default=None, help="only the stratified pilot of N")
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    ap.add_argument("--all-index", action="store_true", help="ignore the thesis subset (ADR 0005)")
     ap.add_argument("--contact", default=os.environ.get("JURIS_CONTACT"))
     args = ap.parse_args(argv)
     if not args.contact:
@@ -149,9 +160,17 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_USAGE
 
     conn = connect(args.db)
-    candidates = select_pilot(conn, args.pilot, args.seed) if args.pilot else None
+    population = None if args.all_index else subset_ids(conn)
+    if args.pilot:
+        candidates = select_pilot(conn, args.pilot, args.seed, population)
+    else:
+        candidates = None if population is None else list(population)
     todo = pending_ids(conn, candidates)
-    print(f"{len(todo)} judgments to fetch" + (f" (pilot of {args.pilot})" if args.pilot else ""))
+    scope = "whole index" if population is None else f"subset of {len(population)}"
+    print(
+        f"{len(todo)} judgments to fetch ({scope}"
+        + (f", pilot {args.pilot})" if args.pilot else ")")
+    )
     with httpx.Client() as client:
         fetcher = PoliteFetcher(
             args.cache, client, contact=args.contact, max_requests=args.max_requests
