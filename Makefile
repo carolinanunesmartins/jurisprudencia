@@ -29,7 +29,7 @@ web-verify:
 index:
 	uv run python -m juris.crawl.index $(ARGS)
 fetch:
-	uv run python -m juris.crawl.fetch
+	uv run python -m juris.crawl.fetch $(ARGS)
 classify:
 	uv run python -m juris.classify --provider live
 classify-replay:

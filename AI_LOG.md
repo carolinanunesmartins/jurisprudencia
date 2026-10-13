@@ -16,7 +16,14 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
-### 2026-10-13 — `make index` and a key correction
+### 2026-10-13 — `make fetch` (M2 T2.1)
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: document fetch loop on top of the polite fetcher: stratified pilot sampling, resume via `fetched_at` and cache, per-document failures listed, parse results stored; tests through a mock transport on the saved judgment fixtures.
+- What failed or needed correction: nothing failed; the pilot is chosen over all rows (not only pending ones) so it stays identical across interrupted runs.
+- How it was fixed: n/a. Also added `ARGS` to the `fetch` Makefile target.
+- Human verification: pending. Never run against the live site; the owner should run `make fetch ARGS="--pilot 100"` after the index finishes and report the failure and empty-field counts it prints.
+
+### 2026-10-13 — `make index` live test and a key correction
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: implement the index crawl loop (follow "Seguinte", store rows per page, resume via cache, stop rules) and tests on the saved pages through a mock transport.
 - What failed or needed correction: my first test expected 298 rows but got 297 plus a "conflict": the real saved pages show one case number (`1748/25.2T8OAZ.P1.S1`) with two different judgments, so SPEC §4's `processo` primary key was wrong.

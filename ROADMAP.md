@@ -23,7 +23,7 @@ Note: the saved judgments are not on the contrato-promessa theme (recent civil/p
 - Accept: at least 2 positions observed in the sample, or decide early to switch to the fallback subset (SPEC §2). Gate G2 still applies at M3 with the 150 sample, but this spike catches a bad subset before M2.
 
 ## M2 — Document crawl and parser (4 h) · todo · days 2–3 · deps: M1
-- T2.1 Document fetcher (same rules), `--max-requests`.
+- T2.1 Document fetcher (same rules), `--max-requests`. *Progress: `make fetch ARGS="--pilot 100"` implemented and tested offline (stratified pilot, resume, failures listed); not yet run live.*
 - T2.2 Parser (fixtures from M1) → `acordao.sumario/texto/decisao`; tests on ≥ 5 fixtures including footnotes and anonymised text.
 - HUMAN: `make fetch` for a **pilot of 100, random and stratified by year** (not the first 100 fetched; otherwise M4 shows no time effect) (evening) and later the rest (overnight, possibly across several runs).
 - Accept: `make fetch` resumes correctly after interruption (tested); ≥ 95% of fetched documents parse with non-empty sumário and texto (report the real rate); parse failures listed.
