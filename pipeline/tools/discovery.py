@@ -68,6 +68,7 @@ def check(db: Path, tax: Path, parts: int) -> int:
     seen: dict[str, Counter[str]] = defaultdict(Counter)
     years: dict[str, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
     novas: dict[str, Counter[str]] = defaultdict(Counter)
+    nyears: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
     total = rejected = unknown = 0
     for k in range(1, parts + 1):
         ids = json.loads((OUT / f"ids_{k}.json").read_text(encoding="utf-8"))
@@ -88,6 +89,7 @@ def check(db: Path, tax: Path, parts: int) -> int:
             for n in item.get("novas", []):
                 if is_grounded(n.get("citacao", ""), sumario):
                     novas[n["titulo"]][n.get("rotulo", "?")] += 1
+                    nyears[n["titulo"]][n.get("rotulo", "?")].append(data_iso[:4])
                 else:
                     rejected += 1
     print(f"{total} judgments answered; quotes rejected: {rejected}; invalid ids: {unknown}\n")
@@ -100,7 +102,10 @@ def check(db: Path, tax: Path, parts: int) -> int:
         print(f"{qid}: {spread or 'no judgment'}")
     print("\nProposed new questions (quote-grounded):")
     for title, labels in sorted(novas.items(), key=lambda t: -sum(t[1].values())):
-        print(f"- {title}  [{sum(labels.values())}] {dict(labels)}")
+        print(f"- {title}  [{sum(labels.values())}]")
+        for label, n in labels.items():
+            ys = sorted(nyears[title][label])
+            print(f"    {label}: {n} ({', '.join(ys)})")
     new_ok = sum(1 for lab in novas.values() if len(lab) >= G2_POSITIONS)
     print(f"\nG2: {ok} seed + {new_ok} proposed questions show >= {G2_POSITIONS} positions")
     passed = ok + new_ok >= G2_QUESTIONS

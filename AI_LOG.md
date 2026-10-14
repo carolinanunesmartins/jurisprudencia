@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — M3 discovery pass result (150 judgments)
+- Tool / model: owner ran the 3 packs in an LLM chat (human-run); Claude Code (Sonnet 5.5) ran `discovery.py check` and read the output.
+- Task: gate G2 measurement and new-question proposals.
+- What failed or needed correction: 0 of the 150 sumários had a quote rejected. The five seed questions show no split: q1 1 position (1 judgment), q2 only basta_mora (4), q3 only exige_definitivo (7), q4 and q5 nothing. The tool printed "10 proposed questions with >= 2 positions", but that count is inflated: position labels are free text, so near-identical labels ("pressupõe resolução" / "pressupõe resolução, implícita no pedido") count as two positions. After merging by hand, about 5 questions look like real two-sided cases (prazo absoluto/relativo, possuidor/detentor, retenção exige consumidor, retenção vs hipoteca, sinal e execução específica), each with only 1-3 judgments on the minority side.
+- How it was fixed: `check` now also prints the years behind each label. The G2 criterion was not changed; the owner decides which proposed questions to approve.
+- Human verification: pending (owner approves, edits or rejects the questions).
+
 ### 2026-10-14 — Taxonomy: allow 2-4 positions per question
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: owner asked why a question may have at most 3 positions; relaxed to 4 in the validator and SPEC §5.1, with a test.
