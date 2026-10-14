@@ -19,7 +19,8 @@ Note: the saved judgments are not on the contrato-promessa theme (recent civil/p
 - HUMAN: `make index` (≈30 min, evening). Then T1.3: list descriptors, count candidates per descriptor and year, apply SPEC §2 decision rule, write `docs/adr/0005-subset.md` with the real numbers.
 - Accept: index of the whole STJ in SQLite; subset chosen with counts; ADR written.
 
-## M1.5 — Feasibility spike (1 h) · todo · day 1–2 · deps: M1 fixtures
+## M1.5 — Feasibility spike (1 h) · doing · day 1–2 · deps: M1 fixtures
+Result 2026-10-14, seed question 3 (sinal e mora), 20 pilot judgments spread over 2002–2025, classified from the sumário by an LLM chat pass (owner): **FAIL on the criterion** — 9 judgments position B (incumprimento definitivo required), 0 position A (mora is enough), 11 do not decide the question; 0 quotes rejected. B appears in every period (2002 to 2025), so in this sample the question looks settled, not split. One question and a keyword-selected pool of 100 fetched judgments is thin evidence; next: fetch the rest of the subset (needed anyway), rerun the spike on questions 1 and 2 (survey splits 2005 and 2008–2013) with the larger pool, before any decision to switch subset. G2 at M3 remains the real gate.
 - HUMAN: take ~20 saved judgments on seed question 1 or 3 and run one LLM pass (human-run, key needed) with a draft prompt.
 - Accept: at least 2 positions observed in the sample, or decide early to switch to the fallback subset (SPEC §2). Gate G2 still applies at M3 with the 150 sample, but this spike catches a bad subset before M2.
 

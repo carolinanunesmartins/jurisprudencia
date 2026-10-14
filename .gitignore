@@ -1,6 +1,9 @@
 # data policy (AGENTS.md rule 3): never commit full texts or HTML cache
 data/raw/
 data/*.db
+# SQLite sidecar files can hold judgment text too (journal / WAL / shared memory)
+data/*.db-*
+data/*.sqlite*
 data/spike/
 .env
 .env.*
@@ -29,3 +32,13 @@ pipeline/tests/fixtures/*.gif
 pipeline/tests/fixtures/0.508
 IGFEJ*
 pipeline/tests/fixtures/local_raw/
+
+# editor / OS / local tool settings
+.claude/settings.local.json
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+.coverage
+htmlcov/
