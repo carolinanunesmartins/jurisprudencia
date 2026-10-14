@@ -42,7 +42,7 @@ def make_db(tmp_path):
         )
     conn.commit()
     (tmp_path / "data" / "spike").mkdir(parents=True)
-    (tmp_path / "data" / "spike" / "ids.json").write_text(json.dumps(["d0", "d1", "d2"]))
+    (tmp_path / "data" / "spike" / "ids_q3.json").write_text(json.dumps(["d0", "d1", "d2"]))
     return tmp_path / "t.db"
 
 
@@ -74,3 +74,10 @@ def test_check_rejects_invented_quotes_and_fails_with_one_position(tmp_path, mon
     assert spike.check(db, answer(tmp_path, items)) == 1
     out = capsys.readouterr().out
     assert "quotes rejected: 1" in out and "FAIL" in out
+
+
+def test_q1_and_q2_candidates():
+    assert spike.is_candidate("Execução específica; alienação a terceiro", "q1")
+    assert not spike.is_candidate("Execução específica e mora", "q1")
+    assert spike.is_candidate("Execução específica; mora do promitente", "q2")
+    assert not spike.is_candidate("Sinal e mora", "q2")

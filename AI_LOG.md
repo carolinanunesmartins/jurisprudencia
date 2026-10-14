@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — M1.5 spike kit for questions 1 and 2
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: generalise `pipeline/tools/spike.py` to `-q q1|q2|q3` (per-question pack and ids files) and write draft prompts `spike_q1_v0.md` (execução específica vs alienação a terceiro) and `spike_q2_v0.md` (mora vs incumprimento definitivo).
+- What failed or needed correction: nothing failed. Candidate keywords were fixed before any model output (full pool of 810 fetched: q1 38 candidates, q2 59, q3 161). The position wording for q1/q2 is my neutral draft from SPEC §5.2, not checked by a lawyer.
+- How it was fixed: n/a.
+- Human verification: pending. The owner should read the two position definitions in the prompts, run the packs in an LLM chat and run `check`.
+
 ### 2026-10-14 — Full `make fetch`: 3 processo mismatches
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: read the owner's last `make fetch` output (3 left of 813, all FAILED with `processo mismatch: index '04S4759' vs '04S4759ver acórdão T REL'`).
