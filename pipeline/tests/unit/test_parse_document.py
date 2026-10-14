@@ -76,3 +76,15 @@ def test_dual_spelling_descriptors_expose_both_variants():
     items = parse_descritores((FIX / "descritores.html").read_bytes())
     dual = next(i for i in items if i.term.startswith("Acção cambiária"))
     assert dual.variants == ("Acção cambiária", "Ação cambiária")
+
+
+def test_processo_ignores_the_link_to_the_relacao_judgment():
+    page = (
+        "<html><body><table>"
+        '<tr><td bgcolor="#71B2CF"><b>Processo:</b></td><td><table><tr>'
+        "<td><b><font>04S4759</font></b></td>"
+        '<td><a href="/jtrl.nsf/0/X">ver acórdão T REL </a></td></tr></table></td></tr>'
+        '<tr><td bgcolor="#71B2CF"><b>Data do Acordão:</b></td><td>07/04/2005</td></tr>'
+        "</table></body></html>"
+    )
+    assert parse_document(page.encode("utf-8")).processo == "04S4759"

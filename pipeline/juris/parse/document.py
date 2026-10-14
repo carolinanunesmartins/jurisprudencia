@@ -55,6 +55,13 @@ class ParsedDocument:
         return json.dumps(d, ensure_ascii=False, indent=2, sort_keys=True)
 
 
+def _processo_text(cell) -> str:
+    """The case number; some pages nest a table with a 'ver acórdão T REL' link next to it."""
+    table = cell.css_first("table")
+    first = table.css_first("td") if table is not None else None
+    return cell_text(first) if first is not None else cell_text(cell)
+
+
 def parse_document(raw: bytes) -> ParsedDocument:
     tree = parse_html(raw)
     found: dict[str, str] = {}
@@ -64,7 +71,7 @@ def parse_document(raw: bytes) -> ParsedDocument:
             continue
         field = _FIELDS.get(label_key(cell_text(cells[0])))
         if field and field not in found:
-            found[field] = cell_text(cells[1])
+            found[field] = _processo_text(cells[1]) if field == "processo" else cell_text(cells[1])
     if not found.get("processo"):
         raise ParseError("missing 'Processo' field")
     if not found.get("data"):

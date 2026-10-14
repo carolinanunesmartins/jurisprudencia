@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — Full `make fetch`: 3 processo mismatches
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: read the owner's last `make fetch` output (3 left of 813, all FAILED with `processo mismatch: index '04S4759' vs '04S4759ver acórdão T REL'`).
+- What failed or needed correction: parser bug, not a site problem. On some pages the Processo cell holds a nested table with the number plus a link "ver acórdão T REL" (the related Relação judgment), and `cell_text` joined both. The safety check against the index row caught it, so nothing wrong was stored.
+- How it was fixed: `_processo_text` takes only the first cell of the nested table; unit test on a synthetic page; all cached pages with such a link re-parse to the plain number. The 3 rows are in the cache, so re-running `make fetch` stores them with 0 requests.
+- Human verification: pending; the owner re-runs `make fetch` and confirms 0 failures.
+
 ### 2026-10-14 — M1.5 spike result (question 3)
 - Tool / model: owner ran the pack in an LLM chat (human-run, per AGENTS.md); Claude Code (Sonnet 5.5) ran `spike.py check` and read the answers.
 - Task: classify 20 pilot sumários on "sinal e mora" and verify the quotes.
