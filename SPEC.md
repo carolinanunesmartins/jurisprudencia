@@ -52,6 +52,7 @@ M3 runs one LLM pass over a random sample of 150 judgments to propose up to 3 fu
 
 ## 6. Classification and detection
 ### 6.1 Per-judgment classification (REQ-CLS)
+Judgments with no full text are classified from the sumário alone and flagged `text_source=sumario` (ADR 0006); those with neither are excluded and counted.
 One call per judgment, all approved questions at once. Input: header fields, sumário, and the reasoning sections truncated to ≈ 6 000 tokens. Output (pydantic): for each question `{relevant: bool, position_id | null, quote, note}`. `quote` ≤ 400 chars, verbatim. Rejected if not a substring (after whitespace normalisation) → stored as `relevant=false` with `quote_ok=false` and counted.
 Temperature 0, one retry on schema failure only, prompts versioned in `pipeline/juris/llm/prompts/*.md`.
 ### 6.2 Detection (REQ-DET), pure functions over `classification`

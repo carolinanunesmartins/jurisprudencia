@@ -20,8 +20,8 @@ Living record of how AI tools were used in this project. It is the source for `I
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: read the owner's resume output (37 stored, 7 incomplete) and classify all 9 incomplete pilot rows from the DB and cached HTML (no network).
 - What failed or needed correction: the acceptance bar (≥95% with sumário and texto) is missed: 91/100. I first suspected the parser; the cached pages show an empty "Decisão Texto Integral" cell (7 rows) or an empty "Sumário" (2 rows from 2003), so the data is missing at the source. Gaps concentrate in 2000–2003 (7 of 13 judgments) and two 2010 rows.
-- How it was fixed: nothing to fix in code; the real rate is reported as ROADMAP asks, with the breakdown. A policy for sumário-only judgments is left to the owner.
-- Human verification: pending; the owner should open one 2000–2001 judgment on dgsi.pt and confirm no full text is shown.
+- How it was fixed: nothing to fix in code; the real rate is reported as ROADMAP asks, with the breakdown. The owner chose to classify sumário-only judgments from the sumário, flagged (ADR 0006, SPEC §6.1).
+- Human verification: the owner made the policy decision; still pending: open one 2000–2001 judgment on dgsi.pt and confirm no full text is shown.
 
 ### 2026-10-14 — First live `make fetch` pilot run
 - Tool / model: Claude Code (Sonnet 5.5)
