@@ -21,6 +21,9 @@ Per year: 2000:22, 2001:26, 2002:23, 2003:37, 2004:56, 2005:37, 2006:51, 2007:41
 ## Why not substring matching
 A naive match on `SINAL`/`TRADIÇÃO`/`PROMESSA` catches `EXTRADIÇÃO` (267 hits), `CONTRADIÇÃO …`, `CARÁCTER SINALAGMÁTICO`, `PROMESSA DE CASAMENTO`, road-sign descriptors and similar. Whole-descriptor patterns avoid these; `test_subset.py` pins both lists.
 
+## Why 2000–2025, and a known limitation
+The start year is a scope choice carried over from SPEC §2, not derived from the data (the index has more judgments per year before 2000, not fewer). Seed question 1 names the uniformizing judgment of 05/11/1998 as a reference point, which lies **outside** the window, so the "before" side of that shift is not in the data. Considered and rejected by the owner (2026-10-14): 1995–2025 would give 1 144 judgments (813 + 331) and include 1998. The limitation is stated in the report; question 1 is judged only on what falls inside 2000–2025.
+
 ## Consequences
 - **Roughly 25–30 judgments per year**, and a dip to 16 in 2020. Time-window detection (M5) has small counts per window; thresholds in SPEC §6 must be applied as written, and per-window counts are shown in the UI.
 - **Cost:** 813 fetches ≈ 40–45 minutes of polite crawling, far under the old 1–2 hour estimate.

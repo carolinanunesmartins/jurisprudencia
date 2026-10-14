@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — Review of the subset justification
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: explain why STJ, the descriptors, 600–1 500 judgments and 2000–2025.
+- What failed or needed correction: the SPEC gives no reason for the 2000 start; the 1998 judgment cited by seed question 1 falls outside the window.
+- How it was fixed: the owner chose to keep 2000–2025; the limitation is recorded in ADR 0005 (alternative 1995–2025 = 1 144 judgments).
+- Human verification: the owner made the window decision.
+
 ### 2026-10-13 — Subset decision (T1.3)
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: from the full index, count descriptors and years, apply the SPEC §2 rule, write ADR 0005, and make `make fetch` use only the subset.
