@@ -39,7 +39,7 @@ Parsing rules: header table → key/value; "Sumário" and "Decisão Texto Integr
 
 ## 5. Taxonomy
 ### 5.1 Structure (`data/taxonomy.json`)
-`questions[{id, title_pt, description_pt, norms[], positions[{id, label_pt, definition_pt}], seed_source, status}]`. 2–3 mutually exclusive positions per question plus the implicit `nao_decide`.
+`questions[{id, title_pt, description_pt, norms[], positions[{id, label_pt, definition_pt}], seed_source, status}]`. 2–4 mutually exclusive positions per question (relaxed from 2–3 on 2026-10-14: real questions can have a third stance; more positions cost labelling accuracy) plus the implicit `nao_decide`.
 ### 5.2 Seed questions (from a practitioner survey of STJ case law on incumprimento do contrato-promessa; to be verified against the judgments themselves) 
 1. Execução específica quando o promitente-vendedor alienou a terceiro antes do registo da acção (eficácia real da promessa). Reference points named in the survey: acórdão uniformizador of 05/11/1998 (proc. 086931) vs STJ 05/05/2005 (proc. 05B743).
 2. Pressuposto da execução específica: mora vs incumprimento definitivo (survey cites STJ 04/03/2008, 19/05/2010, 09/12/2010 and 26/09/2013, proc. 564/11.3TVLSB.L1.S1).

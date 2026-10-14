@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — Taxonomy: allow 2-4 positions per question
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: owner asked why a question may have at most 3 positions; relaxed to 4 in the validator and SPEC §5.1, with a test.
+- What failed or needed correction: the limit was a SPEC choice I had enforced as written, not a detection requirement (split/shift/resolved work with any number of positions).
+- How it was fixed: `2 <= positions <= 4`; tradeoff noted (labelling accuracy, UI readability).
+- Human verification: the owner made the decision.
+
 ### 2026-10-14 — M3 start: seed taxonomy and discovery pass kit
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: T3.1 `data/taxonomy.json` (5 seed questions from SPEC §5.2) with a pydantic loader/validator; T3.2 kit for the discovery pass: `pipeline/tools/discovery.py pack|check`, prompt `discovery_v0.md`, 150 random judgments (stratified by year, seed 20261015) in 3 packs of 50.

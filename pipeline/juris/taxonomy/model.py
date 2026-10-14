@@ -30,8 +30,8 @@ class Question(BaseModel):
     @model_validator(mode="after")
     def _positions(self) -> "Question":
         ids = [p.id for p in self.positions]
-        if not 2 <= len(ids) <= 3:
-            raise ValueError(f"{self.id}: 2-3 positions required")
+        if not 2 <= len(ids) <= 4:
+            raise ValueError(f"{self.id}: 2-4 positions required")
         if len(set(ids)) != len(ids) or "nao_decide" in ids:
             raise ValueError(f"{self.id}: position ids must be unique and not 'nao_decide'")
         return self

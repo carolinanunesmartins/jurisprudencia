@@ -38,3 +38,12 @@ def test_duplicate_question_ids_and_reserved_position_are_rejected():
         Taxonomy.model_validate(
             {"version": "v", "questions": [question(positions=("a", "nao_decide"))]}
         )
+
+
+def test_up_to_four_positions_are_allowed_but_not_five():
+    ok = question(positions=("a", "b", "c", "d"))
+    assert len(Taxonomy.model_validate({"version": "v", "questions": [ok]}).questions) == 1
+    with pytest.raises(ValidationError):
+        Taxonomy.model_validate(
+            {"version": "v", "questions": [question(positions=("a", "b", "c", "d", "e"))]}
+        )
