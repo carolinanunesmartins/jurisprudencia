@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — M1.5 spike result (questions 1 and 2)
+- Tool / model: owner ran both packs in an LLM chat (human-run); Claude Code (Sonnet 5.5) ran `spike.py check -q q1|q2` and read the notes.
+- Task: check quotes and count positions for seed questions 1 and 2 on the full fetched pool.
+- What failed or needed correction: both fail the criterion (at least 2 positions). Q1: 1 A, 19 nenhuma; the keyword filter (execução específica + alienação/terceiro/eficácia real) mostly caught judgments on other points (insolvência, penhora, propriedade horizontal), so Q1 is not really tested. Q2: 6 A, 0 B. 0 invented quotes in both. Positions are read from sumários only.
+- How it was fixed: not a code problem; criterion not changed. Options put to the owner: go on to the M3 discovery pass (G2), tighten the Q1 filter, or switch to the fallback subset.
+- Human verification: pending (owner reads a few sumários, in particular Q2 judgments from 2008–2013 that the survey cites).
+
 ### 2026-10-14 — M1.5 spike kit for questions 1 and 2
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: generalise `pipeline/tools/spike.py` to `-q q1|q2|q3` (per-question pack and ids files) and write draft prompts `spike_q1_v0.md` (execução específica vs alienação a terceiro) and `spike_q2_v0.md` (mora vs incumprimento definitivo).
