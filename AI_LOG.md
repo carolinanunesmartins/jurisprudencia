@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — M1.5 spike kit
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: choose spike judgments from the pilot, write the draft prompt (`pipeline/juris/llm/prompts/spike_q3_v0.md`, seed question 3: sinal e mora) and a `pack`/`check` tool that builds the paste-in file and verifies the model's quotes against the stored sumário.
+- What failed or needed correction: nothing yet; the model pass has not run. Choice made without results: question 3 because the pilot has 23 sumários mentioning sinal plus mora/definitivo across 2002–2025, against 4–5 for questions 1 and 2. The pass criterion is ROADMAP's (at least 2 positions observed); the report also prints the support per position.
+- How it was fixed: n/a.
+- Human verification: pending. The owner runs the prompt in an LLM chat, saves the JSON answer and runs `check`; the owner should also read a few of the 20 sumários to judge whether the model's positions are right.
+
 ### 2026-10-14 — Pilot completed: 91% complete, gaps are on the site
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: read the owner's resume output (37 stored, 7 incomplete) and classify all 9 incomplete pilot rows from the DB and cached HTML (no network).

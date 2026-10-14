@@ -1,6 +1,7 @@
 # data policy (AGENTS.md rule 3): never commit full texts or HTML cache
 data/raw/
 data/*.db
+data/spike/
 .env
 .env.*
 !.env.example
