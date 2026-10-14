@@ -1,0 +1,5 @@
+[
+  {"id": "bare-keyword-kept", "url": "https://www.dgsi.pt/jstj.nsf/a/b?OpenDocument", "expected": "https://www.dgsi.pt/jstj.nsf/a/b?OpenDocument"},
+  {"id": "highlight-removed", "url": "https://www.dgsi.pt/jstj.nsf/a/b?OpenDocument&Highlight=0,sinal", "expected": "https://www.dgsi.pt/jstj.nsf/a/b?OpenDocument"},
+  {"id": "start-param-kept", "url": "https://www.dgsi.pt/jstj.nsf/v?OpenDatabase&Start=139", "expected": "https://www.dgsi.pt/jstj.nsf/v?OpenDatabase&Start=139"}
+]

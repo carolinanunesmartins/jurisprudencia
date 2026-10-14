@@ -1,0 +1,22 @@
+{
+  "data_iso": "2020-11-11",
+  "decisao": "REJEITADA A ADMISSÃO",
+  "descritores": [
+    "REVISTA EXCECIONAL",
+    "RELEVÂNCIA JURÍDICA"
+  ],
+  "indicacoes_eventuais": "TRANSITADO EM JULGADO",
+  "meio_processual": "REVISTA EXCECIONAL",
+  "processo": "23748/18.9T8LSB-A.L1.S2",
+  "relator": "CHAMBEL MOURISCO",
+  "secao": "4.ª SECÇÃO",
+  "sumario": {
+    "head": "A avaliação da suficiência ou insuficiência da matéria de facto alegada no caso ",
+    "len": 442
+  },
+  "texto": {
+    "len": 215,
+    "sha256": "12726e9346b8958b4a9e70dcbc7d27178affd7a761ec35a7a697749da9295b16"
+  },
+  "votacao": "UNANIMIDADE"
+}

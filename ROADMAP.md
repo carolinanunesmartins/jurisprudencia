@@ -4,18 +4,18 @@ Status: `todo | doing | done | blocked`. Capacity assumed: **3 h per working day
 
 Calendar: today Mon 12/10 = day 0 (≈2 h). Days 1–9 = Tue 13/10 → Fri 23/10 (target delivery). Mon 26/10 = reserve. Weekends are optional buffer (+6 h).
 
-## M0 — Foundation (2 h) · doing · day 0
-Scaffold done (T0.1, T0.2 except README stub/NOTA/IA; CI files written, not yet run on GitHub). Remaining: HUMAN install `uv` + `make` (or use the npm/uv commands directly), first CI run, secret scanning, enable Pages (Settings > Pages > Source = GitHub Actions; hosting decided: GitHub Pages) and empty page online.
-- HUMAN: `https://www.dgsi.pt/robots.txt` checked → none (done). Start `AI_LOG.md` today and keep it up to date.
-- T0.1 Scaffold: `pipeline/` (uv, ruff, pytest, pydantic, httpx, selectolax), `web/` (Vite, React, TS strict, Tailwind), `Makefile`.
-- T0.2 Files: README stub (pt-PT), LICENSE, AGENTS/SPEC/ROADMAP, CHANGELOG, `.gitignore` (`data/raw`, `data/*.db`, `.env`), PR template.
-- T0.3 CI workflow + GitHub Pages deploy of an empty page; secret scanning on.
-- Accept: `make verify` green; CI green; empty page online.
+## M0 — Foundation (2 h) · done · day 0
+- Done 2026-10-13: scaffold merged to `main` (PR #17), CI green (`ci-ok`), live page https://carolinanunesmartins.github.io/jurisprudencia/ (HTTP 200, `lang="pt-PT"`, CSP meta).
+- Owner settings confirmed done: Pages source = GitHub Actions, CI green. Secret scanning and the required `ci-ok` check: confirm in repo settings if not yet done.
+- Accept: `make verify` green; CI green; empty page online. ✔
 
-## M1 — Index crawler and subset ★ (3 h) · todo · day 1 · deps: M0
+## M1 — Index crawler and subset ★ (3 h) · done · day 1 · deps: M0
+Done 2026-10-13: full index run by the owner (723 requests, 71 760 judgments, `Index complete`). Subset = 813 judgments (contrato-promessa descriptors, 2000–2025), see `docs/adr/0005-subset.md`. Open: push `m1-crawler` and merge the M1 PR.
+Done so far (branch `m1-crawler`): T1.1 fetcher core `pipeline/juris/crawl/client.py` (mock-transport tests); SQLite schema `pipeline/juris/db/schema.py`; HUMAN fixtures saved (3 index pages, 4 judgments, descriptor list); T1.2 parsers `pipeline/juris/parse/{index,document,descritores}.py` with unit + golden regression tests. Committed judgment fixtures are trimmed by `pipeline/tools/trim_fixture.py` (rule 3); raw saves stay in gitignored `fixtures/local_raw/`. Still to do: wire `make index` (follow "Seguinte" links, dedupe, write `acordao` rows), then HUMAN `make index` and T1.3.
+Note: the saved judgments are not on the contrato-promessa theme (recent civil/penal cases); good for structure, not for the M1.5 spike.
 - T1.1 Crawler per SPEC §3 (rate limit, cache, resume, stop rules) with tests against saved HTML fixtures.
 - HUMAN: save 2 index pages and 3 judgment pages as fixtures (browser → save HTML) so agents can write parsers; check the real page size and encoding.
-- T1.2 Index parser → `acordao` rows (processo, secção, relator, date, descritores, URL).
+- T1.2 Index parser → `acordao` rows (doc_id, processo, relator, date, descritores, URL). Key is `doc_id`, not `processo` (SPEC §4).
 - HUMAN: `make index` (≈30 min, evening). Then T1.3: list descriptors, count candidates per descriptor and year, apply SPEC §2 decision rule, write `docs/adr/0005-subset.md` with the real numbers.
 - Accept: index of the whole STJ in SQLite; subset chosen with counts; ADR written.
 
@@ -24,7 +24,7 @@ Scaffold done (T0.1, T0.2 except README stub/NOTA/IA; CI files written, not yet 
 - Accept: at least 2 positions observed in the sample, or decide early to switch to the fallback subset (SPEC §2). Gate G2 still applies at M3 with the 150 sample, but this spike catches a bad subset before M2.
 
 ## M2 — Document crawl and parser (4 h) · todo · days 2–3 · deps: M1
-- T2.1 Document fetcher (same rules), `--max-requests`.
+- T2.1 Document fetcher (same rules), `--max-requests`. *Progress: `make fetch ARGS="--pilot 100"` implemented and tested offline (stratified pilot, resume, failures listed). Pilot done 2026-10-14 (100 stored, 0 failures after one stop on server disconnects). **Real parse rate: 91/100 with non-empty sumário and texto, below the 95% bar.** All 9 gaps are missing on the site itself (verified in the cached HTML), not parser bugs: 5 from 2000–2001 have a sumário but no full text, 2 from 2003 have full text but no sumário, 2 from 2010 have no full text. From 2004 on: 81/83 complete (97.6%). Owner decision: sumário-only judgments are classified from the sumário and flagged (ADR 0006).*
 - T2.2 Parser (fixtures from M1) → `acordao.sumario/texto/decisao`; tests on ≥ 5 fixtures including footnotes and anonymised text.
 - HUMAN: `make fetch` for a **pilot of 100, random and stratified by year** (not the first 100 fetched; otherwise M4 shows no time effect) (evening) and later the rest (overnight, possibly across several runs).
 - Accept: `make fetch` resumes correctly after interruption (tested); ≥ 95% of fetched documents parse with non-empty sumário and texto (report the real rate); parse failures listed.

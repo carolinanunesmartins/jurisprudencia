@@ -45,7 +45,17 @@ Sem `make`, os comandos equivalentes estão no [Makefile](Makefile).
 | `make index` / `make fetch` | **humano** | crawl do dgsi.pt (ver política abaixo) |
 | `make classify` | **humano** | chamadas reais ao LLM (precisa de `LLM_API_KEY`) |
 
-Os comandos de crawl e de LLM ainda não estão implementados (marcos M1, M2 e M4).
+`make index` está implementado (M1); `make fetch` e `make classify` ainda não (M2 e M4).
+
+### Correr `make index` (humano, à noite)
+
+```powershell
+$env:JURIS_CONTACT = "o.teu@email"      # vai no User-Agent
+make index                              # ≈ 740 pedidos, ≈ 40 min
+make index ARGS="--max-pages 3"         # teste curto primeiro (recomendado)
+```
+
+Cria `data/juris.db` e a cache `data/raw/` (ambos ignorados pelo git). Se parar (limite de pedidos, 429/503, 3 erros seguidos), basta voltar a correr: as páginas já guardadas não geram pedidos.
 
 ## Estrutura
 

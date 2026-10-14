@@ -9,6 +9,7 @@ Normative. MUST/SHOULD per RFC 2119. Confidence tags: [Certain] verified in rese
 ## 2. Subset (decision and criteria)
 - **Court:** Supremo Tribunal de Justiça (`jstj.nsf`, 73 682 documents [Certain]).
 - **Theme:** *contrato-promessa* (sinal, incumprimento, execução específica, tradição, cláusula penal), selected by DGSI **descritores** (exact strings taken from the court's descriptor list in M1) intersected with years **2000–2025**.
+- **Result (M1, ADR 0005):** the full index lists 71 760 judgments; the rule below gives **813** (descriptor regex in `pipeline/juris/db/subset.py`), so no restriction or widening was needed.
 - **Size target:** 600–1 500 judgments. If the filter yields more, restrict years to 2005–2025; if fewer than 400, widen descriptors to include "Sinal" and "Execução específica" explicitly.
 - **Why:** (1) one court, one document format, curated descriptors and summaries; (2) apex court, so divergences matter; (3) a published practitioner survey identifies concrete STJ splits on this theme (§5.2), which gives a head start and an independent check; (4) civil/contractual text, low in sensitive personal data; (5) volume fits a polite crawl of ~1–2 hours.
 - **Early spike (M1.5):** before the full crawl, a ~20-judgment LLM pass must show ≥ 2 positions on one seed question; otherwise switch subset early.
@@ -23,13 +24,16 @@ Normative. MUST/SHOULD per RFC 2119. Confidence tags: [Certain] verified in rese
 - Stop the run at the first HTTP 429/503 or after 3 consecutive errors. No retry loops, no workarounds. Resume manually later.
 - Per-run cap `--max-requests` (default 800). Run off-peak (evening/night).
 - Canonical URL form for documents: `https://www.dgsi.pt/jstj.nsf/<view-id>/<doc-id>?OpenDocument` (no `Highlight=`).
-- Index pages: the "Por Ano" listing of `jstj.nsf` paginated with `?OpenDatabase&Start=<n>` (about 138 rows per page in the examples seen [Likely]; verify in M1). Columns: sessão, processo, relator, descritor; dates mm/dd/yyyy.
-- Budget: ≈ 535 index requests + 600–1 500 documents ≈ 1 100–2 000 requests ≈ 1.5–2 h [Guessing].
-- Encoding: detect from the HTTP header/meta; fixtures decide in M1.
+- Index pages [Certain, verified on saved pages 2026-10-13]: the "Por Ano" listing `https://www.dgsi.pt/jstj.nsf?OpenDatabase`, about 100 rows per page, sorted by date descending. Pagination: follow the page's "Seguinte" link. `Start=<n>` values are Domino view positions (1, 132, 235, … 13299), not multiples of the page size, so they MUST NOT be computed. The last row of a page repeats as the first row of the next: de-duplicate by `doc_id`, never by `processo`. Columns: sessão, processo (link), relator, descritor (one per line); dates mm/dd/yyyy.
+- Document pages [Certain]: key/value table; fields Processo, Nº Convencional (secção), Relator, Descritores, Data do Acordão, Votação, Texto Integral, Privacidade, Meio Processual, Decisão, Indicações Eventuais (optional), Sumário, Decisão Texto Integral. Footnotes are inline; some links carry `file:///` residues.
+- Descriptor list: `https://www.dgsi.pt/jstj.nsf/desc?OpenPage` (4 477 entries on the saved copy; dual spellings written "A / B *").
+- Budget: the index is ≈ 740 requests (73 682 judgments at ≈ 100 rows per page, +1 overlap row per page) ≈ 40 min at ≈ 3 s each, within the default cap of 800; plus 600–1 500 documents ≈ 1.3–2.5 h in total [Likely]. Runs stop at the cap; re-running resumes from the cache.
+- Encoding: windows-1252 (meta charset on all saved pages) [Certain]; decode with cp1252.
 
 ## 4. Data model (SQLite, `data/juris.db`, gitignored)
-- `acordao(processo PK, url, secao, relator, data_iso, descritores_json, meio_processual, decisao, sumario, texto, texto_sha256, fetched_at)`
-- `classification(processo, question_id, relevant, position_id NULL, quote, quote_ok, model, prompt_version, created_at, PK(processo, question_id))`
+- `acordao(doc_id PK, processo, url, secao, relator, data_iso, descritores_json, meio_processual, decisao, sumario, texto, texto_sha256, fetched_at)`
+- `classification(doc_id, question_id, relevant, position_id NULL, quote, quote_ok, model, prompt_version, created_at, PK(doc_id, question_id))`
+- `doc_id` is the 32-hex document id in the URL (`.../<view-id>/<doc_id>?OpenDocument`). `processo` is NOT unique: one case number can have several judgments (e.g. `1748/25.2T8OAZ.P1.S1`: 2026-07-13 and 2026-09-15, found on the saved index pages 2026-10-13), so it is an indexed column only.
 - `divergence(id PK, question_id, type, window_start, window_end, evidence_json, judge_json, rule_confidence)`
 Parsing rules: header table → key/value; "Sumário" and "Decisão Texto Integral" sections; footnotes kept; strip `file:///` residues and spacer images; normalise whitespace; keep text local only.
 
@@ -48,6 +52,7 @@ M3 runs one LLM pass over a random sample of 150 judgments to propose up to 3 fu
 
 ## 6. Classification and detection
 ### 6.1 Per-judgment classification (REQ-CLS)
+Judgments with no full text are classified from the sumário alone and flagged `text_source=sumario` (ADR 0006); those with neither are excluded and counted.
 One call per judgment, all approved questions at once. Input: header fields, sumário, and the reasoning sections truncated to ≈ 6 000 tokens. Output (pydantic): for each question `{relevant: bool, position_id | null, quote, note}`. `quote` ≤ 400 chars, verbatim. Rejected if not a substring (after whitespace normalisation) → stored as `relevant=false` with `quote_ok=false` and counted.
 Temperature 0, one retry on schema failure only, prompts versioned in `pipeline/juris/llm/prompts/*.md`.
 ### 6.2 Detection (REQ-DET), pure functions over `classification`

@@ -27,9 +27,9 @@ web-verify:
 
 # --- HUMAN-run only (crawl / live LLM). Not implemented yet: see ROADMAP M1, M2, M4, M5.
 index:
-	uv run python -m juris.crawl.index
+	uv run python -m juris.crawl.index $(ARGS)
 fetch:
-	uv run python -m juris.crawl.fetch
+	uv run python -m juris.crawl.fetch $(ARGS)
 classify:
 	uv run python -m juris.classify --provider live
 classify-replay:
