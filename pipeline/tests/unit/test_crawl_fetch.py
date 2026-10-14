@@ -183,3 +183,9 @@ def test_main_requires_contact_and_an_existing_db(tmp_path, monkeypatch):
     assert main(["--db", str(tmp_path / "x.db")]) == EXIT_USAGE
     assert main(["--db", str(tmp_path / "x.db"), "--contact", "a@b.c"]) == EXIT_USAGE
     assert not (tmp_path / "x.db").exists()
+
+
+def test_delay_below_the_spec_minimum_is_refused(tmp_path):
+    connect(tmp_path / "t.db").close()
+    args = ["--db", str(tmp_path / "t.db"), "--contact", "a@b.c", "--delay", "1"]
+    assert main(args) == EXIT_USAGE

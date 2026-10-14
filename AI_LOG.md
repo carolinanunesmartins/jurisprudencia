@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — First live `make fetch` pilot run
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: read the owner's pilot output and inspect the two "incomplete" rows from the local cache (no network).
+- What failed or needed correction: the run stopped after 63 stored because the server dropped 3 requests in a row ("Server disconnected without sending a response"). The two incomplete rows (`69/10.0YFLSB`, `3655/1998.L1.S1`, both 2010-05-20) are not a parser bug: the saved pages have an empty "Decisão Texto Integral" cell, so the site itself has no full text for them.
+- How it was fixed: nothing worked around (SPEC §3 forbids it). Added `--delay` (can only be raised above 2.5 s) so the owner can be gentler on the resume. Judgments without full text must be excluded from classification in M4 (no text to ground a quote in).
+- Human verification: pending. The owner should resume later and check that the two rows really show no text in the browser.
+
 ### 2026-10-14 — Review of the subset justification
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: explain why STJ, the descriptors, 600–1 500 judgments and 2000–2025.

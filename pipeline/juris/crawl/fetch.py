@@ -19,7 +19,13 @@ from pathlib import Path
 
 import httpx
 
-from juris.crawl.client import DEFAULT_MAX_REQUESTS, CrawlStop, FetchError, PoliteFetcher
+from juris.crawl.client import (
+    DEFAULT_MAX_REQUESTS,
+    MIN_DELAY_S,
+    CrawlStop,
+    FetchError,
+    PoliteFetcher,
+)
 from juris.db.schema import connect
 from juris.db.subset import subset_ids
 from juris.parse.common import ParseError
@@ -148,12 +154,16 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cache", type=Path, default=Path("data/raw"))
     ap.add_argument("--max-requests", type=int, default=DEFAULT_MAX_REQUESTS)
     ap.add_argument("--pilot", type=int, default=None, help="only the stratified pilot of N")
+    ap.add_argument("--delay", type=float, default=MIN_DELAY_S, help="seconds between requests")
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
     ap.add_argument("--all-index", action="store_true", help="ignore the thesis subset (ADR 0005)")
     ap.add_argument("--contact", default=os.environ.get("JURIS_CONTACT"))
     args = ap.parse_args(argv)
     if not args.contact:
         print("Set JURIS_CONTACT (or --contact): your email goes in the User-Agent (SPEC §3).")
+        return EXIT_USAGE
+    if args.delay < MIN_DELAY_S:
+        print(f"--delay must be at least {MIN_DELAY_S} s (SPEC §3); it can only be raised.")
         return EXIT_USAGE
     if not args.db.exists():
         print(f"{args.db} not found: run `make index` first.")
@@ -173,7 +183,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     with httpx.Client() as client:
         fetcher = PoliteFetcher(
-            args.cache, client, contact=args.contact, max_requests=args.max_requests
+            args.cache,
+            client,
+            contact=args.contact,
+            delay_s=args.delay,
+            max_requests=args.max_requests,
         )
         stats = fetch_documents(fetcher, conn, todo, progress=_print_progress)
     print(
