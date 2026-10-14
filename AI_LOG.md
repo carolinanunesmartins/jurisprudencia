@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — M1.5 spike result (question 3)
+- Tool / model: owner ran the pack in an LLM chat (human-run, per AGENTS.md); Claude Code (Sonnet 5.5) ran `spike.py check` and read the answers.
+- Task: classify 20 pilot sumários on "sinal e mora" and verify the quotes.
+- What failed or needed correction: criterion failed: only position B (9), no A, 11 "nenhuma". The 11 are off-question or silent per the model's notes (interpelação admonitória, tu quoque, direito de retenção, insolvência). No invented quotes (0 of 9 rejected). A forked agent correctly refused to answer the pack itself (HUMAN task).
+- How it was fixed: not a code problem. Result recorded in ROADMAP M1.5; next step is a larger pool (fetch the rest of the subset) and questions 1 and 2, not an immediate subset switch, because one question over 20 keyword-picked sumários is weak evidence. The pass criterion was not changed after seeing the result.
+- Human verification: pending; the owner should read the sumários of judgments 1, 2, 11 and 15 and say whether the model's B reading is right.
+
 ### 2026-10-14 — Repo hygiene and security review
 - Tool / model: Claude Code (Sonnet 5.5), `/security-review` with a hygiene brief.
 - Task: look for loose env files, committed secrets or data, missing ignores and stale files; review the branch diff for vulnerabilities.
