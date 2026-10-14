@@ -31,9 +31,9 @@ Result 2026-10-14, questions 1 and 2 on the full pool (810 fetched, 20 sumários
 - HUMAN: `make fetch` for a **pilot of 100, random and stratified by year** (not the first 100 fetched; otherwise M4 shows no time effect) (evening) and later the rest (overnight, possibly across several runs).
 - Accept: `make fetch` resumes correctly after interruption (tested); ≥ 95% of fetched documents parse with non-empty sumário and texto (report the real rate); parse failures listed.
 
-## M3 — Taxonomy ★ (3 h) · todo · days 3–4 · deps: M2 pilot
-- T3.1 Seed `taxonomy.json` from SPEC §5.2.
-- T3.2 Discovery pass on 150 sampled judgments (HUMAN-run, needs key) → ≤ 3 proposed questions.
+## M3 — Taxonomy ★ (3 h) · doing · days 3–4 · deps: M2 pilot
+- T3.1 Seed `taxonomy.json` from SPEC §5.2. *Done 2026-10-14 (`data/taxonomy.json` + validator; q4/q5 positions are drafts for owner review).*
+- T3.2 Discovery pass on 150 sampled judgments (HUMAN-run, needs key) → ≤ 3 proposed questions. *Kit ready 2026-10-14: `python pipeline/tools/discovery.py pack|check`, 3 packs of 50 in `data/discovery/`; owner pastes each into an LLM chat and saves `answer_<k>.json`.*
 - HUMAN (≈45 min): approve/edit/reject questions and positions. Gate G2 (SPEC §2).
 - T3.3 Freeze taxonomy + prompt version (tag it). Generate the blind label sheet for the 60-judgment position-accuracy sample now (moved from M7: it does not depend on model output).
 - HUMAN (≈2 h, days 4–5): fill the 60 labels. Record the labeller's legal background in the report; single annotator is a stated limitation; allow an `unclear` label.

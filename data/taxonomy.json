@@ -1,0 +1,65 @@
+{
+  "version": "seed-0",
+  "questions": [
+    {
+      "id": "q1",
+      "title_pt": "Execução específica após alienação a terceiro",
+      "description_pt": "Se o promitente-vendedor alienou o bem a terceiro antes do registo da ação, a execução específica continua possível?",
+      "norms": ["CC art. 413.º", "CC art. 830.º"],
+      "positions": [
+        {"id": "admite", "label_pt": "Admite a execução específica", "definition_pt": "A execução específica continua possível apesar da alienação a terceiro (por exemplo, promessa com eficácia real registada)."},
+        {"id": "exclui", "label_pt": "Exclui a execução específica", "definition_pt": "Alienado o bem a terceiro, a execução específica já não é possível."}
+      ],
+      "seed_source": "SPEC 5.2 item 1 (survey: AUJ 05/11/1998 vs STJ 05/05/2005)",
+      "status": "seed"
+    },
+    {
+      "id": "q2",
+      "title_pt": "Execução específica: mora ou incumprimento definitivo",
+      "description_pt": "Para a execução específica basta a mora do promitente ou exige-se incumprimento definitivo?",
+      "norms": ["CC art. 830.º"],
+      "positions": [
+        {"id": "basta_mora", "label_pt": "Basta a mora", "definition_pt": "A mora do promitente é suficiente para a execução específica."},
+        {"id": "exige_definitivo", "label_pt": "Exige incumprimento definitivo", "definition_pt": "A execução específica pressupõe incumprimento definitivo, não bastando a mora."}
+      ],
+      "seed_source": "SPEC 5.2 item 2 (survey: STJ 2008, 2010, 2013)",
+      "status": "seed"
+    },
+    {
+      "id": "q3",
+      "title_pt": "Sinal e mora",
+      "description_pt": "Para as consequências do sinal basta a mora ou exige-se incumprimento definitivo?",
+      "norms": ["CC art. 442.º n.º 2"],
+      "positions": [
+        {"id": "basta_mora", "label_pt": "Basta a mora", "definition_pt": "A mora é suficiente para as consequências do sinal."},
+        {"id": "exige_definitivo", "label_pt": "Exige incumprimento definitivo", "definition_pt": "Só o incumprimento definitivo produz as consequências do sinal."}
+      ],
+      "seed_source": "SPEC 5.2 item 3 (survey: STJ 2006-2012)",
+      "status": "seed"
+    },
+    {
+      "id": "q4",
+      "title_pt": "Redução equitativa da cláusula penal aplicada ao sinal",
+      "description_pt": "O sinal que funciona como cláusula penal pode ser reduzido equitativamente?",
+      "norms": ["CC art. 812.º", "CC art. 442.º"],
+      "positions": [
+        {"id": "reduz", "label_pt": "Admite a redução", "definition_pt": "O art. 812.º aplica-se ao sinal, que pode ser reduzido equitativamente."},
+        {"id": "nao_reduz", "label_pt": "Não admite a redução", "definition_pt": "O sinal não pode ser reduzido nos termos do art. 812.º."}
+      ],
+      "seed_source": "SPEC 5.2 item 4 (survey: STJ 18/11/2004 vs 1977, 1983)",
+      "status": "seed"
+    },
+    {
+      "id": "q5",
+      "title_pt": "Sinal, tradição da coisa e afastamento da execução específica",
+      "description_pt": "Havendo sinal, presume-se afastada a execução específica; a tradição da coisa altera essa presunção?",
+      "norms": ["CC art. 830.º n.º 2"],
+      "positions": [
+        {"id": "presuncao_mantem", "label_pt": "A presunção mantém-se", "definition_pt": "Com sinal presume-se afastada a execução específica, mesmo com tradição da coisa."},
+        {"id": "presuncao_afastada", "label_pt": "A tradição afasta a presunção", "definition_pt": "A tradição da coisa permite a execução específica apesar do sinal."}
+      ],
+      "seed_source": "SPEC 5.2 item 5 (survey: STJ 19/12/2006; TRP 20/01/2005)",
+      "status": "seed"
+    }
+  ]
+}

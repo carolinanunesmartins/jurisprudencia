@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — M3 start: seed taxonomy and discovery pass kit
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: T3.1 `data/taxonomy.json` (5 seed questions from SPEC §5.2) with a pydantic loader/validator; T3.2 kit for the discovery pass: `pipeline/tools/discovery.py pack|check`, prompt `discovery_v0.md`, 150 random judgments (stratified by year, seed 20261015) in 3 packs of 50.
+- What failed or needed correction: a long shell heredoc failed to parse again and wrote nothing (files then written with the file tool). `data/discovery/` was not gitignored although it holds sumários; caught before committing and added to `.gitignore`.
+- How it was fixed: as above. `check` verifies every quote against the stored sumário and prints positions per seed question (gate G2) plus the proposed new questions. The position wording of q4 and q5 is my draft from the survey summary, not checked by a lawyer; owner approval is the T3.2 HUMAN step.
+- Human verification: pending. The owner runs the three packs in an LLM chat, saves answer_1..3.json, runs `check`, and approves, edits or rejects the questions and positions.
+
 ### 2026-10-14 — M1.5 spike result (questions 1 and 2)
 - Tool / model: owner ran both packs in an LLM chat (human-run); Claude Code (Sonnet 5.5) ran `spike.py check -q q1|q2` and read the notes.
 - Task: check quotes and count positions for seed questions 1 and 2 on the full fetched pool.

@@ -5,6 +5,7 @@ data/*.db
 data/*.db-*
 data/*.sqlite*
 data/spike/
+data/discovery/
 .env
 .env.*
 !.env.example
