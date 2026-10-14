@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-14 — Repo hygiene and security review
+- Tool / model: Claude Code (Sonnet 5.5), `/security-review` with a hygiene brief.
+- Task: look for loose env files, committed secrets or data, missing ignores and stale files; review the branch diff for vulnerabilities.
+- What failed or needed correction: `data/*.db` did not cover SQLite sidecar files (`-journal`, `-wal`, `-shm`), which can hold judgment text and would break AGENTS.md rule 3 if added by accident. Local tool settings and editor/OS files were also not ignored. `docs/adr/.gitkeep` was stale.
+- How it was fixed: added the ignore patterns and removed the `.gitkeep`. Checked tracked files, history and content: no `.env`, keys, tokens, databases, cache or personal paths were ever committed; no code vulnerabilities found (SQL is parameterised, the crawler host is allow-listed, cache file names are hashes).
+- Human verification: pending; the owner should confirm GitHub secret scanning stays enabled.
+
 ### 2026-10-14 — M1.5 spike kit
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: choose spike judgments from the pilot, write the draft prompt (`pipeline/juris/llm/prompts/spike_q3_v0.md`, seed question 3: sinal e mora) and a `pack`/`check` tool that builds the paste-in file and verifies the model's quotes against the stored sumário.
