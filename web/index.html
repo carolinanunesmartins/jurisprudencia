@@ -7,8 +7,28 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self'"
     />
+    <title>Jurisprudência: onde o Supremo decidiu a mesma questão de duas maneiras</title>
+    <meta
+      name="description"
+      content="Acórdãos do Supremo Tribunal de Justiça sobre contrato-promessa (2000 a 2025), agrupados por questão jurídica, com as divergências e mudanças de entendimento ao longo do tempo. Cada posição tem citação literal e ligação ao acórdão no dgsi.pt."
+    />
+    <link rel="canonical" href="https://carolinanunesmartins.github.io/jurisprudencia/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_PT" />
+    <meta property="og:title" content="Jurisprudência: onde o Supremo decidiu a mesma questão de duas maneiras" />
+    <meta
+      property="og:description"
+      content="Acórdãos do STJ agrupados por questão, com as divergências e mudanças de entendimento ao longo do tempo, sempre com citação e ligação ao original."
+    />
+    <meta property="og:url" content="https://carolinanunesmartins.github.io/jurisprudencia/" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <title>Jurisprudência</title>
+    <!-- start the data requests with the HTML instead of after the JS bundle (same mode as fetch()) -->
+    <link rel="preload" href="./data/meta.json" as="fetch" crossorigin="anonymous" />
+    <link rel="preload" href="./data/questions.json" as="fetch" crossorigin="anonymous" />
+    <link rel="preload" href="./data/judgments.json" as="fetch" crossorigin="anonymous" />
+    <link rel="preload" href="./data/divergences.json" as="fetch" crossorigin="anonymous" />
+    <link rel="preload" href="./data/aujs.json" as="fetch" crossorigin="anonymous" />
+    <link rel="preload" href="./data/evaluation.json" as="fetch" crossorigin="anonymous" />
   </head>
   <body>
     <div id="root"></div>

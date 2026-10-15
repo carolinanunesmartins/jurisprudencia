@@ -126,13 +126,14 @@ async function getJson<T>(name: string): Promise<T> {
 }
 
 export async function loadData(): Promise<Data> {
-  const [meta, questions, judgments, divergences, aujs] = await Promise.all([
+  // all six requests in parallel; evaluation.json is optional, so its failure is not fatal
+  const [meta, questions, judgments, divergences, aujs, evaluation] = await Promise.all([
     getJson<Meta>("meta.json"),
     getJson<Question[]>("questions.json"),
     getJson<Judgment[]>("judgments.json"),
     getJson<Divergence[]>("divergences.json"),
     getJson<Auj[]>("aujs.json"),
+    getJson<Evaluation>("evaluation.json").catch(() => null),
   ]);
-  const evaluation = await getJson<Evaluation>("evaluation.json").catch(() => null);
   return { meta, questions, judgments, divergences, aujs, evaluation };
 }

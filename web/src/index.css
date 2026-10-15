@@ -1,27 +1,147 @@
 @import "tailwindcss";
+@import "@fontsource-variable/literata/opsz.css";
+@import "@fontsource-variable/hanken-grotesk";
 
-/* Brand/colour tokens live here as custom properties; never hardcode colours in components. */
+/*
+ * Identity: "duas vozes". Colour means a position and nothing else: everything that is not a
+ * position is ink on paper. Tokens only; components never use raw colours (AGENTS.md, CLAUDE.md).
+ */
 :root {
-  --color-bg: #ffffff;
-  --color-fg: #111827;
-  --color-muted: #4b5563;
-  --color-accent: #1d4ed8;
-  --color-rule: #d1d5db;
-  --color-highlight: #fef3c7;
-  /* positions: Okabe-Ito colour-blind-safe palette; each also has its own marker shape */
-  --pos-0: #0072b2;
-  --pos-1: #d55e00;
-  --pos-2: #009e73;
-  --pos-3: #cc79a7;
+  --paper: #f5f6f4;
+  --surface: #ecefec; /* quiet blocks: the uniformizing ruling, table header */
+  --ink: #18212b;
+  --graphite: #56606b; /* secondary text: 5.9:1 on paper */
+  --rule: #d9dddc;
+  /* positions: teal and ochre read apart for common colour-vision deficiencies; in the chart each
+     position also has its own side of the axis and every label names it, so colour is never the
+     only cue */
+  --pos-0: #0e6e77;
+  --pos-1: #94570f;
+  --pos-2: #5b4b8a;
+  --pos-3: #8a3b55;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  color-scheme: light;
 }
 
-body {
-  background: var(--color-bg);
-  color: var(--color-fg);
+/* soft tints of the position colours, for highlighter marks and bars; derived, so they follow
+   the dark theme without their own values */
+:root {
+  --pos-0-soft: color-mix(in srgb, var(--pos-0) 24%, transparent);
+  --pos-1-soft: color-mix(in srgb, var(--pos-1) 24%, transparent);
 }
 
-a:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #12171d;
+    --surface: #1a2129;
+    --ink: #e6e9ec;
+    --graphite: #a3adb8;
+    --rule: #2b333c;
+    --pos-0: #5fbac2;
+    --pos-1: #d9a55e;
+    --pos-2: #a99ad6;
+    --pos-3: #d98aa6;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-graphite: var(--graphite);
+  --color-rule: var(--rule);
+  --color-pos-0: var(--pos-0);
+  --color-pos-1: var(--pos-1);
+  --font-serif: "Literata Variable", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Hanken Grotesk Variable", system-ui, sans-serif;
+}
+
+/* base rules live in a layer so Tailwind utilities (no-underline, colours) can override them */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.55;
+    font-feature-settings: "kern", "liga";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* numbers that line up: years, counts, process numbers */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* quoted judgments: the reading voice of the site */
+  .voice {
+    font-family: var(--font-serif);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    font-variation-settings: "opsz" 18;
+    hanging-punctuation: first;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--rule);
+    transition: text-decoration-color 150ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    a:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* a highlighter stroke under a phrase, in a position's colour */
+  .hl-0,
+  .hl-1 {
+    padding: 0 0.08em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  .hl-0 {
+    background: linear-gradient(transparent 58%, var(--pos-0-soft) 58%);
+  }
+  .hl-1 {
+    background: linear-gradient(transparent 58%, var(--pos-1-soft) 58%);
+  }
+
+  /* <details> disclosure: one look everywhere, the marker turns when open */
+  details > summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  ::selection {
+    background: var(--pos-0);
+    color: var(--paper);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0ms !important;
+  }
 }
