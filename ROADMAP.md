@@ -44,13 +44,14 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 ## M4 — Vertical slice online ★ (3 h) · todo · day 4 · deps: M3 (code may start once T3.3 is done; the live run waits for the labels)
 - T4.1 Classification module + `ReplayProvider` + schema + grounding check (tests with fixtures). *Done 2026-10-15 (`juris/classify/`, `juris/llm/provider.py`): `make classify ARGS="--pilot 100"` (HUMAN) refuses to run until the 60 labels are filled; `make classify-replay` offline. Columns `note`, `text_source` added to `classification` (auto-migrated).*
 - HUMAN: run classification on the 100-judgment pilot; measure tokens/cost; set the API spend limit. **Only after the commit with the 60 filled labels (`data/eval/labels.csv`) exists**: that commit, dated before any classification output, is the evidence that the labels are blind.
-- T4.2 Export `web/public/data/*.json` for the pilot; minimal UI: `/perguntas` and one question timeline; deploy.
+- T4.2 Export `web/public/data/*.json` for the pilot; minimal UI: `/perguntas` and one question timeline; deploy. *Code done 2026-10-15: `make export` (grounded quotes only; split/shift published only if the judge confirmed it), `make data-check` (also in CI), routes `/`, `/perguntas`, `/perguntas/:id` (SVG timeline with shape + colour per position, divergence cards, judgments table). Committed data is empty until the owner classifies; the site shows "sem dados ainda".*
 - Accept: a public URL showing real pilot data with quotes and links. If this fails, cut scope now (see Cuts).
 
 ## M5 — Full classification and detection (4 h) · todo · days 5–6 · deps: M4
 - HUMAN: full `make classify` (cost limit set); keep the run log.
 - T5.1 Detection per SPEC §6.2–6.5, config in `detect.toml`, unit tests on synthetic matrices (shift, split, resolved, ties, thin support). *Done 2026-10-15 (§6.2–6.3; `make detect` writes the `divergence` table and prints per question, dev/test). Rule confidence §6.5 needs the judge: T5.2.*
 - T5.2 Judge pass for the top divergences; store verdicts. *Done 2026-10-15 (code): `juris/detect/judge.py`, prompt `judge_v1`, `make judge` (HUMAN) / `make judge-replay`; rule confidence §6.5; prints the Gate G3 verdict. Runbook: `docs/llm-runbook.md`.*
+- T5.3 Commit `data/classifications` (metadata, labels, quotes, `texto_sha256`, url) so `detect`/`export` reproduce from a fresh clone (SPEC §11).
 - Gate G3 (SPEC §2): ≥ 1 judge-confirmed split/shift on a test question → stay; 0 → pivot to arrendamento urbano. Decide by Sat 17/10.
 - T5.3 Commit `data/classifications` snapshot (metadata, position, quote, `texto_sha256`, url; no full texts) so `detect`, `export` and `data-check` run from a fresh clone.
 - Day-5 checkpoint: decide cuts (judge pass, `resolved`, filters) from actual progress, not at the end.

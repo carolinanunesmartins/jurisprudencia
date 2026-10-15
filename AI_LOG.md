@@ -16,6 +16,14 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — M4 T4.2 export, data-check and minimal UI
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `juris/export/` (pydantic schemas, deterministic `make export`, `make data-check` added to CI) and the web app routes `/`, `/perguntas`, `/perguntas/:id` (hand-rolled SVG timeline, no d3 dependency; Okabe-Ito colours plus a marker shape per position; divergence cards; judgments table as the chart's data-table alternative).
+- Prompt / approach (one line): publish only grounded quotes ≤ 400 characters and links; a split/shift is published only with a confirming judge verdict (unjudged/hidden become counts); quotes rendered as text, never HTML.
+- What failed or needed correction: the existing tests rendered `<App />` without a router; they were wrapped in `MemoryRouter`, and the disclaimer regression now checks every route. There was an act() warning in one test, and the rule confidence showed "media" without the accent.
+- How it was fixed: tests are async; the confidence labels are in `messages.pt.ts`. 3 Python tests (export filters, determinism and an empty database, data-check catching bad links, long quotes and ungrounded quotes) and 10 web tests. Visual check: built the site, served it with `vite preview` using the export-test data, and took a screenshot of `/perguntas/q6` in Chrome. The only console error was a 404 for the missing favicon.
+- Human verification (what was checked by a person): none yet. The live site stays empty until the owner classifies and exports.
+
 ### 2026-10-15 — M5 T5.2 judge pass and LLM runbook
 - Tool / model: Claude Code (Opus 5.5)
 - Task: `juris/detect/judge.py`. The judge pass sees only the question, the two quotes, their dates and assigned positions (SPEC §6.4), covering at most 40 divergences, weakest-side support first. It adds rule confidence (§6.5), the UI label rule, and the Gate G3 verdict. Also `make judge` / `make judge-replay`, and `docs/llm-runbook.md` for the owner (key, spend limit, env vars, order, cost estimate).

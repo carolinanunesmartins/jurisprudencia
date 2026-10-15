@@ -6,9 +6,22 @@
   --color-fg: #111827;
   --color-muted: #4b5563;
   --color-accent: #1d4ed8;
+  --color-rule: #d1d5db;
+  --color-highlight: #fef3c7;
+  /* positions: Okabe-Ito colour-blind-safe palette; each also has its own marker shape */
+  --pos-0: #0072b2;
+  --pos-1: #d55e00;
+  --pos-2: #009e73;
+  --pos-3: #cc79a7;
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-fg);
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }

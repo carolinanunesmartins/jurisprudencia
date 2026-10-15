@@ -27,6 +27,8 @@ jobs:
         run: uv run pytest -m unit
       - name: Regression tests
         run: uv run pytest -m regression
+      - name: Data check (published JSON; no database in CI, so grounding is skipped)
+        run: uv run python -m juris.export.check
 
   web:
     name: web (typecheck, lint, unit + regression, build)
