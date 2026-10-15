@@ -1,0 +1,172 @@
+"""Per-judgment classification (SPEC §6.1, ADR 0007): one call per judgment, all approved questions.
+
+Input is the header plus the sumário; only judgments without a sumário send the full text,
+truncated. Every quote is checked against the text that was sent: a quote that is not a verbatim
+substring is stored as relevant=0, quote_ok=0 and counted (AGENTS.md rule 4).
+"""
+
+import csv
+import json
+import sqlite3
+from collections import Counter
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from pathlib import Path
+
+from juris.classify.grounding import is_grounded
+from juris.classify.schema import SchemaError, validate_answer
+from juris.crawl.fetch import select_pilot
+from juris.db.subset import subset_ids
+from juris.llm.prompt import CLASSIFY, classify_prompt
+from juris.llm.provider import LlmProvider, MissingFixture
+from juris.taxonomy.model import Taxonomy
+
+TEXT_CHARS = 24_000  # ≈ 6 000 tokens of Portuguese prose (SPEC §6.1)
+PILOT_SEED = 20261016
+
+
+@dataclass
+class Stats:
+    judgments: int = 0
+    schema_failures: int = 0
+    missing_fixtures: int = 0
+    quotes_accepted: int = 0
+    quotes_rejected: int = 0
+    by_source: Counter[str] = field(default_factory=Counter)
+    positions: Counter[tuple[str, str]] = field(default_factory=Counter)
+
+    def report(self) -> str:
+        lines = [
+            f"judgments classified: {self.judgments} {dict(self.by_source)}",
+            f"schema failures (after one retry): {self.schema_failures}",
+            f"missing replay fixtures: {self.missing_fixtures}",
+            f"quotes accepted: {self.quotes_accepted}; rejected: {self.quotes_rejected}",
+        ]
+        lines += [f"  {q} {p}: {n}" for (q, p), n in sorted(self.positions.items())]
+        return "\n".join(lines)
+
+
+def build_input(row: sqlite3.Row) -> tuple[str, str, str]:
+    """(input text for the model, text_source, the text quotes must come from)."""
+    if row["sumario"]:
+        source, text = "sumario", row["sumario"]
+    else:
+        source, text = "texto", row["texto"][:TEXT_CHARS]
+    descritores = "; ".join(json.loads(row["descritores_json"] or "[]"))
+    header = [
+        f"Processo: {row['processo']}",
+        f"Data: {row['data_iso']}",
+        f"Secção: {row['secao'] or ''}",
+        f"Relator: {row['relator'] or ''}",
+        f"Meio processual: {row['meio_processual'] or ''}",
+        f"Descritores: {descritores}",
+        f"Fonte: {'sumário' if source == 'sumario' else 'texto integral (excerto)'}",
+    ]
+    return "\n".join(header) + "\n\n" + text, source, text
+
+
+def eligible(conn: sqlite3.Connection) -> set[str]:
+    have_text = {
+        r[0]
+        for r in conn.execute(
+            "SELECT doc_id FROM acordao"
+            " WHERE COALESCE(sumario, '') <> '' OR COALESCE(texto, '') <> ''"
+        )
+    }
+    return subset_ids(conn) & have_text
+
+
+def done_ids(conn: sqlite3.Connection, prompt_version: str) -> set[str]:
+    return {
+        r[0]
+        for r in conn.execute(
+            "SELECT DISTINCT doc_id FROM classification WHERE prompt_version = ?", (prompt_version,)
+        )
+    }
+
+
+def labels_filled(path: Path) -> tuple[int, int]:
+    """(filled, total) rows of the blind label sheet; (0, 0) if it does not exist."""
+    if not path.exists():
+        return 0, 0
+    with path.open(encoding="utf-8-sig", newline="") as f:
+        rows = list(csv.DictReader(f))
+    return sum(1 for r in rows if (r.get("label") or "").strip()), len(rows)
+
+
+def classify_one(
+    provider: LlmProvider, tax: Taxonomy, system: str, row: sqlite3.Row, stats: Stats
+) -> list[tuple] | None:
+    """Rows for the classification table, or None when the judgment could not be classified."""
+    prompt_input, source, text = build_input(row)
+    answers = None
+    for _ in range(2):  # one retry, on schema failure only (SPEC §6.1)
+        try:
+            answers = validate_answer(provider.generate_json(CLASSIFY, system, prompt_input), tax)
+            break
+        except (SchemaError, ValueError):
+            continue
+    if answers is None:
+        stats.schema_failures += 1
+        return None
+    now = datetime.now(UTC).isoformat(timespec="seconds")
+    out = []
+    for qid, a in answers.items():
+        relevant, quote_ok = a.relevant, False
+        if relevant:
+            quote_ok = is_grounded(a.quote, text)
+            if quote_ok:
+                stats.quotes_accepted += 1
+                stats.positions[(qid, a.position_id or "")] += 1
+            else:
+                stats.quotes_rejected += 1
+                relevant = False
+        out.append(
+            (
+                row["doc_id"],
+                qid,
+                int(relevant),
+                a.position_id if relevant else None,
+                a.quote,
+                int(quote_ok),
+                a.note,
+                source,
+                provider.model,
+                CLASSIFY,
+                now,
+            )
+        )
+    stats.judgments += 1
+    stats.by_source[source] += 1
+    return out
+
+
+def run(
+    conn: sqlite3.Connection,
+    provider: LlmProvider,
+    tax: Taxonomy,
+    pilot: int | None = None,
+    limit: int | None = None,
+) -> Stats:
+    conn.row_factory = sqlite3.Row
+    pool = eligible(conn)
+    ids = select_pilot(conn, pilot, PILOT_SEED, population=pool) if pilot else sorted(pool)
+    todo = [d for d in ids if d not in done_ids(conn, CLASSIFY)][:limit]
+    system = classify_prompt(tax)
+    stats = Stats()
+    for doc_id in todo:
+        row = conn.execute("SELECT * FROM acordao WHERE doc_id = ?", (doc_id,)).fetchone()
+        try:
+            rows = classify_one(provider, tax, system, row, stats)
+        except MissingFixture:
+            stats.missing_fixtures += 1
+            continue
+        if rows:
+            conn.executemany(
+                "INSERT OR REPLACE INTO classification(doc_id, question_id, relevant, position_id,"
+                " quote, quote_ok, note, text_source, model, prompt_version, created_at)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                rows,
+            )
+            conn.commit()
+    return stats

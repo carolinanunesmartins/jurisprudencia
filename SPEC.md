@@ -15,6 +15,7 @@ Normative. MUST/SHOULD per RFC 2119. Confidence tags: [Certain] verified in rese
 - **Early spike (M1.5):** before the full crawl, a ~20-judgment LLM pass must show ≥ 2 positions on one seed question; otherwise switch subset early.
 - **Pilot sample:** the 100-judgment pilot is random, stratified by year.
 - **Gate G2 (end of M3):** if the 150-judgment sample shows fewer than 3 questions with ≥ 2 observed positions each, pivot to the fallback subset (STJ, arrendamento urbano) before building anything else.
+- **Gate G3 (after the full classification and detection, M5; fixed 2026-10-15 by the owner before any classification):** stay on contrato-promessa if at least one split or shift on a test question (q6–q10) passes the judge pass (`real_opposition`, any rule confidence). With zero, pivot to arrendamento urbano (the STJ index already exists: descriptor filter, fetch, discovery). Target decision date Sat 17/10.
 
 ## 3. Responsible crawling (REQ-CRAWL)
 - Source robots.txt: none present (checked by the owner on 2026-10-12). Absence of robots.txt is not permission: the rules below apply regardless.
@@ -39,7 +40,7 @@ Parsing rules: header table → key/value; "Sumário" and "Decisão Texto Integr
 
 ## 5. Taxonomy
 ### 5.1 Structure (`data/taxonomy.json`)
-`questions[{id, title_pt, description_pt, norms[], positions[{id, label_pt, definition_pt}], seed_source, status}]`. 2–3 mutually exclusive positions per question plus the implicit `nao_decide`.
+`questions[{id, title_pt, description_pt, norms[], positions[{id, label_pt, definition_pt}], seed_source, status}]`. 2–4 mutually exclusive positions per question (relaxed from 2–3 on 2026-10-14: real questions can have a third stance; more positions cost labelling accuracy) plus the implicit `nao_decide`.
 ### 5.2 Seed questions (from a practitioner survey of STJ case law on incumprimento do contrato-promessa; to be verified against the judgments themselves) 
 1. Execução específica quando o promitente-vendedor alienou a terceiro antes do registo da acção (eficácia real da promessa). Reference points named in the survey: acórdão uniformizador of 05/11/1998 (proc. 086931) vs STJ 05/05/2005 (proc. 05B743).
 2. Pressuposto da execução específica: mora vs incumprimento definitivo (survey cites STJ 04/03/2008, 19/05/2010, 09/12/2010 and 26/09/2013, proc. 564/11.3TVLSB.L1.S1).
@@ -52,8 +53,8 @@ M3 runs one LLM pass over a random sample of 150 judgments to propose up to 3 fu
 
 ## 6. Classification and detection
 ### 6.1 Per-judgment classification (REQ-CLS)
-Judgments with no full text are classified from the sumário alone and flagged `text_source=sumario` (ADR 0006); those with neither are excluded and counted.
-One call per judgment, all approved questions at once. Input: header fields, sumário, and the reasoning sections truncated to ≈ 6 000 tokens. Output (pydantic): for each question `{relevant: bool, position_id | null, quote, note}`. `quote` ≤ 400 chars, verbatim. Rejected if not a substring (after whitespace normalisation) → stored as `relevant=false` with `quote_ok=false` and counted.
+Judgments are classified from the sumário (`text_source=sumario`); only those without a sumário use the full text (`text_source=texto`) (ADR 0007, amending ADR 0006). Those with neither are excluded and counted.
+One call per judgment, all approved questions at once (prompt `classify_v1`, frozen with taxonomy `v1`, git tag `taxonomy-v1`). Input: header fields and the sumário, or, without a sumário, the reasoning sections truncated to ≈ 6 000 tokens. Output (pydantic): for each question `{relevant: bool, position_id | null, quote, note}`. `quote` ≤ 400 chars, verbatim. Rejected if not a substring (after whitespace normalisation) → stored as `relevant=false` with `quote_ok=false` and counted.
 Temperature 0, one retry on schema failure only, prompts versioned in `pipeline/juris/llm/prompts/*.md`.
 ### 6.2 Detection (REQ-DET), pure functions over `classification`
 Definitions use calendar-year windows and are configurable (`detect.toml`). Defaults, fixed before looking at results:
@@ -62,6 +63,7 @@ Definitions use calendar-year windows and are configurable (`detect.toml`). Defa
 - **shift:** the dominant position of window W₂ differs from that of an earlier window W₁ (both with support ≥ `k`), with W₂ starting after W₁ ends.
 - **resolved:** a judgment flagged as uniformização (meio processual or text marker, §6.3) falls inside or after a split/shift on the same question.
 - Each divergence stores the strongest opposing pair (latest of the earlier dominant position vs earliest of the later one) with quotes and links.
+- Implementation choices (`pipeline/juris/detect/core.py`, fixed 2026-10-15 before any classification): only grounded positions count (`relevant=1`, `quote_ok=1`); consecutive or overlapping split windows merge into one divergence; a shift is reported once per change of dominant position, between the last window dominated by the old position and the first later window, starting after it ends, dominated by the new one; a dominant position must also reach `k`, and ties have no dominant; **resolved** = a uniformização judgment positioned on the same question, dated in or after the first year of the split/shift. Thresholds live in `detect.toml` at the repo root.
 ### 6.3 Uniformização marker
 Flag when `meio_processual` or the first 2 000 characters of the text contain "uniformização de jurisprudência" (case-insensitive, accent-insensitive). Heuristic; precision reported in the evaluation.
 ### 6.4 Judge pass (REQ-JUDGE)
@@ -70,7 +72,7 @@ For the ≤ 40 strongest divergences: a larger model receives only the two quote
 `alta` = support ≥ 3 on both sides and judge agrees; `média` = support ≥ 2 and judge agrees; `baixa` = otherwise. Displayed next to every divergence.
 
 ## 7. LLM access
-- Provider interface `LlmProvider.generate_json(prompt_id, input) -> dict`. First adapter: Anthropic (env `LLM_API_KEY`, models from `CLASSIFY_MODEL`, `JUDGE_MODEL`).
+- Provider interface `LlmProvider.generate_json(prompt_id, system, input) -> dict` (`juris/llm/provider.py`). First adapter: Anthropic over the existing `httpx` dependency, no SDK (env `LLM_API_KEY`, models from `CLASSIFY_MODEL`, `JUDGE_MODEL`); a live run records each answer as a replay fixture in `data/replay/` (gitignored).
 - `ReplayProvider`: fixtures keyed by sha256 of the canonical request JSON, used in tests and `make classify-replay`.
 - Cost control: measure tokens on the 100-judgment pilot, extrapolate, and set a spend limit on the API key before the full run (HUMAN). Prefer prompt caching of the taxonomy and instructions, and the provider's batch endpoint if it fits.
 
@@ -86,13 +88,13 @@ Quality bar: keyboard navigable, visible focus, colour-blind-safe palette with n
 CSP via `<meta http-equiv>` in `web/index.html` (GitHub Pages cannot set headers; `frame-ancestors` is therefore not enforceable): `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self'`.
 
 ## 9. Evaluation (REQ-EVAL), outputs in `data/eval/report.md`
-1. **Position accuracy:** owner labels 60 judgments (stratified: 12 per seed question) blind to model output → accuracy and confusion matrix vs the model.
+1. **Position accuracy:** owner labels 60 (judgment, question) rows from the sumário, blind to model output → accuracy and confusion matrix vs the model. Stratified over the 7 approved questions (changed 2026-10-15, before any model output, because only 2 of the 5 seeds were approved): 8 each for q2, q3, q10 and 9 each for the two-sided discovered q6–q9, drawn from fixed keyword pools in `pipeline/tools/labelsheet.py`, evenly spaced by date, excluding judgments the owner already saw with an LLM answer (spike, discovery). Labels: a position id, `nao_decide` or `unclear`. Keyword pools are noisy, so many rows will be `nao_decide`; report counts next to percentages.
 2. **Divergence precision:** owner labels up to 30 detected divergences as correct / incorrect / legislative-change / unclear → precision per type.
 3. **Survey recovery:** for each of the five seed questions, does the system find the split or shift the survey describes? Table of yes/partial/no with evidence.
 4. **Baseline:** keyword heuristic (opposing decision words within the same descriptor) on the same labelled set.
 5. **Grounding:** quotes proposed, accepted, rejected (hard gate: accepted fabrications = 0).
 6. **Cost and time:** tokens, currency, minutes per stage.
-7. **Split:** two questions are the dev set (tune `detect.toml` here); the rest are the test set. Report test results only for the test set; report dev separately.
+7. **Split:** two questions are the dev set (tune `detect.toml` here); the rest are the test set. Fixed 2026-10-15 by the owner, before any classification: dev = q2, q3 (the approved survey seeds); test = q6–q10. Report test results only for the test set; report dev separately.
 No target numbers are invented in advance; report what is measured.
 
 ## 10. Security and privacy

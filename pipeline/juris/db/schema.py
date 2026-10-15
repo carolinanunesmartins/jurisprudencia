@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS classification (
   position_id TEXT,
   quote TEXT,
   quote_ok INTEGER NOT NULL DEFAULT 0,
+  note TEXT,
+  text_source TEXT,
   model TEXT,
   prompt_version TEXT,
   created_at TEXT,
@@ -45,7 +47,16 @@ CREATE TABLE IF NOT EXISTS divergence (
 """
 
 
+# Columns added after the first local databases were created (M4, ADR 0007).
+_ADDED = {"classification": ("note TEXT", "text_source TEXT")}
+
+
 def connect(path: Path | str) -> sqlite3.Connection:
     conn = sqlite3.connect(path)
     conn.executescript(DDL)
+    for table, columns in _ADDED.items():
+        have = {r[1] for r in conn.execute(f"PRAGMA table_info({table})")}
+        for col in columns:
+            if col.split()[0] not in have:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {col}")
     return conn

@@ -16,6 +16,80 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — M5 T5.1 detection
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `pipeline/juris/detect/` (pure functions for split, shift and resolved, plus the uniformização marker), `detect.toml` with the SPEC §6.2 defaults, and `make detect` writing the `divergence` table. Written before any classification exists, so nothing was tuned on results.
+- Prompt / approach (one line): SPEC §6.2 leaves open how overlapping windows count; chosen: merge overlapping split windows, one shift per change of dominant position, a dominant position also needs `k`, ties have none. Recorded in SPEC §6.2.
+- What failed or needed correction: 5 of my first test expectations were wrong, not the code. Window spans were off by a year (a 2010–2011 split lights up windows 2009–2012), and a case I called "flicker" (A in 2005, B in 2007) is a real shift under the SPEC definition. The split-pair code was first written convolutedly and was simplified.
+- How it was fixed: expectations recomputed by hand and the test renamed (`test_adjacent_periods_count_as_a_shift`); 12 tests on synthetic data plus a database test. `make detect` on the real database prints 0 divergences, as expected with no classifications yet.
+- Human verification (what was checked by a person): none yet.
+
+### 2026-10-15 — Gate G3 fixed before results
+- Tool / model: Claude Code (Opus 5.5)
+- Task: record the owner's pivot rule (SPEC §2 Gate G3, ROADMAP M5) before any classification exists, per AGENTS.md rule 8.
+- Prompt / approach (one line): options offered: ≥ 1 or ≥ 2 judge-confirmed divergences, or never pivot; the owner chose ≥ 1 on a test question.
+- What failed or needed correction: nothing.
+- How it was fixed: n/a.
+- Human verification (what was checked by a person): the owner chose the rule.
+
+### 2026-10-15 — M4 T4.1 classification module
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `juris/llm/provider.py` (provider interface, ReplayProvider keyed by sha256 of the canonical request, Anthropic adapter over `httpx` with temperature 0, cached system block and a replay fixture recorded per answer); `juris/classify/schema.py` (pydantic validation of the untrusted answer against the approved questions); `juris/classify/run.py` + `__main__` (sumário first per ADR 0007, one retry on schema failure only, grounding check against the text actually sent, resume by prompt version, stratified `--pilot`).
+- Prompt / approach (one line): no new dependency; the live run refuses to start until all 60 blind labels are filled (`--not-blind` overrides), so model output cannot precede the labels.
+- What failed or needed correction: two lines over the ruff limit. SPEC §7's `generate_json(prompt_id, input)` had no place for the rendered prompt, so the signature gained `system`.
+- How it was fixed: wrapped; SPEC §7 updated. Unit tests cover the schema, grounding rejection, the text fallback, resume, the retry, the HTTP adapter (mock transport) and the label guard. `make classify-replay` was smoke-run on the real database: 0 fixtures exist yet, as expected.
+- Human verification (what was checked by a person): none yet. The live pilot (`make classify ARGS="--pilot 100"`) is HUMAN-run after the labels are committed.
+
+### 2026-10-15 — Taxonomy frozen (v1) and blind label sheet (M3 T3.3)
+- Tool / model: Claude Code (Opus 5.5)
+- Task: freeze the taxonomy (`v1`) and the classification prompt (`pipeline/juris/llm/prompts/classify_v1.md`, rendered by `juris/llm/prompt.py` with approved questions only), and generate the 60-row blind label sheet (`pipeline/tools/labelsheet.py`). Owner decisions taken before any model output: the model classifies from the sumário (ADR 0007, amends ADR 0006), and the dev set is q2 + q3 (SPEC §9.7).
+- Prompt / approach (one line): fixed keyword pools per approved question, 8–9 rows each, evenly spaced by date, excluding the 195 judgments already shown to the owner with an LLM answer (spike, discovery); sheet with sumários is local (`data/labelling/`, gitignored), `data/eval/labels.csv` holds ids and empty labels only.
+- What failed or needed correction: SPEC §9.1 said "12 per seed question", but only 2 of the 5 seeds were approved, and ROADMAP T7.1 said discovered questions are not evaluated. Both were rewritten for the 7 approved questions before generating the sheet. The earlier `render_questions` in the discovery tool also renders rejected questions; the classification prompt uses its own renderer that keeps only `approved`. One test expectation was wrong (Python rounds 12.5 to 12).
+- How it was fixed: SPEC §6.1, §9.1 and §9.7, ROADMAP T3.3/T7.1 updated; ADR 0007 added; tests for the allocation, exclusion, label validation and the approved-only prompt.
+- Human verification (what was checked by a person): owner read and accepted the q6–q10 position definitions and chose the model input and the dev split. Pending: owner labels the 60 rows from the sumário and records their legal background in `data/eval/labeller.md`.
+
+### 2026-10-15 — Taxonomy approved (7 questions)
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: write the approved `data/taxonomy.json` from the owner's decision on the discovery results: approved q2, q3 (kept for the survey comparison), q6 prazo absoluto/relativo, q7 possuidor/detentor, q8 retenção exige consumidor, q9 retenção vs hipoteca, q10 sinal e execução específica; rejected q1, q4, q5.
+- What failed or needed correction: before writing the position definitions I re-read the quotes: for q10 both found judgments (2008, 2013) sit on the same side, so it is not yet two-sided as I had first presented it; kept because the full classification will show whether the other side exists. Position definitions are drafted from the quotes, not checked by a lawyer.
+- How it was fixed: stated in the seed_source of q10; test now checks the approved ids. Note for M4: classification must use only `status == "approved"` questions (the discovery packs rendered all of them).
+- Human verification: the owner chose the list; still pending: read the position definitions of q6-q10.
+
+### 2026-10-14 — M3 discovery pass result (150 judgments)
+- Tool / model: owner ran the 3 packs in an LLM chat (human-run); Claude Code (Sonnet 5.5) ran `discovery.py check` and read the output.
+- Task: gate G2 measurement and new-question proposals.
+- What failed or needed correction: 0 of the 150 sumários had a quote rejected. The five seed questions show no split: q1 1 position (1 judgment), q2 only basta_mora (4), q3 only exige_definitivo (7), q4 and q5 nothing. The tool printed "10 proposed questions with >= 2 positions", but that count is inflated: position labels are free text, so near-identical labels ("pressupõe resolução" / "pressupõe resolução, implícita no pedido") count as two positions. After merging by hand, about 5 questions look like real two-sided cases (prazo absoluto/relativo, possuidor/detentor, retenção exige consumidor, retenção vs hipoteca, sinal e execução específica), each with only 1-3 judgments on the minority side.
+- How it was fixed: `check` now also prints the years behind each label. The G2 criterion was not changed; the owner decides which proposed questions to approve.
+- Human verification: pending (owner approves, edits or rejects the questions).
+
+### 2026-10-14 — Taxonomy: allow 2-4 positions per question
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: owner asked why a question may have at most 3 positions; relaxed to 4 in the validator and SPEC §5.1, with a test.
+- What failed or needed correction: the limit was a SPEC choice I had enforced as written, not a detection requirement (split/shift/resolved work with any number of positions).
+- How it was fixed: `2 <= positions <= 4`; tradeoff noted (labelling accuracy, UI readability).
+- Human verification: the owner made the decision.
+
+### 2026-10-14 — M3 start: seed taxonomy and discovery pass kit
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: T3.1 `data/taxonomy.json` (5 seed questions from SPEC §5.2) with a pydantic loader/validator; T3.2 kit for the discovery pass: `pipeline/tools/discovery.py pack|check`, prompt `discovery_v0.md`, 150 random judgments (stratified by year, seed 20261015) in 3 packs of 50.
+- What failed or needed correction: a long shell heredoc failed to parse again and wrote nothing (files then written with the file tool). `data/discovery/` was not gitignored although it holds sumários; caught before committing and added to `.gitignore`.
+- How it was fixed: as above. `check` verifies every quote against the stored sumário and prints positions per seed question (gate G2) plus the proposed new questions. The position wording of q4 and q5 is my draft from the survey summary, not checked by a lawyer; owner approval is the T3.2 HUMAN step.
+- Human verification: pending. The owner runs the three packs in an LLM chat, saves answer_1..3.json, runs `check`, and approves, edits or rejects the questions and positions.
+
+### 2026-10-14 — M1.5 spike result (questions 1 and 2)
+- Tool / model: owner ran both packs in an LLM chat (human-run); Claude Code (Sonnet 5.5) ran `spike.py check -q q1|q2` and read the notes.
+- Task: check quotes and count positions for seed questions 1 and 2 on the full fetched pool.
+- What failed or needed correction: both fail the criterion (at least 2 positions). Q1: 1 A, 19 nenhuma; the keyword filter (execução específica + alienação/terceiro/eficácia real) mostly caught judgments on other points (insolvência, penhora, propriedade horizontal), so Q1 is not really tested. Q2: 6 A, 0 B. 0 invented quotes in both. Positions are read from sumários only.
+- How it was fixed: not a code problem; criterion not changed. Options put to the owner: go on to the M3 discovery pass (G2), tighten the Q1 filter, or switch to the fallback subset.
+- Human verification: pending (owner reads a few sumários, in particular Q2 judgments from 2008–2013 that the survey cites).
+
+### 2026-10-14 — M1.5 spike kit for questions 1 and 2
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: generalise `pipeline/tools/spike.py` to `-q q1|q2|q3` (per-question pack and ids files) and write draft prompts `spike_q1_v0.md` (execução específica vs alienação a terceiro) and `spike_q2_v0.md` (mora vs incumprimento definitivo).
+- What failed or needed correction: nothing failed. Candidate keywords were fixed before any model output (full pool of 810 fetched: q1 38 candidates, q2 59, q3 161). The position wording for q1/q2 is my neutral draft from SPEC §5.2, not checked by a lawyer.
+- How it was fixed: n/a.
+- Human verification: pending. The owner should read the two position definitions in the prompts, run the packs in an LLM chat and run `check`.
+
 ### 2026-10-14 — Full `make fetch`: 3 processo mismatches
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: read the owner's last `make fetch` output (3 left of 813, all FAILED with `processo mismatch: index '04S4759' vs '04S4759ver acórdão T REL'`).

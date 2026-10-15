@@ -5,6 +5,11 @@ data/*.db
 data/*.db-*
 data/*.sqlite*
 data/spike/
+data/discovery/
+# blind label sheet holds sumários; data/eval/labels.csv (ids and labels only) is committed
+data/labelling/
+# replay fixtures recorded by the live classify run (model answers per judgment)
+data/replay/
 .env
 .env.*
 !.env.example

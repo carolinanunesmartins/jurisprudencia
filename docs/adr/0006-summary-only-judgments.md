@@ -1,6 +1,6 @@
 # ADR 0006 — Judgments without full text are classified from the sumário, and flagged
 
-Status: accepted (2026-10-14, owner decision).
+Status: accepted (2026-10-14, owner decision); amended by ADR 0007 (2026-10-15): the sumário is now the primary source for every judgment that has one.
 
 ## Context
 The first live pilot (100 judgments drawn from the subset, stratified by year) parsed 91/100 with both a sumário and a full text, below the ROADMAP M2 bar of 95%. All 9 gaps are empty on dgsi.pt itself (verified in the cached HTML): 7 judgments have a sumário but an empty "Decisão Texto Integral" (five from 2000–2001, two from 2010) and 2 from 2003 have full text but no sumário. From 2004 on, 81/83 were complete. The sample of early years is tiny (6 judgments in 2000–2001), so the rate for those years is a signal, not an estimate.
