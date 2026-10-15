@@ -33,19 +33,21 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 - HUMAN: `make fetch` for a **pilot of 100, random and stratified by year** (not the first 100 fetched; otherwise M4 shows no time effect) (evening) and later the rest (overnight, possibly across several runs).
 - Accept: `make fetch` resumes correctly after interruption (tested); ≥ 95% of fetched documents parse with non-empty sumário and texto (report the real rate); parse failures listed.
 
-## M3 — Taxonomy ★ (3 h) · doing · days 3–4 · deps: M2 pilot
+## M3 — Taxonomy ★ (3 h) · done · days 3–4 · deps: M2 pilot
 - T3.1 Seed `taxonomy.json` from SPEC §5.2. *Done 2026-10-14 (`data/taxonomy.json` + validator; q4/q5 positions are drafts for owner review).*
 - T3.2 Discovery pass on 150 sampled judgments (HUMAN-run, needs key) → ≤ 3 proposed questions. *Done 2026-10-15: G2 passes on the SPEC rule (about 5 two-sided questions, thin support); owner approved 7 questions. Kit 2026-10-14: `python pipeline/tools/discovery.py pack|check`, 3 packs of 50 in `data/discovery/`; owner pastes each into an LLM chat and saves `answer_<k>.json`.*
 - HUMAN (≈45 min): approve/edit/reject questions and positions. Gate G2 (SPEC §2).
 - T3.3 Freeze taxonomy + prompt version (tag it). Generate the blind label sheet for the 60-judgment position-accuracy sample now (moved from M7: it does not depend on model output). *Done 2026-10-15: taxonomy `v1` + prompt `classify_v1`, git tag `taxonomy-v1`. Sheet: `python pipeline/tools/labelsheet.py make` → `data/labelling/sheet.md` (local) and `data/eval/labels.csv` (committed, labels empty); `labelsheet.py validate` checks the filled labels. Allocation and dev/test split (dev = q2, q3) written into SPEC §9 before any model output; model input = sumário (ADR 0007).*
+- *Labels committed 2026-10-15 (`86c3fe1`), made by an AI on the owner's instruction and disclosed in `data/eval/labeller.md` and AI_LOG.*
 - HUMAN (≈2 h, days 4–5): fill the 60 labels, run `labelsheet.py validate`, commit. M3 stays `doing` until that commit; no live classify run before it. Record the labeller's legal background in the report; single annotator is a stated limitation; allow an `unclear` label.
 - Accept: `taxonomy.json` with 5–8 approved questions, each with ≥ 2 positions and definitions; taxonomy/prompt frozen before labelling.
 
-## M4 — Vertical slice online ★ (3 h) · todo · day 4 · deps: M3 (code may start once T3.3 is done; the live run waits for the labels)
+## M4 — Vertical slice online ★ (3 h) · doing · day 4 · deps: M3 (code may start once T3.3 is done; the live run waits for the labels)
 - T4.1 Classification module + `ReplayProvider` + schema + grounding check (tests with fixtures). *Done 2026-10-15 (`juris/classify/`, `juris/llm/provider.py`): `make classify ARGS="--pilot 100"` (HUMAN) refuses to run until the 60 labels are filled; `make classify-replay` offline. Columns `note`, `text_source` added to `classification` (auto-migrated).*
 - HUMAN: run classification on the 100-judgment pilot; measure tokens/cost; set the API spend limit. **Only after the commit with the 60 filled labels (`data/eval/labels.csv`) exists**: that commit, dated before any classification output, is the evidence that the labels are blind.
 - T4.2 Export `web/public/data/*.json` for the pilot; minimal UI: `/perguntas` and one question timeline; deploy. *Code done 2026-10-15: `make export` (grounded quotes only; split/shift published only if the judge confirmed it), `make data-check` (also in CI), routes `/`, `/perguntas`, `/perguntas/:id` (SVG timeline with shape + colour per position, divergence cards, judgments table). Committed data is empty until the owner classifies; the site shows "sem dados ainda".*
 - Accept: a public URL showing real pilot data with quotes and links. If this fails, cut scope now (see Cuts).
+- *Status 2026-10-15: real data for all 813 is exported and checked; **not yet deployed** — CI has no Pages deploy job yet (SPEC §11). Remaining: deploy job + CSP, then the URL.*
 
 ## M5 — Full classification and detection (4 h) · done · days 5–6 · deps: M4
 - HUMAN: full `make classify` (cost limit set); keep the run log. *Done 2026-10-15: 813 judgments (800 sumário, 13 texto), 0 schema failures, 0 truncated, ≈ 2.1 M tokens; quote grounding repaired offline (SPEC §6.1): 11 of 695 quotes rejected. `make judge`: 23 judged, 0 invalid, 3 confirmed.*
