@@ -16,6 +16,14 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — M5 T5.1 detection
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `pipeline/juris/detect/` (pure functions for split, shift and resolved, plus the uniformização marker), `detect.toml` with the SPEC §6.2 defaults, and `make detect` writing the `divergence` table. Written before any classification exists, so nothing was tuned on results.
+- Prompt / approach (one line): SPEC §6.2 leaves open how overlapping windows count; chosen: merge overlapping split windows, one shift per change of dominant position, a dominant position also needs `k`, ties have none. Recorded in SPEC §6.2.
+- What failed or needed correction: 5 of my first test expectations were wrong, not the code. Window spans were off by a year (a 2010–2011 split lights up windows 2009–2012), and a case I called "flicker" (A in 2005, B in 2007) is a real shift under the SPEC definition. The split-pair code was first written convolutedly and was simplified.
+- How it was fixed: expectations recomputed by hand and the test renamed (`test_adjacent_periods_count_as_a_shift`); 12 tests on synthetic data plus a database test. `make detect` on the real database prints 0 divergences, as expected with no classifications yet.
+- Human verification (what was checked by a person): none yet.
+
 ### 2026-10-15 — Gate G3 fixed before results
 - Tool / model: Claude Code (Opus 5.5)
 - Task: record the owner's pivot rule (SPEC §2 Gate G3, ROADMAP M5) before any classification exists, per AGENTS.md rule 8.

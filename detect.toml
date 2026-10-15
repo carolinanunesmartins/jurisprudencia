@@ -1,0 +1,7 @@
+# Detection thresholds (SPEC §6.2). Defaults fixed before looking at results (AGENTS.md rule 8).
+# Tune only on the dev questions (SPEC §9.7: q2, q3); report test results on q6-q10.
+window_years = 3     # calendar-year windows, sliding by 1
+min_support = 2      # k: judgments per position in a window
+dominance = 0.60     # share of the window's positioned judgments
+first_year = 2000
+last_year = 2025

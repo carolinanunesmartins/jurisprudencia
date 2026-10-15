@@ -63,6 +63,7 @@ Definitions use calendar-year windows and are configurable (`detect.toml`). Defa
 - **shift:** the dominant position of window W₂ differs from that of an earlier window W₁ (both with support ≥ `k`), with W₂ starting after W₁ ends.
 - **resolved:** a judgment flagged as uniformização (meio processual or text marker, §6.3) falls inside or after a split/shift on the same question.
 - Each divergence stores the strongest opposing pair (latest of the earlier dominant position vs earliest of the later one) with quotes and links.
+- Implementation choices (`pipeline/juris/detect/core.py`, fixed 2026-10-15 before any classification): only grounded positions count (`relevant=1`, `quote_ok=1`); consecutive or overlapping split windows merge into one divergence; a shift is reported once per change of dominant position, between the last window dominated by the old position and the first later window, starting after it ends, dominated by the new one; a dominant position must also reach `k`, and ties have no dominant; **resolved** = a uniformização judgment positioned on the same question, dated in or after the first year of the split/shift. Thresholds live in `detect.toml` at the repo root.
 ### 6.3 Uniformização marker
 Flag when `meio_processual` or the first 2 000 characters of the text contain "uniformização de jurisprudência" (case-insensitive, accent-insensitive). Heuristic; precision reported in the evaluation.
 ### 6.4 Judge pass (REQ-JUDGE)
