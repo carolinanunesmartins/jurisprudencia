@@ -87,7 +87,8 @@ class ReplayProvider:
 
 
 class AnthropicProvider:
-    """Temperature 0; the instructions are sent as a cached system block (SPEC §7)."""
+    """Temperature 0 unless None (newer models reject it); instructions in a cached system block
+    (SPEC §7)."""
 
     def __init__(
         self,
@@ -97,10 +98,12 @@ class AnthropicProvider:
         client: httpx.Client | None = None,
         max_tokens: int = 1200,  # a full 7-question answer is ~1 000 tokens; typical ~400
         workspace_id: str | None = None,  # needed only for keys not scoped to a workspace
+        temperature: float | None = 0,
     ):
         self.model = model
         self.record = record
         self.max_tokens = max_tokens
+        self.temperature = temperature
         self.usage: dict[str, int] = {}
         self._client = client or httpx.Client(timeout=120)
         self._headers = {
@@ -115,10 +118,11 @@ class AnthropicProvider:
         body = {
             "model": self.model,
             "max_tokens": self.max_tokens,
-            "temperature": 0,
             "system": [{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
             "messages": [{"role": "user", "content": input}],
         }
+        if self.temperature is not None:
+            body["temperature"] = self.temperature
         resp = self._client.post(ANTHROPIC_URL, headers=self._headers, json=body)
         if resp.is_error:
             raise api_error(resp)

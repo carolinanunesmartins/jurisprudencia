@@ -150,7 +150,11 @@ def main() -> int:
             print("set LLM_API_KEY and JUDGE_MODEL (see .env.example)", file=sys.stderr)
             return 2
         live = AnthropicProvider(
-            key, model, record=a.replay_dir, workspace_id=os.environ.get("LLM_WORKSPACE_ID")
+            key,
+            model,
+            record=a.replay_dir,
+            workspace_id=os.environ.get("LLM_WORKSPACE_ID"),
+            temperature=None,  # the judge model rejects it ("temperature is deprecated")
         )
         provider = CachedProvider(replay, live)
     system = (PROMPTS / f"{JUDGE}.md").read_text(encoding="utf-8")

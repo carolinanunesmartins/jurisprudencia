@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Judge model rejects `temperature`
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `make judge` failed with "API error 400: invalid_request_error: `temperature` is deprecated for this model" (claude-sonnet-5-5). `AnthropicProvider` now takes `temperature` (default 0, `None` leaves it out); the judge passes `None`. The classifier is unchanged (temperature 0). SPEC §7 updated.
+- What failed or needed correction: SPEC §7 assumed temperature 0 for every call.
+- How it was fixed: as above, with a unit test. Consequence: judge verdicts are not guaranteed deterministic across live runs; they stay reproducible because each verdict is recorded as a replay fixture (`make judge-replay`).
+- Human verification (what was checked by a person): pending; the owner re-runs `make judge`.
+
 ### 2026-10-15 — Full classification run and quote-grounding repairs
 - Tool / model: Claude Code (Opus 5.5); classifier claude-haiku-4-5-20251001 (owner-run).
 - Task: the owner ran `make classify` on all 813 judgments (100-judgment pilot first): 0 schema failures, 0 truncated, about 2.1 M tokens. 118 of 695 relevant quotes (17 %) were rejected by grounding, 10 of the pilot's 13 on test questions q6/q7. Diagnosed offline from the recorded answers: the model joined passages with "...", left out paragraph numbers ("II –"), wrote straight for curly quotes, mended spacing/hyphenation broken in the source ("promes-sa", "contratopromessa"), added a final full stop, or exceeded 400 characters.

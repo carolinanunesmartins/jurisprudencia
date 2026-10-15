@@ -190,3 +190,15 @@ def test_workspace_header_is_sent_only_when_set():
             CLASSIFY, "s", "i"
         )
     assert seen == ["wrkspc_1", None]
+
+
+def test_temperature_is_left_out_when_none():
+    sent = {}
+
+    def handler(request):
+        sent.update(json.loads(request.content))
+        return httpx.Response(200, json={"content": [{"type": "text", "text": "{}"}]})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    AnthropicProvider("k", "m", client=client, temperature=None).generate_json(CLASSIFY, "s", "i")
+    assert "temperature" not in sent
