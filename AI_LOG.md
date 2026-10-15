@@ -16,6 +16,14 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Gate G3 fixed before results
+- Tool / model: Claude Code (Opus 5.5)
+- Task: record the owner's pivot rule (SPEC §2 Gate G3, ROADMAP M5) before any classification exists, per AGENTS.md rule 8.
+- Prompt / approach (one line): options offered: ≥ 1 or ≥ 2 judge-confirmed divergences, or never pivot; the owner chose ≥ 1 on a test question.
+- What failed or needed correction: nothing.
+- How it was fixed: n/a.
+- Human verification (what was checked by a person): the owner chose the rule.
+
 ### 2026-10-15 — M4 T4.1 classification module
 - Tool / model: Claude Code (Opus 5.5)
 - Task: `juris/llm/provider.py` (provider interface, ReplayProvider keyed by sha256 of the canonical request, Anthropic adapter over `httpx` with temperature 0, cached system block and a replay fixture recorded per answer); `juris/classify/schema.py` (pydantic validation of the untrusted answer against the approved questions); `juris/classify/run.py` + `__main__` (sumário first per ADR 0007, one retry on schema failure only, grounding check against the text actually sent, resume by prompt version, stratified `--pilot`).

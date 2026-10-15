@@ -15,6 +15,7 @@ Normative. MUST/SHOULD per RFC 2119. Confidence tags: [Certain] verified in rese
 - **Early spike (M1.5):** before the full crawl, a ~20-judgment LLM pass must show ≥ 2 positions on one seed question; otherwise switch subset early.
 - **Pilot sample:** the 100-judgment pilot is random, stratified by year.
 - **Gate G2 (end of M3):** if the 150-judgment sample shows fewer than 3 questions with ≥ 2 observed positions each, pivot to the fallback subset (STJ, arrendamento urbano) before building anything else.
+- **Gate G3 (after the full classification and detection, M5; fixed 2026-10-15 by the owner before any classification):** stay on contrato-promessa if at least one split or shift on a test question (q6–q10) passes the judge pass (`real_opposition`, any rule confidence). With zero, pivot to arrendamento urbano (the STJ index already exists: descriptor filter, fetch, discovery). Target decision date Sat 17/10.
 
 ## 3. Responsible crawling (REQ-CRAWL)
 - Source robots.txt: none present (checked by the owner on 2026-10-12). Absence of robots.txt is not permission: the rules below apply regardless.
