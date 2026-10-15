@@ -1,0 +1,139 @@
+{
+ "aujs": 3,
+ "cost": {
+  "input_tokens": 1607043,
+  "output_tokens": 474755,
+  "usd_estimate": 3.98
+ },
+ "divergence_labels": {
+  "hidden": {
+   "correct": 1,
+   "incorrect": 3
+  },
+  "labellers": [
+   "Claude Opus 5.5 (não cego: viu os veredictos do juiz)"
+  ],
+  "shown": {
+   "correct": 2,
+   "incorrect": 1,
+   "unclear": 1
+  }
+ },
+ "divergences": {
+  "judged": 23,
+  "shown_v1": 3,
+  "shown_v2": 4,
+  "shown_v2_test": 4
+ },
+ "grounding": {
+  "accepted": 684,
+  "proposed": 695,
+  "rejected": 11
+ },
+ "position": [
+  {
+   "exact": [
+    33,
+    42
+   ],
+   "precision": [
+    20,
+    28
+   ],
+   "recall": [
+    20,
+    21
+   ],
+   "rows": 42,
+   "set": "test",
+   "system": "model",
+   "unclear": 2
+  },
+  {
+   "exact": [
+    24,
+    42
+   ],
+   "precision": [
+    4,
+    6
+   ],
+   "recall": [
+    4,
+    21
+   ],
+   "rows": 42,
+   "set": "test",
+   "system": "baseline",
+   "unclear": 2
+  },
+  {
+   "exact": [
+    13,
+    16
+   ],
+   "precision": [
+    6,
+    8
+   ],
+   "recall": [
+    6,
+    8
+   ],
+   "rows": 16,
+   "set": "dev",
+   "system": "model",
+   "unclear": 0
+  },
+  {
+   "exact": [
+    7,
+    16
+   ],
+   "precision": [
+    0,
+    1
+   ],
+   "recall": [
+    0,
+    8
+   ],
+   "rows": 16,
+   "set": "dev",
+   "system": "baseline",
+   "unclear": 0
+  }
+ ],
+ "survey": [
+  {
+   "question": null,
+   "result": "não avaliável",
+   "seed": 1,
+   "topic": "Execução específica e alienação a terceiro antes do registo da acção"
+  },
+  {
+   "question": "q2",
+   "result": "parcial",
+   "seed": 2,
+   "topic": "Execução específica: mora ou incumprimento definitivo"
+  },
+  {
+   "question": "q3",
+   "result": "parcial",
+   "seed": 3,
+   "topic": "Sinal e mora"
+  },
+  {
+   "question": null,
+   "result": "não avaliável",
+   "seed": 4,
+   "topic": "Redução equitativa da cláusula penal aplicada ao sinal"
+  },
+  {
+   "question": "q10",
+   "result": "sim",
+   "seed": 5,
+   "topic": "Presunção de afastamento da execução específica quando há sinal"
+  }
+ ]
+}

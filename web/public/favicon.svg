@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    path { stroke: #1f2937; }
+    @media (prefers-color-scheme: dark) { path { stroke: #e5e7eb; } }
+  </style>
+  <!-- two diverging lines from one point: a divergence -->
+  <path d="M4 16 H14 L28 6 M14 16 L28 26" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

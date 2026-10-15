@@ -16,6 +16,49 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — M8 docs: README, NOTA.md, IA.md
+- Tool / model: Claude Code (Opus 5.5)
+- Task: rewrite the stale README (it still said M0 and that fetch/classify were not implemented) with the live URL, what the site shows, a quickstart without crawl or API key, reproduction from `data/classifications/` and the full HUMAN pipeline; NOTA.md (one page: subset and criterion, grouping, detection, results, limitations); IA.md summarised from all AI_LOG entries; CHANGELOG by milestone.
+- What failed or needed correction: self-review of the drafts found two statements not supported by the record: IA.md listed a judge "memory" bug caught by tests that never happened, and NOTA.md implied the theme was chosen for its uniformização activity (that was found later). Both corrected; model attribution made less precise where the dates were not exact.
+- How it was fixed: as above; the README's "byte for byte" claim re-checked (snapshot → new database → detect → export equals `web/public/data`).
+- Human verification (what was checked by a person): pending (the owner reads the three documents before the submission).
+
+### 2026-10-15 — Divergence labels: wrong rows, then AI labels disclosed
+- Tool / model: Claude Code (Opus 5.5)
+- Task: the agent asked the owner to label "rows 2, 12, 17, 23" (the shown divergences, column `n`); the labels landed on file lines 2, 12, 17, 23, i.e. `n` = 1, 11, 16, 22 (hidden divergences), and were made by GitHub Copilot (entry below). The owner chose to keep AI labels, disclosed. The agent labelled the 4 shown rows from the two quotes (q10 correct, q7 unclear, q8 correct, q9 incorrect: different legal grounds) and added a `labeller` column.
+- What failed or needed correction: the instruction was ambiguous (row number vs `n`); the report and `/metodo` were written for a human labeller and would have misattributed AI labels to a person.
+- How it was fixed: report section 6 names the labeller of each set and states it is not SPEC §9.2's human check; `/metodo` says the shown divergences were reviewed by AI models, not by a person; `evaluation.json` records the shown set's labellers. Result: shown 2 correct, 1 incorrect, 1 unclear (2/3 of decided); hidden 1 of 4 correct (q10 shift 2000–2005: a real divergence the judge hid, per Copilot). The agent's labels are not blind: it had read the judge's verdicts.
+- Human verification (what was checked by a person): none of the divergence labels.
+
+### 2026-10-15 — Label four detected divergences
+- Tool / model: GitHub Copilot.
+- Task: label divergence rows 1, 11, 16 and 22 in `data/eval/divergence_labels.csv` from the quote pair and frozen taxonomy.
+- Prompt / approach (one line): `correct` only for direct opposing answers to the same question; distinguish non-position, different legal points, and legislative change.
+- What failed or needed correction: none.
+- How it was fixed: labels set to `correct` for q10 and `incorrect` for q6, q8 and q9; the q9 pair compares judicial-sale survival with priority over an earlier mortgage.
+- Human verification (what was checked by a person): the owner requested these specific rows and supplied the labelling criteria; this judgement is not legal-expert reviewed.
+
+### 2026-10-15 — M6: divergence page, /metodo, a11y pass
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `/divergencias/:id` with both quotes side by side and how the divergence was detected; `/metodo` rendered from `evaluation.json`, which `make evaluate` now writes next to `report.md` (schema `EvaluationOut`, validated by `make data-check` when present); favicon (SVG, light/dark aware). A11y measured in the preview with scripted checks at 360 px and in light/dark emulation.
+- What failed or needed correction: a stray `cat >> /dev/null` in a shell command waited on stdin and hung the run (stopped, re-run). Token counts were first published as floats (typed `CostOut`). `judge.confidence` was typed as a plain string on the web side (narrowed to the three values the schema allows, removing a cast).
+- How it was fixed: 20 web tests (detail page, card link, not-found, /metodo with and without evaluation) + disclaimer regression on the new routes; 181 pytest; data-check 0 errors.
+- Human verification (what was checked by a person): none yet (the owner is labelling the 4 shown divergences).
+
+### 2026-10-15 — Evaluation report (M7 T7.2) and divergence sheet (T7.1)
+- Tool / model: Claude Code (Opus 5.5)
+- Task: SPEC §9.4's baseline was only loosely defined, so it was operationalised (label-pool relevance + cue phrases from the frozen position definitions, negated cues ignored, both/none → nao_decide) and committed (`7ed0291`) before being run. `juris/evaluate` writes `data/eval/report.md` (pt-PT, for `/metodo`) from committed data plus the local database (baseline texts) and `data/replay/` (re-derives pair rule v1 from recorded verdicts, no API calls). Run-log numbers the database does not hold are in `data/eval/runs.json`; the survey-recovery table is curated in `data/eval/survey.json`. The label pools moved from `tools/labelsheet.py` to `juris/evaluate/pools.py` (shared, unchanged).
+- What failed or needed correction: the survey notes first stated a made-up rejection reason for seed 4 and missed that seed 5's own question (q5) was rejected; both corrected to the reasons recorded in `taxonomy.json`. Numbers were first printed in English format.
+- How it was fixed: results — test questions: model 33/42 exact vs baseline 24/42; labelled positions recovered 20/21 vs 4/21; model positions agreeing with the label 20/28 (the over-assignment). Dev: 13/16 vs 7/16. v1 re-derived: 3 shown (q3, q7, q9), equal to the live v1 run; v2: 4 (q7, q8, q9, q10). Survey: seed 5 recovered (q10 shift 2003–2008 around the survey's 06B3805), seeds 2 and 3 partial, seeds 1 and 4 not evaluable. Cost ≈ 4 USD at assumed list prices (to confirm in the console); judge tokens and minutes per stage were not recorded.
+- Human verification (what was checked by a person): none yet; divergence labelling is a HUMAN task.
+
+### 2026-10-15 — Merge conflicts and the first deploy with data (M4 done)
+- Tool / model: Claude Code (Opus 5.5)
+- Task: resolve the PR conflicts, then verify the deployed site. `main` (#20) was the squash of branch commit 5d33321 (identical tree), so all 14 conflicts resolved to the branch version; the merged tree was checked equal to the branch and the tests re-run. After the owner merged (#21) and the deploy ran: compared the 5 live data files with the committed ones (equal once CRLF/LF is ignored) and checked `/`, `/perguntas/q8`, `/uniformizacoes` in a browser via scripted DOM reads.
+- What failed or needed correction: the full-page screenshot timed out in the browser tool, so the check read the rendered DOM instead; resizing to 360 px did not take effect, so the phone layout is not verified yet.
+- How it was fixed: n/a (left to the M6 a11y pass). Console: only a `/favicon.ico` 404.
+- Human verification (what was checked by a person): the owner merged and confirmed the deploy.
+
 ### 2026-10-15 — Deploy gated by data-check
 - Tool / model: Claude Code (Opus 5.5)
 - Task: the owner asked for the deploy job. One already existed (`deploy.yml`, M0: build on push to `main`, upload, deploy to Pages); Pages is enabled and serves the old `main`. Added a `data-check` job that the build needs, so data failing `make data-check` is never published.

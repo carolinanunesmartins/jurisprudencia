@@ -1,5 +1,5 @@
 # Commands are part of the contract in AGENTS.md §2: keep names stable.
-.PHONY: setup verify lint test test-unit test-regression web-verify index fetch classify classify-replay detect judge judge-replay export data-check snapshot snapshot-load web-dev
+.PHONY: setup verify lint test test-unit test-regression web-verify index fetch classify classify-replay detect judge judge-replay export data-check snapshot snapshot-load evaluate web-dev
 
 setup:
 	uv sync
@@ -51,6 +51,9 @@ snapshot:
 	uv run python -m juris.db.snapshot dump
 snapshot-load:
 	uv run python -m juris.db.snapshot load
+# data/eval/report.md (needs the local database and data/replay/)
+evaluate:
+	uv run python -m juris.evaluate
 
 web-dev:
 	npm --prefix web run dev

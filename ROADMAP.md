@@ -42,12 +42,12 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 - HUMAN (≈2 h, days 4–5): fill the 60 labels, run `labelsheet.py validate`, commit. M3 stays `doing` until that commit; no live classify run before it. Record the labeller's legal background in the report; single annotator is a stated limitation; allow an `unclear` label.
 - Accept: `taxonomy.json` with 5–8 approved questions, each with ≥ 2 positions and definitions; taxonomy/prompt frozen before labelling.
 
-## M4 — Vertical slice online ★ (3 h) · doing · day 4 · deps: M3 (code may start once T3.3 is done; the live run waits for the labels)
+## M4 — Vertical slice online ★ (3 h) · done · day 4 · deps: M3 (code may start once T3.3 is done; the live run waits for the labels)
 - T4.1 Classification module + `ReplayProvider` + schema + grounding check (tests with fixtures). *Done 2026-10-15 (`juris/classify/`, `juris/llm/provider.py`): `make classify ARGS="--pilot 100"` (HUMAN) refuses to run until the 60 labels are filled; `make classify-replay` offline. Columns `note`, `text_source` added to `classification` (auto-migrated).*
 - HUMAN: run classification on the 100-judgment pilot; measure tokens/cost; set the API spend limit. **Only after the commit with the 60 filled labels (`data/eval/labels.csv`) exists**: that commit, dated before any classification output, is the evidence that the labels are blind.
 - T4.2 Export `web/public/data/*.json` for the pilot; minimal UI: `/perguntas` and one question timeline; deploy. *Code done 2026-10-15: `make export` (grounded quotes only; split/shift published only if the judge confirmed it), `make data-check` (also in CI), routes `/`, `/perguntas`, `/perguntas/:id` (SVG timeline with shape + colour per position, divergence cards, judgments table). Committed data is empty until the owner classifies; the site shows "sem dados ainda".*
 - Accept: a public URL showing real pilot data with quotes and links. If this fails, cut scope now (see Cuts).
-- *Status 2026-10-15: real data for all 813 is exported and checked. Deploy: `.github/workflows/deploy.yml` (since M0) publishes on every push to `main`, now gated by `make data-check`; Pages is enabled and serves the old `main` (no data). Remaining: owner merges `m1-crawler` into `main`, then check https://carolinanunesmartins.github.io/jurisprudencia/.*
+- *Status 2026-10-15: real data for all 813 is exported and checked. Deploy: `.github/workflows/deploy.yml` (since M0) publishes on every push to `main`, now gated by `make data-check`; Pages is enabled and serves the old `main` (no data). Merged (#21) and deployed; checked 2026-10-15 on https://carolinanunesmartins.github.io/jurisprudencia/: the 5 data files equal the committed ones, `/`, `/perguntas/q8` (timeline, the 2019 split, the AUJ 4/2014 entry, related AUJ cards) and `/uniformizacoes` (3 cards, 10 dgsi.pt links) render, disclaimer present, no horizontal overflow at desktop width. Only console error: `/favicon.ico` 404. Phone-width check left to the M6 a11y pass.*
 
 ## M5 — Full classification and detection (4 h) · done · days 5–6 · deps: M4
 - HUMAN: full `make classify` (cost limit set); keep the run log. *Done 2026-10-15: 813 judgments (800 sumário, 13 texto), 0 schema failures, 0 truncated, ≈ 2.1 M tokens; quote grounding repaired offline (SPEC §6.1): 11 of 695 quotes rejected. `make judge`: 23 judged, 0 invalid, 3 confirmed.*
@@ -58,20 +58,23 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 - Day-5 checkpoint: decide cuts (judge pass, `resolved`, filters) from actual progress, not at the end.
 - Accept: `divergence` table populated; every divergence has two grounded quotes and links; `make data-check` green on a fresh clone (schema, quote ≤ 400, links, fixture grounding; real-text grounding result recorded in the classify run log).
 
-## M6 — Full UI (5 h) · doing · days 6–8 · deps: M5
+## M6 — Full UI (5 h) · done · days 6–8 · deps: M5
+- *Done 2026-10-15: `/divergencias/:id` (side by side, "como foi detetada": window, support, rule, judge verdict with its rationale marked as unverified model text, rule confidence); `/metodo` (steps, measured numbers from `web/public/data/evaluation.json` written by `make evaluate`, survey recovery, limitations, link to the report); favicon. A11y pass in the preview: no horizontal overflow at 360 px on all 6 routes, lowest text contrast 6.7:1, no heading-level skips, every link named, visible focus outline; the site has no dark theme (stays light, same contrast). Cut (ROADMAP Cuts #1): year/secção filters.*
 - *2026-10-15: `/uniformizacoes` with the STJ's own uniformização cards (SPEC §6.6; 3 AUJs, every text a verified quote), also shown on related question pages; the "resolved" label reworded to a fact.*
 - T6.1 `/`, `/perguntas`, `/perguntas/:id` (timeline, data-table alternative, filters).
 - T6.2 `/divergencias/:id` side-by-side, "como foi detetado", confidence.
 - T6.3 `/metodo` (filled from `data/eval/report.md` later), disclaimer, a11y pass (keyboard, focus, contrast, 360 px).
 - Accept: all routes work offline-static; a11y checks have no serious issues; CSP headers applied.
 
-## M7 — Evaluation (3 h) · todo · day 8 · deps: M5 (parallel with M6)
+## M7 — Evaluation (3 h) · done · day 8 · deps: M5 (parallel with M6)
+- *2026-10-15: `make evaluate` writes `data/eval/report.md` (cost, grounding, position accuracy vs the pre-registered keyword baseline, v1/v2 divergences re-derived from recorded verdicts, AUJ, survey recovery, limitations). Divergence sheet `data/eval/divergence_labels.csv` (23 rows) generated; divergence precision waits for the HUMAN labels.*
 - T7.1 Label sheet for ≤ 30 divergences (the 60 position labels are already done in M3). Report counts alongside percentages; no confidence-interval claims at this sample size. All 7 approved questions are evaluated (5 of them came from discovery, not the survey); the 3 rejected seeds appear only in the survey-recovery table.
 - HUMAN (≈1 h): label the divergences.
 - T7.2 Metrics script and baseline; `data/eval/report.md`; survey-recovery table.
 - Accept: report with measured numbers, dev/test split respected, limitations listed.
 
-## M8 — Docs, video, submission ★ (3 h) · todo · day 9 · deps: M6, M7
+## M8 — Docs, video, submission ★ (3 h) · doing · day 9 · deps: M6, M7
+- *2026-10-15: T8.1 README (pt-PT: what it shows, quickstart without crawl, reproduction from the committed snapshot, full HUMAN reproduction), T8.2 NOTA.md (one page), T8.3 IA.md (from AI_LOG) done; fresh-clone reproduction re-checked. Remaining HUMAN: video, submission.*
 - T8.1 `README.md` (pt-PT): what it is, quickstart without crawling (uses committed data), full reproduction steps, crawl policy.
 - T8.2 `NOTA.md` (≤ 1 page): subset and criterion, grouping approach, divergence detection, main limitations.
 - T8.3 `IA.md` from `AI_LOG.md`: tools, workflow, what worked, what failed.

@@ -1,0 +1,37 @@
+[
+ {
+  "seed": 1,
+  "topic": "Execução específica e alienação a terceiro antes do registo da acção",
+  "question": null,
+  "result": "não avaliável",
+  "evidence": "Pergunta rejeitada na taxonomia (q1): só 1 acórdão na amostra de descoberta de 150. Os acórdãos de referência do inquérito (086931, 1998; 05B743, 2005) estão no índice mas sem texto no dgsi.pt."
+ },
+ {
+  "seed": 2,
+  "topic": "Execução específica: mora ou incumprimento definitivo",
+  "question": "q2",
+  "result": "parcial",
+  "evidence": "Divisão detetada (2000–2016 e 2019–2025) e os acórdãos de 19/05/2010 e 09/12/2010 citados no inquérito estão classificados como «basta a mora»; o juiz não confirmou nenhum par, por isso não aparece no sítio."
+ },
+ {
+  "seed": 3,
+  "topic": "Sinal e mora",
+  "question": "q3",
+  "result": "parcial",
+  "evidence": "Divisão 2002–2006 confirmada pelo juiz com a regra de pares v1 (2002: «exige incumprimento definitivo» vs «a mora basta»); com a regra v2 o par escolhido não toma posição e fica oculta. A posição minoritária tem só 3 acórdãos."
+ },
+ {
+  "seed": 4,
+  "topic": "Redução equitativa da cláusula penal aplicada ao sinal",
+  "question": null,
+  "result": "não avaliável",
+  "evidence": "Pergunta rejeitada na taxonomia (q4): 0 acórdãos na amostra de descoberta de 150."
+ },
+ {
+  "seed": 5,
+  "topic": "Presunção de afastamento da execução específica quando há sinal",
+  "question": "q10",
+  "result": "sim",
+  "evidence": "A pergunta-semente (q5) foi rejeitada (0 na amostra de descoberta), mas o mesmo tema é a pergunta descoberta q10. Mudança 2003–2008 confirmada (2004: o sinal «implica convenção contrária» vs 2006: «presunção relativa, iuris tantum»). O acórdão de 19/12/2006 (06B3805) citado no inquérito está classificado como «admissível», dentro dessa janela."
+ }
+]

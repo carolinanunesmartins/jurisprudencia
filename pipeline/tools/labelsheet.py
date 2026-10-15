@@ -15,10 +15,10 @@ import csv
 import json
 import sqlite3
 import sys
-from collections.abc import Callable
 from pathlib import Path
 
 from juris.db.subset import fold
+from juris.evaluate.pools import POOLS
 from juris.taxonomy.model import Taxonomy, load_taxonomy
 
 SHEET = Path("data/labelling/sheet.md")
@@ -28,20 +28,6 @@ FIELDS = ["n", "doc_id", "processo", "data", "url", "question", "label", "notes"
 EXTRA_LABELS = ("nao_decide", "unclear")
 
 
-def _has(t: str, *words: str) -> bool:
-    return any(w in t for w in words)
-
-
-# Candidate pools on accent-folded upper-case sumários. Noisy on purpose: nao_decide is a label.
-POOLS: dict[str, Callable[[str], bool]] = {
-    "q2": lambda t: "EXECUCAO ESPECIFICA" in t and _has(t, "MORA", "DEFINITIV"),
-    "q3": lambda t: "SINAL" in t and _has(t, "MORA", "DEFINITIV"),
-    "q6": lambda t: "PRAZO" in t and _has(t, "ABSOLUT", "RELATIV", "ESSENCIAL"),
-    "q7": lambda t: "TRADICAO" in t and _has(t, "POSSE", "POSSUIDOR", "DETENTOR", "DETENCAO"),
-    "q8": lambda t: "RETENCAO" in t and "CONSUMIDOR" in t,
-    "q9": lambda t: "RETENCAO" in t and "HIPOTECA" in t,
-    "q10": lambda t: "SINAL" in t and "EXECUCAO ESPECIFICA" in t,
-}
 # 60 rows: 8 per approved question, plus one more for each two-sided discovered question.
 ALLOCATION = {"q2": 8, "q3": 8, "q6": 9, "q7": 9, "q8": 9, "q9": 9, "q10": 8}
 

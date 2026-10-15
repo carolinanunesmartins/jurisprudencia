@@ -94,6 +94,18 @@ export const fixture: Data = {
       ruling_quote: "Uniformiza-se assim",
     },
   ],
+  evaluation: {
+    cost: { input_tokens: 1000, output_tokens: 200, usd_estimate: 0.5 },
+    grounding: { proposed: 10, accepted: 9, rejected: 1 },
+    position: [
+      { set: "test", system: "model", rows: 4, unclear: 0, exact: [3, 4], recall: [2, 2], precision: [2, 3] },
+      { set: "test", system: "baseline", rows: 4, unclear: 0, exact: [2, 4], recall: [0, 2], precision: [0, 0] },
+    ],
+    divergences: { judged: 5, shown_v1: 1, shown_v2: 2, shown_v2_test: 2 },
+    aujs: 1,
+    divergence_labels: null,
+    survey: [{ seed: 5, topic: "Sinal e execução específica", question: "q10", result: "sim" }],
+  },
 };
 
 export const empty: Data = {
@@ -103,4 +115,5 @@ export const empty: Data = {
   judgments: [],
   divergences: [],
   aujs: [],
+  evaluation: null,
 };

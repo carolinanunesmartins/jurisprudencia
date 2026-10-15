@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import type { Auj, Data, Divergence, Judgment, Question } from "./data";
+import type { Auj, Data, Divergence, Judgment, Question, Score } from "./data";
 import { messages } from "./messages.pt";
 import { Marker, Timeline } from "./Timeline";
 
@@ -12,6 +12,11 @@ export function Home({ data }: { data: Data }) {
       <p>
         <Link to="/perguntas" className="underline text-[color:var(--color-accent)]">
           {messages.nav.questions}
+        </Link>
+      </p>
+      <p>
+        <Link to="/metodo" className="underline text-[color:var(--color-accent)]">
+          {messages.nav.method}
         </Link>
       </p>
       {data.aujs.length > 0 && (
@@ -90,6 +95,110 @@ export function AujCard({ a }: { a: Auj }) {
   );
 }
 
+const ratio = ([n, d]: [number, number]) => (d ? `${n}/${d} (${Math.round((100 * n) / d)} %)` : "—");
+
+function ScoreTable({ rows }: { rows: Score[] }) {
+  const m = messages.method_page;
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-left">
+            <th className="p-1">{m.cols.set}</th>
+            <th className="p-1">{m.cols.system}</th>
+            <th className="p-1">{m.cols.exact}</th>
+            <th className="p-1">{m.cols.recall}</th>
+            <th className="p-1">{m.cols.precision}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={`${r.set}-${r.system}`} className="border-t border-[color:var(--color-rule)]">
+              <td className="p-1">
+                {m.set[r.set]} ({r.rows})
+              </td>
+              <td className="p-1">{m.system[r.system]}</td>
+              <td className="p-1">{ratio(r.exact)}</td>
+              <td className="p-1">{ratio(r.recall)}</td>
+              <td className="p-1">{ratio(r.precision)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function MethodPage({ data }: { data: Data }) {
+  const m = messages.method_page;
+  const ev = data.evaluation;
+  const labels = ev?.divergence_labels;
+  const labelled = labels ? Object.values(labels.shown).reduce((a, b) => a + b, 0) : 0;
+  return (
+    <section className="space-y-4">
+      <h2 className="text-xl font-semibold">{m.heading}</h2>
+      <h3 className="font-semibold">{m.stepsHeading}</h3>
+      <ol className="list-decimal pl-5 space-y-2">
+        {m.steps.map((s) => (
+          <li key={s}>{s}</li>
+        ))}
+      </ol>
+      <h3 className="font-semibold">{m.numbersHeading}</h3>
+      {ev === null ? (
+        <p>{m.unavailable}</p>
+      ) : (
+        <>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>{m.grounding(ev.grounding.proposed, ev.grounding.accepted, ev.grounding.rejected)}</li>
+            <li>
+              {m.divergences(
+                ev.divergences.judged,
+                ev.divergences.shown_v1,
+                ev.divergences.shown_v2,
+                ev.divergences.shown_v2_test,
+              )}
+            </li>
+            <li>
+              {labels && labelled > 0
+                ? m.labels(labels.shown.correct ?? 0, labelled, labels.labellers.join("; "))
+                : m.noLabels}
+            </li>
+            <li>{m.aujs(ev.aujs)}</li>
+            <li>
+              {m.cost(
+                (ev.cost.input_tokens + ev.cost.output_tokens).toLocaleString("pt-PT"),
+                ev.cost.usd_estimate.toLocaleString("pt-PT"),
+              )}
+            </li>
+          </ul>
+          <h4 className="font-medium">{m.accuracyHeading}</h4>
+          <p className="text-sm text-[color:var(--color-muted)]">{m.accuracyNote}</p>
+          <ScoreTable rows={ev.position} />
+          <h4 className="font-medium">{m.surveyHeading}</h4>
+          <ul className="list-disc pl-5 space-y-1">
+            {ev.survey.map((s) => (
+              <li key={s.seed}>
+                {s.topic}: <strong>{s.result}</strong>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <h3 className="font-semibold">{m.limitsHeading}</h3>
+      <ul className="list-disc pl-5 space-y-1">
+        {m.limits.map((l) => (
+          <li key={l}>{l}</li>
+        ))}
+      </ul>
+      <p>
+        <a href={m.reportUrl} rel="noopener noreferrer" target="_blank" className="underline">
+          {m.report}
+        </a>
+      </p>
+    </section>
+  );
+}
+
 export function AujPage({ data }: { data: Data }) {
   return (
     <section className="space-y-3">
@@ -163,7 +272,74 @@ function DivergenceCard({ d, q }: { d: Divergence; q: Question }) {
           <p>«{p.quote}»</p>
         </blockquote>
       ))}
+      <p className="text-sm">
+        <Link
+          to={`/divergencias/${encodeURIComponent(d.id)}`}
+          className="underline text-[color:var(--color-accent)]"
+        >
+          {messages.divergence.detail}
+        </Link>
+      </p>
     </li>
+  );
+}
+
+export function DivergencePage({ data }: { data: Data }) {
+  const { id } = useParams();
+  const d = data.divergences.find((x) => x.id === id);
+  const q = d && data.questions.find((x) => x.id === d.question_id);
+  if (!d || !q) return <p>{messages.divergence.notFound}</p>;
+  const index = (pos: string) => q.positions.findIndex((p) => p.id === pos);
+  const label = (pos: string) => q.positions[index(pos)]?.label ?? pos;
+  return (
+    <section className="space-y-4">
+      <Link to={`/perguntas/${q.id}`} className="underline text-[color:var(--color-accent)]">
+        {messages.divergence.backTo(q.title)}
+      </Link>
+      <h2 className="text-xl font-semibold">
+        {messages.display[d.display]} · {messages.type[d.type]} ·{" "}
+        {messages.years(d.window_start, d.window_end)}
+      </h2>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {d.pair.map((p) => (
+          <article key={p.doc_id} className="rounded border border-[color:var(--color-rule)] p-3 space-y-2">
+            <p className="font-medium">
+              <svg width="14" height="14" aria-hidden="true" className="inline mr-1">
+                <Marker index={index(p.position)} x={7} y={7} />
+              </svg>
+              {label(p.position)}
+            </p>
+            <p className="text-sm text-[color:var(--color-muted)]">
+              {p.date} · <DgsiLink url={p.url}>{p.processo || messages.table.open}</DgsiLink>
+            </p>
+            <blockquote>«{p.quote}»</blockquote>
+          </article>
+        ))}
+      </div>
+      <h3 className="font-semibold">{messages.divergence.how}</h3>
+      <ul className="list-disc pl-5 space-y-2">
+        <li>{messages.divergence.window(d.window_start, d.window_end)}</li>
+        <li>
+          {messages.divergence.support}{" "}
+          {Object.entries(d.support)
+            .map(([pos, n]) => `${label(pos)}: ${n}`)
+            .join("; ")}
+        </li>
+        <li>{messages.divergence.rule[d.type]}</li>
+        {d.judge && (
+          <li>
+            {messages.divergence.judge(messages.divergence.judgeConfidence[d.judge.confidence])}
+            <p className="mt-1 text-sm text-[color:var(--color-muted)]">{messages.divergence.rationale}</p>
+            <p className="text-sm">{d.judge.rationale}</p>
+          </li>
+        )}
+        {d.rule_confidence && (
+          <li>
+            {messages.confidence[d.rule_confidence]}. {messages.divergence.ruleConfidence}
+          </li>
+        )}
+      </ul>
+    </section>
   );
 }
 
