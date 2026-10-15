@@ -12,7 +12,7 @@ from collections import Counter
 from pathlib import Path
 
 from juris.db.schema import connect
-from juris.detect.core import Point, detect, is_uniformizacao, load_config
+from juris.detect.core import Point, detect, load_config, uniformizacao_of
 from juris.llm.prompt import CLASSIFY
 from juris.taxonomy.model import load_taxonomy
 
@@ -22,16 +22,21 @@ DEV = ("q2", "q3")  # SPEC §9.7
 def points_by_question(conn: sqlite3.Connection, prompt_version: str = CLASSIFY):
     rows = conn.execute(
         "SELECT c.question_id, a.doc_id, a.data_iso, c.position_id, c.quote, a.url,"
-        " a.meio_processual, a.texto FROM classification c JOIN acordao a USING (doc_id)"
+        " a.uniformizacao, a.meio_processual, a.texto"
+        " FROM classification c JOIN acordao a USING (doc_id)"
         " WHERE c.relevant = 1 AND c.quote_ok = 1 AND c.prompt_version = ?"
         " ORDER BY a.data_iso, a.doc_id",
         (prompt_version,),
     )
     out: dict[str, list[Point]] = {}
-    for qid, doc_id, date, pos, quote, url, meio, texto in rows:
-        uni = is_uniformizacao(meio, texto)
+    for qid, doc_id, date, pos, quote, url, flag, meio, texto in rows:
+        uni = uniformizacao_of(flag, meio, texto)
         out.setdefault(qid, []).append(Point(doc_id, date, pos, quote, url, uni))
     return out
+
+
+def _canonical(evidence: dict) -> str:
+    return json.dumps(evidence, sort_keys=True, ensure_ascii=False)
 
 
 def run(conn: sqlite3.Connection, tax_path: Path, cfg_path: Path) -> list:
@@ -39,18 +44,29 @@ def run(conn: sqlite3.Connection, tax_path: Path, cfg_path: Path) -> list:
     approved = [q.id for q in load_taxonomy(tax_path).questions if q.status == "approved"]
     points = points_by_question(conn)
     found = []
+    # a verdict stays with a divergence whose evidence (the pair the judge saw) did not change,
+    # so re-running detect after the judge does not lose the verdicts
+    kept = {
+        (q, t, s, e, _canonical(json.loads(ev))): (judge, conf)
+        for q, t, s, e, ev, judge, conf in conn.execute(
+            "SELECT question_id, type, window_start, window_end, evidence_json, judge_json,"
+            " rule_confidence FROM divergence WHERE judge_json IS NOT NULL"
+        )
+    }
     conn.execute("DELETE FROM divergence")
     for qid in approved:
         pts = points.get(qid, [])
         divs = detect(qid, pts, cfg)
         found += divs
+        rows = []
+        for d in divs:
+            ev = d.evidence()
+            key = (d.question_id, d.type, d.window_start, d.window_end, _canonical(ev))
+            rows.append((*key[:4], json.dumps(ev), *kept.get(key, (None, None))))
         conn.executemany(
-            "INSERT INTO divergence(question_id, type, window_start, window_end, evidence_json)"
-            " VALUES (?,?,?,?,?)",
-            [
-                (d.question_id, d.type, d.window_start, d.window_end, json.dumps(d.evidence()))
-                for d in divs
-            ],
+            "INSERT INTO divergence(question_id, type, window_start, window_end, evidence_json,"
+            " judge_json, rule_confidence) VALUES (?,?,?,?,?,?,?)",
+            rows,
         )
         split = "dev" if qid in DEV else "test"
         support = dict(sorted(Counter(p.position for p in pts).items()))

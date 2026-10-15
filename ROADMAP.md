@@ -47,13 +47,12 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 - T4.2 Export `web/public/data/*.json` for the pilot; minimal UI: `/perguntas` and one question timeline; deploy. *Code done 2026-10-15: `make export` (grounded quotes only; split/shift published only if the judge confirmed it), `make data-check` (also in CI), routes `/`, `/perguntas`, `/perguntas/:id` (SVG timeline with shape + colour per position, divergence cards, judgments table). Committed data is empty until the owner classifies; the site shows "sem dados ainda".*
 - Accept: a public URL showing real pilot data with quotes and links. If this fails, cut scope now (see Cuts).
 
-## M5 — Full classification and detection (4 h) · todo · days 5–6 · deps: M4
-- HUMAN: full `make classify` (cost limit set); keep the run log.
+## M5 — Full classification and detection (4 h) · done · days 5–6 · deps: M4
+- HUMAN: full `make classify` (cost limit set); keep the run log. *Done 2026-10-15: 813 judgments (800 sumário, 13 texto), 0 schema failures, 0 truncated, ≈ 2.1 M tokens; quote grounding repaired offline (SPEC §6.1): 11 of 695 quotes rejected. `make judge`: 23 judged, 0 invalid, 3 confirmed.*
 - T5.1 Detection per SPEC §6.2–6.5, config in `detect.toml`, unit tests on synthetic matrices (shift, split, resolved, ties, thin support). *Done 2026-10-15 (§6.2–6.3; `make detect` writes the `divergence` table and prints per question, dev/test). Rule confidence §6.5 needs the judge: T5.2.*
 - T5.2 Judge pass for the top divergences; store verdicts. *Done 2026-10-15 (code): `juris/detect/judge.py`, prompt `judge_v1`, `make judge` (HUMAN) / `make judge-replay`; rule confidence §6.5; prints the Gate G3 verdict. Runbook: `docs/llm-runbook.md`.*
-- T5.3 Commit `data/classifications` (metadata, labels, quotes, `texto_sha256`, url) so `detect`/`export` reproduce from a fresh clone (SPEC §11).
-- Gate G3 (SPEC §2): ≥ 1 judge-confirmed split/shift on a test question → stay; 0 → pivot to arrendamento urbano. Decide by Sat 17/10.
-- T5.3 Commit `data/classifications` snapshot (metadata, position, quote, `texto_sha256`, url; no full texts) so `detect`, `export` and `data-check` run from a fresh clone.
+- Gate G3 (SPEC §2): ≥ 1 judge-confirmed split/shift on a test question → stay; 0 → pivot to arrendamento urbano. Decide by Sat 17/10. **Decided 2026-10-15: STAY on contrato-promessa** — 2 confirmed on test questions (q7 shift 2004–2009, q9 split 2013–2021; judge confidence média, rule confidence alta), plus 1 on dev (q3 split 2002–2006).
+- T5.3 Commit `data/classifications` snapshot (metadata, position, quote, `texto_sha256`, url; no full texts) so `detect`, `export` and `data-check` run from a fresh clone. *Done 2026-10-15: `make snapshot` / `make snapshot-load` (`juris/db/snapshot.py`); rejected quotes withheld; a database rebuilt from it gives byte-identical `web/public/data`. `make detect` now keeps a judge verdict while its evidence is unchanged.*
 - Day-5 checkpoint: decide cuts (judge pass, `resolved`, filters) from actual progress, not at the end.
 - Accept: `divergence` table populated; every divergence has two grounded quotes and links; `make data-check` green on a fresh clone (schema, quote ≤ 400, links, fixture grounding; real-text grounding result recorded in the classify run log).
 

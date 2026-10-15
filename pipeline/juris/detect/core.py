@@ -70,6 +70,11 @@ def is_uniformizacao(meio_processual: str | None, texto: str | None) -> bool:
     )
 
 
+def uniformizacao_of(flag: int | None, meio_processual: str | None, texto: str | None) -> bool:
+    """The stored flag (snapshot databases have no text), else the heuristic."""
+    return bool(flag) if flag is not None else is_uniformizacao(meio_processual, texto)
+
+
 @dataclass(frozen=True)
 class Window:
     start: int

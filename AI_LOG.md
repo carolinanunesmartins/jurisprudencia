@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Judge run, Gate G3 and the committed snapshot (T5.3)
+- Tool / model: Claude Code (Opus 5.5); judge claude-sonnet-5-5 (owner-run).
+- Task: read the 23 verdicts (20 hidden: mostly one excerpt does not take a position on the question, i.e. the classifier positioned judgments that only touch it); record Gate G3 = STAY (2 confirmed on test questions: q7 shift 2004–2009, q9 split 2013–2021). T5.3: `juris/db/snapshot.py` dumps `data/classifications/{acordao,classification,divergence}.jsonl` (metadata, `texto_sha256`, grounded quotes, verdicts; no sumário, no text) and loads them into a new database. Snapshot databases have no text, so `acordao.uniformizacao` stores the flag. `make detect` now keeps a verdict while the evidence the judge saw is unchanged (removes the "detect after judge wipes verdicts" hazard).
+- What failed or needed correction: first fresh-clone test kept 0 verdicts (the snapshot writes sorted keys, detect compared the evidence string byte for byte → now compared in canonical form) and reported 0 rejected quotes (withheld quotes are NULL; the export counted only non-empty ones).
+- How it was fixed: as above. Verified: snapshot → new database → `make detect` → `make export` gives byte-identical `web/public/data`; `make data-check` 0 errors; unit tests for no-text, withheld quotes, round trip, verdict keeping.
+- Human verification (what was checked by a person): the owner ran `make judge`, `make export`, `make data-check` (0 errors with grounding).
+
 ### 2026-10-15 — Judge model rejects `temperature`
 - Tool / model: Claude Code (Opus 5.5)
 - Task: `make judge` failed with "API error 400: invalid_request_error: `temperature` is deprecated for this model" (claude-sonnet-5-5). `AnthropicProvider` now takes `temperature` (default 0, `None` leaves it out); the judge passes `None`. The classifier is unchanged (temperature 0). SPEC §7 updated.

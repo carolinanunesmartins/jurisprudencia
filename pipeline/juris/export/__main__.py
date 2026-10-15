@@ -14,7 +14,7 @@ from pathlib import Path
 from juris.db.schema import connect
 from juris.db.subset import subset_ids
 from juris.detect.__main__ import DEV
-from juris.detect.core import is_uniformizacao
+from juris.detect.core import uniformizacao_of
 from juris.detect.judge import Verdict, display
 from juris.export.model import (
     DivergenceOut,
@@ -34,14 +34,14 @@ OUT = Path("web/public/data")
 def _judgments(conn: sqlite3.Connection, approved: list[str]) -> list[JudgmentOut]:
     rows = conn.execute(
         "SELECT a.doc_id, a.processo, a.data_iso, a.url, a.secao, a.relator, c.question_id,"
-        " c.position_id, c.quote, c.text_source, a.meio_processual, a.texto"
+        " c.position_id, c.quote, c.text_source, a.uniformizacao, a.meio_processual, a.texto"
         " FROM classification c JOIN acordao a USING (doc_id)"
         " WHERE c.relevant = 1 AND c.quote_ok = 1 AND c.prompt_version = ?"
         " ORDER BY c.question_id, a.data_iso, a.doc_id",
         (CLASSIFY,),
     )
     out = []
-    for doc_id, proc, date, url, secao, relator, qid, pos, quote, src, meio, texto in rows:
+    for doc_id, proc, date, url, secao, relator, qid, pos, quote, src, flag, meio, texto in rows:
         if qid not in approved:
             continue
         out.append(
@@ -56,7 +56,7 @@ def _judgments(conn: sqlite3.Connection, approved: list[str]) -> list[JudgmentOu
                 position=pos,
                 quote=quote,
                 text_source=src or "sumario",
-                uniformizacao=is_uniformizacao(meio, texto),
+                uniformizacao=uniformizacao_of(flag, meio, texto),
             )
         )
     return out
@@ -154,7 +154,7 @@ def export(conn: sqlite3.Connection, tax_path: Path, out: Path = OUT) -> Meta:
     ).fetchall()
     (rejected,) = conn.execute(
         "SELECT COUNT(*) FROM classification WHERE prompt_version = ? AND quote_ok = 0"
-        " AND quote <> ''",
+        " AND (quote IS NULL OR quote <> '')",  # NULL: rejected, withheld in the snapshot
         (CLASSIFY,),
     ).fetchone()
     meta = Meta(
