@@ -35,7 +35,8 @@ def _read(path: Path) -> list[dict]:
 def dump(conn: sqlite3.Connection, out: Path = SNAPSHOT, prompt_version: str = CLASSIFY) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     classified = conn.execute(
-        "SELECT doc_id, question_id, relevant, position_id, quote, quote_ok, text_source, model"
+        "SELECT doc_id, question_id, relevant, position_id, quote, quote_ok, quote_match,"
+        " text_source, model"
         " FROM classification WHERE prompt_version = ? ORDER BY doc_id, question_id",
         (prompt_version,),
     ).fetchall()
@@ -48,11 +49,12 @@ def dump(conn: sqlite3.Connection, out: Path = SNAPSHOT, prompt_version: str = C
             # null = a rejected quote, withheld: it is the model's string, not the text's
             "quote": quote if ok or not quote else None,
             "quote_ok": bool(ok),
+            "quote_match": match,
             "text_source": src,
             "model": model,
             "prompt_version": prompt_version,
         }
-        for d, q, rel, pos, quote, ok, src, model in classified
+        for d, q, rel, pos, quote, ok, match, src, model in classified
     ]
     ids = sorted({r["doc_id"] for r in rows})
     acordaos = []
@@ -125,7 +127,7 @@ def load(db: Path, src: Path = SNAPSHOT) -> dict:
     rows = _read(src / "classification.jsonl")
     conn.executemany(
         "INSERT INTO classification(doc_id, question_id, relevant, position_id, quote, quote_ok,"
-        " text_source, model, prompt_version) VALUES (?,?,?,?,?,?,?,?,?)",
+        " quote_match, text_source, model, prompt_version) VALUES (?,?,?,?,?,?,?,?,?,?)",
         [
             (
                 r["doc_id"],
@@ -134,6 +136,7 @@ def load(db: Path, src: Path = SNAPSHOT) -> dict:
                 r["position_id"],
                 r["quote"],
                 int(r["quote_ok"]),
+                r.get("quote_match"),
                 r["text_source"],
                 r["model"],
                 r["prompt_version"],

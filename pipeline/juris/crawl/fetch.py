@@ -144,6 +144,16 @@ def fetch_documents(
     return stats
 
 
+def read_ids(path: Path) -> list[str]:
+    """doc_ids from a list file: one per line, `#` starts a comment, blank lines ignored."""
+    out = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        doc_id = line.split("#", 1)[0].strip()
+        if doc_id and doc_id not in out:
+            out.append(doc_id)
+    return out
+
+
 def _print_progress(stats: FetchStats, doc_id: str) -> None:
     print(f"stored {stats.stored:>5} | failures {len(stats.failures):>3} | {doc_id}", flush=True)
 
@@ -157,6 +167,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--delay", type=float, default=MIN_DELAY_S, help="seconds between requests")
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
     ap.add_argument("--all-index", action="store_true", help="ignore the thesis subset (ADR 0005)")
+    ap.add_argument(
+        "--ids-file",
+        type=Path,
+        help="fetch only these indexed doc_ids, one per line (# comments allowed)",
+    )
     ap.add_argument("--contact", default=os.environ.get("JURIS_CONTACT"))
     args = ap.parse_args(argv)
     if not args.contact:
@@ -171,12 +186,29 @@ def main(argv: list[str] | None = None) -> int:
 
     conn = connect(args.db)
     population = None if args.all_index else subset_ids(conn)
-    if args.pilot:
+    if args.ids_file:
+        ids = read_ids(args.ids_file)
+        unknown = [
+            d
+            for d in ids
+            if not conn.execute("SELECT 1 FROM acordao WHERE doc_id = ?", (d,)).fetchone()
+        ]
+        if unknown:
+            print(f"not in the index (run `make index` first?): {unknown}")
+            return EXIT_USAGE
+        population, candidates = set(ids), ids
+    elif args.pilot:
         candidates = select_pilot(conn, args.pilot, args.seed, population)
     else:
         candidates = None if population is None else list(population)
     todo = pending_ids(conn, candidates)
-    scope = "whole index" if population is None else f"subset of {len(population)}"
+    scope = (
+        f"{args.ids_file}"
+        if args.ids_file
+        else "whole index"
+        if population is None
+        else f"subset of {len(population)}"
+    )
     print(
         f"{len(todo)} judgments to fetch ({scope}"
         + (f", pilot {args.pilot})" if args.pilot else ")")

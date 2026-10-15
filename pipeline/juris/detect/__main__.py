@@ -22,16 +22,17 @@ DEV = ("q2", "q3")  # SPEC §9.7
 def points_by_question(conn: sqlite3.Connection, prompt_version: str = CLASSIFY):
     rows = conn.execute(
         "SELECT c.question_id, a.doc_id, a.data_iso, c.position_id, c.quote, a.url,"
-        " a.uniformizacao, a.meio_processual, a.texto"
+        " a.uniformizacao, a.meio_processual, a.texto, c.quote_match"
         " FROM classification c JOIN acordao a USING (doc_id)"
         " WHERE c.relevant = 1 AND c.quote_ok = 1 AND c.prompt_version = ?"
         " ORDER BY a.data_iso, a.doc_id",
         (prompt_version,),
     )
     out: dict[str, list[Point]] = {}
-    for qid, doc_id, date, pos, quote, url, flag, meio, texto in rows:
+    for qid, doc_id, date, pos, quote, url, flag, meio, texto, match in rows:
         uni = uniformizacao_of(flag, meio, texto)
-        out.setdefault(qid, []).append(Point(doc_id, date, pos, quote, url, uni))
+        partial = bool(set((match or "").split("+")) & {"trimmed", "ellipsis"})
+        out.setdefault(qid, []).append(Point(doc_id, date, pos, quote, url, uni, partial))
     return out
 
 

@@ -122,7 +122,7 @@ def classify_one(
     now = datetime.now(UTC).isoformat(timespec="seconds")
     out = []
     for qid, a in answers.items():
-        relevant, quote_ok, quote = a.relevant, False, a.quote
+        relevant, quote_ok, quote, match = a.relevant, False, a.quote, None
         if relevant:
             span, how = ground(a.quote, text)
             quote_ok = span is not None
@@ -130,6 +130,7 @@ def classify_one(
                 quote = span  # the text's own words, never the model's copy
                 stats.quotes_accepted += 1
                 stats.repairs.update(how)
+                match = "+".join(sorted(how))
                 stats.positions[(qid, a.position_id or "")] += 1
             else:
                 stats.quotes_rejected += 1
@@ -142,6 +143,7 @@ def classify_one(
                 a.position_id if relevant else None,
                 quote,
                 int(quote_ok),
+                match,
                 a.note,
                 source,
                 provider.model,
@@ -188,8 +190,8 @@ def run(
         if rows:
             conn.executemany(
                 "INSERT OR REPLACE INTO classification(doc_id, question_id, relevant, position_id,"
-                " quote, quote_ok, note, text_source, model, prompt_version, created_at)"
-                " VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                " quote, quote_ok, quote_match, note, text_source, model, prompt_version,"
+                " created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                 rows,
             )
             conn.commit()

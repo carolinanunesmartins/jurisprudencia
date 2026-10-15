@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Why divergences are hidden; AUJ evidence; pair rule v2 (pre-registered)
+- Tool / model: Claude Code (Opus 5.5)
+- Task: on the owner's question, read all 20 hidden verdicts: 18 have an excerpt that takes no position (or is about another legal ground), 2 have both excerpts agreeing; 3 cite a truncated excerpt. Root causes: the classifier positions judgments that only touch the question (8 of 28 on the labels) and v1 picks the pair by date adjacency. Searched the full STJ index for uniformização descriptors: contrato-promessa is among the substantive themes with most activity; 3 real AUJs are in the 813 with text (4/2014, 2019, 2021), and their texts name the conflicting judgments and both camps. The owner chose: AUJ-anchored divergences first (option A), then a pre-registered pair rule (option B).
+- What failed or needed correction: AUJ 4/2014 was not flagged as uniformização because dgsi.pt misspells its meio processual ("UNIFORMIZAÇÃO DE JURSIPRUDÊNCIA"); the field check now needs only "uniformiz" (SPEC §6.3, regression test). `make detect` re-run: the q8 "resolved" entries now point at AUJ 4/2014 itself; all 23 verdicts kept. `make fetch` gained `--ids-file` (same polite client) and `data/auj/fetch_ids.txt` lists the 4 indexed-but-unfetched judgments the AUJs cite.
+- How it was fixed: pair rule v2 written into SPEC §6.2 and committed before any v2 verdict exists; classification now stores `quote_match` (how grounding located the quote) so detect can avoid partial quotes; v1 stays reproducible (`pair_rule = "v1"`).
+- Human verification (what was checked by a person): pending (owner's fetch and `make judge`).
+
 ### 2026-10-15 — Judge run, Gate G3 and the committed snapshot (T5.3)
 - Tool / model: Claude Code (Opus 5.5); judge claude-sonnet-5-5 (owner-run).
 - Task: read the 23 verdicts (20 hidden: mostly one excerpt does not take a position on the question, i.e. the classifier positioned judgments that only touch it); record Gate G3 = STAY (2 confirmed on test questions: q7 shift 2004–2009, q9 split 2013–2021). T5.3: `juris/db/snapshot.py` dumps `data/classifications/{acordao,classification,divergence}.jsonl` (metadata, `texto_sha256`, grounded quotes, verdicts; no sumário, no text) and loads them into a new database. Snapshot databases have no text, so `acordao.uniformizacao` stores the flag. `make detect` now keeps a verdict while the evidence the judge saw is unchanged (removes the "detect after judge wipes verdicts" hazard).

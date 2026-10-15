@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS divergence (
 # Columns added after the first local databases were created (M4, ADR 0007; T5.3: a database
 # rebuilt from the committed snapshot has no texts, so it carries the uniformização flag).
 _ADDED = {
-    "classification": ("note TEXT", "text_source TEXT"),
+    # quote_match: how grounding located the quote (SPEC §6.1), e.g. "exact", "ellipsis+typography"
+    "classification": ("note TEXT", "text_source TEXT", "quote_match TEXT"),
     "acordao": ("uniformizacao INTEGER",),
 }
 

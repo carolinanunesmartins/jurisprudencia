@@ -86,6 +86,12 @@ def test_uniformizacao_before_the_divergence_does_not_resolve_it():
 def test_uniformizacao_marker_is_accent_and_case_insensitive():
     assert is_uniformizacao("Recurso para Uniformização de Jurisprudência", "")
     assert is_uniformizacao("Revista", "x" * 100 + "UNIFORMIZACAO DE JURISPRUDENCIA")
+
+
+def test_uniformizacao_marker_survives_the_source_typo_in_meio_processual():
+    # regression: AUJ 4/2014 is listed as "UNIFORMIZAÇÃO DE JURSIPRUDÊNCIA" on dgsi.pt
+    assert is_uniformizacao("UNIFORMIZAÇÃO DE JURSIPRUDÊNCIA", "")
+    assert not is_uniformizacao("REVISTA", "cita o acórdão uniformizador n.º 4/2014")
     assert not is_uniformizacao("Revista", "x" * 2000 + "uniformização de jurisprudência")
 
 
@@ -114,3 +120,59 @@ def test_detect_main_reads_grounded_classifications_only(tmp_path, capsys):
     (evidence,) = conn.execute("SELECT evidence_json FROM divergence").fetchone()
     assert json.loads(evidence)["support"] == {"absoluto": 2, "relativo": 2}
     assert "q6 [test]" in capsys.readouterr().out
+
+
+V2 = Config(
+    window_years=3, min_support=2, dominance=0.6, first_year=2000, last_year=2025, pair_rule="v2"
+)
+
+
+def P(doc, date, pos, partial=False):
+    return Point(doc, date, pos, partial=partial)
+
+
+def test_pair_rule_v2_split_takes_the_closest_whole_quotes():
+    points = [
+        P("a1", "2010-01-01", "A"),
+        P("b1", "2010-01-05", "B", partial=True),  # v1 would show this one
+        P("a2", "2010-06-01", "A"),
+        P("b2", "2010-06-10", "B"),
+        P("a3", "2011-01-01", "A"),
+        P("b3", "2011-03-01", "B"),
+    ]
+    (v1,) = splits("q", points, CFG)
+    (v2,) = splits("q", points, V2)
+    assert [p.doc_id for p in v1.pair] == ["a1", "b1"]
+    assert [p.doc_id for p in v2.pair] == ["a2", "b2"]
+
+
+def test_pair_rule_v2_falls_back_when_a_side_has_only_partial_quotes():
+    points = [
+        P("a1", "2010-01-01", "A"),
+        P("b1", "2010-02-01", "B", partial=True),
+        P("a2", "2011-01-01", "A"),
+        P("b2", "2011-02-01", "B", partial=True),
+    ]
+    assert splits("q", points, V2)[0].pair == splits("q", points, CFG)[0].pair
+
+
+def test_pair_rule_v2_shift_skips_a_partial_quote():
+    points = [P(f"a{i}", f"200{i}-01-01", "A") for i in range(3)]
+    points += [P("a3", "2002-06-01", "A", partial=True)]
+    points += [P(f"b{i}", f"20{10 + i}-01-01", "B") for i in range(3)]
+    (shift,) = [d for d in detect("q", points, V2) if d.type == "shift"]
+    assert shift.pair[0].doc_id == "a2"
+
+
+def test_partial_flag_is_not_part_of_the_evidence():
+    d = splits(
+        "q",
+        [
+            P("a", "2010-01-01", "A", True),
+            P("b", "2010-02-01", "B"),
+            P("c", "2010-03-01", "A"),
+            P("e", "2010-04-01", "B"),
+        ],
+        CFG,
+    )[0]
+    assert all("partial" not in p for p in d.evidence()["pair"])

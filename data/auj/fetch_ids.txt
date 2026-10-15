@@ -1,0 +1,6 @@
+# Judgments named in the AUJ texts that are indexed but not fetched (agent-made list).
+# make fetch ARGS="--ids-file data/auj/fetch_ids.txt"  (HUMAN-run, polite crawl, SPEC §3)
+186dea1ec17532f080257ce70053b7cb  # 1092/10.0TBLSD-G.P1.S1 2014-05-29 - AUJ 2019: wide 'consumidor' camp
+44a10857c186e69a80257d9c003f39a2  # 7617/11.6TBBRG-C.G1.S1 2014-11-25 - AUJ 2019: cited by the appellant, strict camp
+a66e5022a0bbcc1e8025772a0037db1f  # 1336/06.2TBBCL-G.G1.S1 2010-05-20 - AUJ 4/2014: cited case law on retention in insolvency
+42d8ebc34a684bca802577670031df7b  # 1336/06.2TBBCL-G.G1.S1 2010-05-20 - AUJ 4/2014: cited case law on retention in insolvency
