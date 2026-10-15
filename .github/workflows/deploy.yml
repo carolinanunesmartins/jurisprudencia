@@ -14,7 +14,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Never publish data that fails `make data-check` (schemas, quotes <= 400 chars, dgsi.pt
+  # links, cross-references, AUJ cards). No database in CI, so grounding was checked locally.
+  data-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+      - run: uv sync --frozen || uv sync
+      - run: uv run python -m juris.export.check
+
   build:
+    needs: data-check
     runs-on: ubuntu-latest
     defaults:
       run:

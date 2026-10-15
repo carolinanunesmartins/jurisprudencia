@@ -9,6 +9,7 @@ from juris.crawl.fetch import (
     fetch_documents,
     main,
     pending_ids,
+    read_ids,
     select_pilot,
 )
 from juris.db.schema import connect
@@ -188,4 +189,18 @@ def test_main_requires_contact_and_an_existing_db(tmp_path, monkeypatch):
 def test_delay_below_the_spec_minimum_is_refused(tmp_path):
     connect(tmp_path / "t.db").close()
     args = ["--db", str(tmp_path / "t.db"), "--contact", "a@b.c", "--delay", "1"]
+    assert main(args) == EXIT_USAGE
+
+
+def test_ids_file_lists_doc_ids_with_comments_and_no_duplicates(tmp_path):
+    f = tmp_path / "ids.txt"
+    f.write_text("# AUJ 2019\nd1  # fundamento\n\nd3\nd1\n", encoding="utf-8")
+    assert read_ids(f) == ["d1", "d3"]
+
+
+def test_ids_file_with_an_unindexed_id_is_refused_before_any_request(tmp_path):
+    connect(tmp_path / "t.db").close()
+    f = tmp_path / "ids.txt"
+    f.write_text("nope\n", encoding="utf-8")
+    args = ["--db", str(tmp_path / "t.db"), "--contact", "a@b.c", "--ids-file", str(f)]
     assert main(args) == EXIT_USAGE

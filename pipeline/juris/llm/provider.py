@@ -20,6 +20,33 @@ class MissingFixture(LookupError):
     pass
 
 
+class Truncated(RuntimeError):
+    """The answer hit max_tokens. Not retried: the same request would be cut again."""
+
+
+class ApiError(RuntimeError):
+    """The API refused the request; the message is the API's own (it never contains the key)."""
+
+    def __init__(self, status: int, message: str):
+        super().__init__(f"API error {status}: {message}")
+        self.status = status
+
+
+def api_error(resp: httpx.Response) -> ApiError:
+    try:
+        err = resp.json().get("error") or {}
+        message = f"{err.get('type', '?')}: {err.get('message', '')}"
+    except ValueError:
+        message = resp.text[:500]
+    return ApiError(resp.status_code, message)
+
+
+def tokens_used(provider: object) -> int:
+    """Input + output tokens billed so far (0 for providers that do not bill)."""
+    usage: dict[str, int] = getattr(provider, "usage", {})
+    return sum(v for k, v in usage.items() if k.endswith("tokens"))
+
+
 class LlmProvider(Protocol):
     model: str
 
@@ -60,7 +87,8 @@ class ReplayProvider:
 
 
 class AnthropicProvider:
-    """Temperature 0; the instructions are sent as a cached system block (SPEC §7)."""
+    """Temperature 0 unless None (newer models reject it); instructions in a cached system block
+    (SPEC §7)."""
 
     def __init__(
         self,
@@ -68,11 +96,14 @@ class AnthropicProvider:
         model: str,
         record: Path | None = None,
         client: httpx.Client | None = None,
-        max_tokens: int = 2000,
+        max_tokens: int = 1200,  # a full 7-question answer is ~1 000 tokens; typical ~400
+        workspace_id: str | None = None,  # needed only for keys not scoped to a workspace
+        temperature: float | None = 0,
     ):
         self.model = model
         self.record = record
         self.max_tokens = max_tokens
+        self.temperature = temperature
         self.usage: dict[str, int] = {}
         self._client = client or httpx.Client(timeout=120)
         self._headers = {
@@ -80,21 +111,27 @@ class AnthropicProvider:
             "anthropic-version": ANTHROPIC_VERSION,
             "content-type": "application/json",
         }
+        if workspace_id:
+            self._headers["anthropic-workspace-id"] = workspace_id
 
     def generate_json(self, prompt_id: str, system: str, input: str) -> dict[str, Any]:
         body = {
             "model": self.model,
             "max_tokens": self.max_tokens,
-            "temperature": 0,
             "system": [{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
             "messages": [{"role": "user", "content": input}],
         }
+        if self.temperature is not None:
+            body["temperature"] = self.temperature
         resp = self._client.post(ANTHROPIC_URL, headers=self._headers, json=body)
-        resp.raise_for_status()
+        if resp.is_error:
+            raise api_error(resp)
         data = resp.json()
         for k, v in (data.get("usage") or {}).items():
             if isinstance(v, int):
                 self.usage[k] = self.usage.get(k, 0) + v
+        if data.get("stop_reason") == "max_tokens":
+            raise Truncated(f"answer cut at {self.max_tokens} tokens")
         text = "".join(
             b.get("text", "") for b in data.get("content", []) if b.get("type") == "text"
         )

@@ -33,30 +33,33 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 - HUMAN: `make fetch` for a **pilot of 100, random and stratified by year** (not the first 100 fetched; otherwise M4 shows no time effect) (evening) and later the rest (overnight, possibly across several runs).
 - Accept: `make fetch` resumes correctly after interruption (tested); ≥ 95% of fetched documents parse with non-empty sumário and texto (report the real rate); parse failures listed.
 
-## M3 — Taxonomy ★ (3 h) · doing · days 3–4 · deps: M2 pilot
+## M3 — Taxonomy ★ (3 h) · done · days 3–4 · deps: M2 pilot
 - T3.1 Seed `taxonomy.json` from SPEC §5.2. *Done 2026-10-14 (`data/taxonomy.json` + validator; q4/q5 positions are drafts for owner review).*
 - T3.2 Discovery pass on 150 sampled judgments (HUMAN-run, needs key) → ≤ 3 proposed questions. *Done 2026-10-15: G2 passes on the SPEC rule (about 5 two-sided questions, thin support); owner approved 7 questions. Kit 2026-10-14: `python pipeline/tools/discovery.py pack|check`, 3 packs of 50 in `data/discovery/`; owner pastes each into an LLM chat and saves `answer_<k>.json`.*
 - HUMAN (≈45 min): approve/edit/reject questions and positions. Gate G2 (SPEC §2).
 - T3.3 Freeze taxonomy + prompt version (tag it). Generate the blind label sheet for the 60-judgment position-accuracy sample now (moved from M7: it does not depend on model output). *Done 2026-10-15: taxonomy `v1` + prompt `classify_v1`, git tag `taxonomy-v1`. Sheet: `python pipeline/tools/labelsheet.py make` → `data/labelling/sheet.md` (local) and `data/eval/labels.csv` (committed, labels empty); `labelsheet.py validate` checks the filled labels. Allocation and dev/test split (dev = q2, q3) written into SPEC §9 before any model output; model input = sumário (ADR 0007).*
+- *Labels committed 2026-10-15 (`86c3fe1`), made by an AI on the owner's instruction and disclosed in `data/eval/labeller.md` and AI_LOG.*
 - HUMAN (≈2 h, days 4–5): fill the 60 labels, run `labelsheet.py validate`, commit. M3 stays `doing` until that commit; no live classify run before it. Record the labeller's legal background in the report; single annotator is a stated limitation; allow an `unclear` label.
 - Accept: `taxonomy.json` with 5–8 approved questions, each with ≥ 2 positions and definitions; taxonomy/prompt frozen before labelling.
 
-## M4 — Vertical slice online ★ (3 h) · todo · day 4 · deps: M3 (code may start once T3.3 is done; the live run waits for the labels)
+## M4 — Vertical slice online ★ (3 h) · doing · day 4 · deps: M3 (code may start once T3.3 is done; the live run waits for the labels)
 - T4.1 Classification module + `ReplayProvider` + schema + grounding check (tests with fixtures). *Done 2026-10-15 (`juris/classify/`, `juris/llm/provider.py`): `make classify ARGS="--pilot 100"` (HUMAN) refuses to run until the 60 labels are filled; `make classify-replay` offline. Columns `note`, `text_source` added to `classification` (auto-migrated).*
 - HUMAN: run classification on the 100-judgment pilot; measure tokens/cost; set the API spend limit. **Only after the commit with the 60 filled labels (`data/eval/labels.csv`) exists**: that commit, dated before any classification output, is the evidence that the labels are blind.
-- T4.2 Export `web/public/data/*.json` for the pilot; minimal UI: `/perguntas` and one question timeline; deploy.
+- T4.2 Export `web/public/data/*.json` for the pilot; minimal UI: `/perguntas` and one question timeline; deploy. *Code done 2026-10-15: `make export` (grounded quotes only; split/shift published only if the judge confirmed it), `make data-check` (also in CI), routes `/`, `/perguntas`, `/perguntas/:id` (SVG timeline with shape + colour per position, divergence cards, judgments table). Committed data is empty until the owner classifies; the site shows "sem dados ainda".*
 - Accept: a public URL showing real pilot data with quotes and links. If this fails, cut scope now (see Cuts).
+- *Status 2026-10-15: real data for all 813 is exported and checked. Deploy: `.github/workflows/deploy.yml` (since M0) publishes on every push to `main`, now gated by `make data-check`; Pages is enabled and serves the old `main` (no data). Remaining: owner merges `m1-crawler` into `main`, then check https://carolinanunesmartins.github.io/jurisprudencia/.*
 
-## M5 — Full classification and detection (4 h) · todo · days 5–6 · deps: M4
-- HUMAN: full `make classify` (cost limit set); keep the run log.
+## M5 — Full classification and detection (4 h) · done · days 5–6 · deps: M4
+- HUMAN: full `make classify` (cost limit set); keep the run log. *Done 2026-10-15: 813 judgments (800 sumário, 13 texto), 0 schema failures, 0 truncated, ≈ 2.1 M tokens; quote grounding repaired offline (SPEC §6.1): 11 of 695 quotes rejected. `make judge`: 23 judged, 0 invalid, 3 confirmed.*
 - T5.1 Detection per SPEC §6.2–6.5, config in `detect.toml`, unit tests on synthetic matrices (shift, split, resolved, ties, thin support). *Done 2026-10-15 (§6.2–6.3; `make detect` writes the `divergence` table and prints per question, dev/test). Rule confidence §6.5 needs the judge: T5.2.*
-- T5.2 Judge pass for the top divergences; store verdicts.
-- Gate G3 (SPEC §2): ≥ 1 judge-confirmed split/shift on a test question → stay; 0 → pivot to arrendamento urbano. Decide by Sat 17/10.
-- T5.3 Commit `data/classifications` snapshot (metadata, position, quote, `texto_sha256`, url; no full texts) so `detect`, `export` and `data-check` run from a fresh clone.
+- T5.2 Judge pass for the top divergences; store verdicts. *Done 2026-10-15 (code): `juris/detect/judge.py`, prompt `judge_v1`, `make judge` (HUMAN) / `make judge-replay`; rule confidence §6.5; prints the Gate G3 verdict. Runbook: `docs/llm-runbook.md`.*
+- Gate G3 (SPEC §2): ≥ 1 judge-confirmed split/shift on a test question → stay; 0 → pivot to arrendamento urbano. Decide by Sat 17/10. **Decided 2026-10-15: STAY on contrato-promessa** — 2 confirmed on test questions (q7 shift 2004–2009, q9 split 2013–2021; judge confidence média, rule confidence alta), plus 1 on dev (q3 split 2002–2006).
+- T5.3 Commit `data/classifications` snapshot (metadata, position, quote, `texto_sha256`, url; no full texts) so `detect`, `export` and `data-check` run from a fresh clone. *Done 2026-10-15: `make snapshot` / `make snapshot-load` (`juris/db/snapshot.py`); rejected quotes withheld; a database rebuilt from it gives byte-identical `web/public/data`. `make detect` now keeps a judge verdict while its evidence is unchanged.*
 - Day-5 checkpoint: decide cuts (judge pass, `resolved`, filters) from actual progress, not at the end.
 - Accept: `divergence` table populated; every divergence has two grounded quotes and links; `make data-check` green on a fresh clone (schema, quote ≤ 400, links, fixture grounding; real-text grounding result recorded in the classify run log).
 
-## M6 — Full UI (5 h) · todo · days 6–8 · deps: M5
+## M6 — Full UI (5 h) · doing · days 6–8 · deps: M5
+- *2026-10-15: `/uniformizacoes` with the STJ's own uniformização cards (SPEC §6.6; 3 AUJs, every text a verified quote), also shown on related question pages; the "resolved" label reworded to a fact.*
 - T6.1 `/`, `/perguntas`, `/perguntas/:id` (timeline, data-table alternative, filters).
 - T6.2 `/divergencias/:id` side-by-side, "como foi detetado", confidence.
 - T6.3 `/metodo` (filled from `data/eval/report.md` later), disclaimer, a11y pass (keyboard, focus, contrast, 360 px).

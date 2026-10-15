@@ -13,12 +13,12 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
-from juris.classify.grounding import is_grounded
+from juris.classify.grounding import ground
 from juris.classify.schema import SchemaError, validate_answer
 from juris.crawl.fetch import select_pilot
 from juris.db.subset import subset_ids
 from juris.llm.prompt import CLASSIFY, classify_prompt
-from juris.llm.provider import LlmProvider, MissingFixture
+from juris.llm.provider import LlmProvider, MissingFixture, Truncated, tokens_used
 from juris.taxonomy.model import Taxonomy
 
 TEXT_CHARS = 24_000  # ≈ 6 000 tokens of Portuguese prose (SPEC §6.1)
@@ -29,9 +29,12 @@ PILOT_SEED = 20261016
 class Stats:
     judgments: int = 0
     schema_failures: int = 0
+    truncated: int = 0
+    stopped_by_budget: bool = False
     missing_fixtures: int = 0
     quotes_accepted: int = 0
     quotes_rejected: int = 0
+    repairs: Counter[str] = field(default_factory=Counter)
     by_source: Counter[str] = field(default_factory=Counter)
     positions: Counter[tuple[str, str]] = field(default_factory=Counter)
 
@@ -39,9 +42,13 @@ class Stats:
         lines = [
             f"judgments classified: {self.judgments} {dict(self.by_source)}",
             f"schema failures (after one retry): {self.schema_failures}",
+            f"answers cut at max_tokens (not retried): {self.truncated}",
             f"missing replay fixtures: {self.missing_fixtures}",
             f"quotes accepted: {self.quotes_accepted}; rejected: {self.quotes_rejected}",
+            f"  how accepted quotes were matched: {dict(sorted(self.repairs.items()))}",
         ]
+        if self.stopped_by_budget:
+            lines.append("STOPPED: token budget reached; run again to continue")
         lines += [f"  {q} {p}: {n}" for (q, p), n in sorted(self.positions.items())]
         return "\n".join(lines)
 
@@ -104,6 +111,9 @@ def classify_one(
         try:
             answers = validate_answer(provider.generate_json(CLASSIFY, system, prompt_input), tax)
             break
+        except Truncated:
+            stats.truncated += 1  # a retry would be cut again and paid twice
+            return None
         except (SchemaError, ValueError):
             continue
     if answers is None:
@@ -112,11 +122,15 @@ def classify_one(
     now = datetime.now(UTC).isoformat(timespec="seconds")
     out = []
     for qid, a in answers.items():
-        relevant, quote_ok = a.relevant, False
+        relevant, quote_ok, quote, match = a.relevant, False, a.quote, None
         if relevant:
-            quote_ok = is_grounded(a.quote, text)
-            if quote_ok:
+            span, how = ground(a.quote, text)
+            quote_ok = span is not None
+            if span is not None:
+                quote = span  # the text's own words, never the model's copy
                 stats.quotes_accepted += 1
+                stats.repairs.update(how)
+                match = "+".join(sorted(how))
                 stats.positions[(qid, a.position_id or "")] += 1
             else:
                 stats.quotes_rejected += 1
@@ -127,8 +141,9 @@ def classify_one(
                 qid,
                 int(relevant),
                 a.position_id if relevant else None,
-                a.quote,
+                quote,
                 int(quote_ok),
+                match,
                 a.note,
                 source,
                 provider.model,
@@ -147,14 +162,25 @@ def run(
     tax: Taxonomy,
     pilot: int | None = None,
     limit: int | None = None,
+    budget_tokens: int | None = None,
+    progress_every: int = 50,
+    reground: bool = False,
 ) -> Stats:
+    """Classify the judgments not yet done; with `reground`, redo the ones already done (from
+    replay fixtures, so no API calls) to apply a change in grounding."""
     conn.row_factory = sqlite3.Row
     pool = eligible(conn)
     ids = select_pilot(conn, pilot, PILOT_SEED, population=pool) if pilot else sorted(pool)
-    todo = [d for d in ids if d not in done_ids(conn, CLASSIFY)][:limit]
+    done = done_ids(conn, CLASSIFY)
+    todo = [d for d in ids if (d in done) == reground][:limit]
     system = classify_prompt(tax)
     stats = Stats()
-    for doc_id in todo:
+    for i, doc_id in enumerate(todo, 1):
+        if budget_tokens is not None and tokens_used(provider) >= budget_tokens:
+            stats.stopped_by_budget = True
+            break
+        if progress_every and i % progress_every == 0:
+            print(f"{i}/{len(todo)} judgments, {tokens_used(provider)} tokens so far", flush=True)
         row = conn.execute("SELECT * FROM acordao WHERE doc_id = ?", (doc_id,)).fetchone()
         try:
             rows = classify_one(provider, tax, system, row, stats)
@@ -164,8 +190,8 @@ def run(
         if rows:
             conn.executemany(
                 "INSERT OR REPLACE INTO classification(doc_id, question_id, relevant, position_id,"
-                " quote, quote_ok, note, text_source, model, prompt_version, created_at)"
-                " VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                " quote, quote_ok, quote_match, note, text_source, model, prompt_version,"
+                " created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                 rows,
             )
             conn.commit()

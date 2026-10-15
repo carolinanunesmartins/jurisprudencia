@@ -1,0 +1,170 @@
+[
+ {
+  "counts": {
+   "basta_mora": 30,
+   "exige_definitivo": 145
+  },
+  "description": "Para a execução específica basta a mora do promitente ou exige-se incumprimento definitivo?",
+  "first_year": 2000,
+  "id": "q2",
+  "last_year": 2025,
+  "positions": [
+   {
+    "definition": "A mora do promitente é suficiente para a execução específica.",
+    "id": "basta_mora",
+    "label": "Basta a mora"
+   },
+   {
+    "definition": "A execução específica pressupõe incumprimento definitivo, não bastando a mora.",
+    "id": "exige_definitivo",
+    "label": "Exige incumprimento definitivo"
+   }
+  ],
+  "split": "dev",
+  "title": "Execução específica: mora ou incumprimento definitivo"
+ },
+ {
+  "counts": {
+   "basta_mora": 3,
+   "exige_definitivo": 140
+  },
+  "description": "Para as consequências do sinal basta a mora ou exige-se incumprimento definitivo?",
+  "first_year": 2000,
+  "id": "q3",
+  "last_year": 2025,
+  "positions": [
+   {
+    "definition": "A mora é suficiente para as consequências do sinal.",
+    "id": "basta_mora",
+    "label": "Basta a mora"
+   },
+   {
+    "definition": "Só o incumprimento definitivo produz as consequências do sinal.",
+    "id": "exige_definitivo",
+    "label": "Exige incumprimento definitivo"
+   }
+  ],
+  "split": "dev",
+  "title": "Sinal e mora"
+ },
+ {
+  "counts": {
+   "absoluto": 43,
+   "relativo": 112
+  },
+  "description": "O prazo fixado para a celebração do contrato definitivo é um termo absoluto (o seu decurso é incumprimento definitivo) ou relativo (o seu decurso é apenas mora)?",
+  "first_year": 2000,
+  "id": "q6",
+  "last_year": 2025,
+  "positions": [
+   {
+    "definition": "O prazo é relativamente fixo: o seu decurso gera mora, não incumprimento definitivo.",
+    "id": "relativo",
+    "label": "Prazo relativo"
+   },
+   {
+    "definition": "O prazo é absolutamente fixo: o seu decurso sem celebração do contrato é incumprimento definitivo.",
+    "id": "absoluto",
+    "label": "Prazo absoluto"
+   }
+  ],
+  "split": "test",
+  "title": "Prazo para celebrar o contrato prometido: absoluto ou relativo"
+ },
+ {
+  "counts": {
+   "detentor": 46,
+   "possuidor": 61
+  },
+  "description": "O promitente-comprador a quem foi entregue a coisa (tradição) é possuidor, com acesso à tutela possessória e à usucapião, ou mero detentor precário?",
+  "first_year": 2000,
+  "id": "q7",
+  "last_year": 2025,
+  "positions": [
+   {
+    "definition": "A tradição não confere posse: o promitente-comprador é detentor precário (ou possuidor em nome alheio).",
+    "id": "detentor",
+    "label": "Mero detentor"
+   },
+   {
+    "definition": "A tradição confere posse em nome próprio, ao menos quando acompanhada de certos factos (por exemplo, pagamento integral do preço).",
+    "id": "possuidor",
+    "label": "Possuidor"
+   }
+  ],
+  "split": "test",
+  "title": "Promitente-comprador com tradição: possuidor ou detentor"
+ },
+ {
+  "counts": {
+   "exige_consumidor": 21,
+   "nao_exige": 18
+  },
+  "description": "O direito de retenção do promitente-comprador com tradição depende de ele ser consumidor?",
+  "first_year": 2002,
+  "id": "q8",
+  "last_year": 2024,
+  "positions": [
+   {
+    "definition": "O direito de retenção só beneficia o promitente-comprador que seja consumidor.",
+    "id": "exige_consumidor",
+    "label": "Exige consumidor"
+   },
+   {
+    "definition": "O direito de retenção existe independentemente da qualidade de consumidor.",
+    "id": "nao_exige",
+    "label": "Não exige consumidor"
+   }
+  ],
+  "split": "test",
+  "title": "Direito de retenção do promitente-comprador: exige a qualidade de consumidor"
+ },
+ {
+  "counts": {
+   "nao_prevalece": 13,
+   "prevalece": 21
+  },
+  "description": "O direito de retenção do promitente-comprador prevalece sobre uma hipoteca anteriormente registada?",
+  "first_year": 2002,
+  "id": "q9",
+  "last_year": 2024,
+  "positions": [
+   {
+    "definition": "O direito de retenção prevalece sobre a hipoteca, ainda que anteriormente registada.",
+    "id": "prevalece",
+    "label": "Prevalece"
+   },
+   {
+    "definition": "O direito de retenção não prevalece sobre a hipoteca (pelo menos em certos casos, como a hipoteca legal).",
+    "id": "nao_prevalece",
+    "label": "Não prevalece"
+   }
+  ],
+  "split": "test",
+  "title": "Direito de retenção do promitente-comprador face a hipoteca anterior"
+ },
+ {
+  "counts": {
+   "admissivel": 18,
+   "afastada": 13
+  },
+  "description": "Havendo sinal, a execução específica é admissível ou presume-se afastada (art. 830.º n.º 2)? A presunção pode ser ilidida?",
+  "first_year": 2000,
+  "id": "q10",
+  "last_year": 2022,
+  "positions": [
+   {
+    "definition": "O sinal não impede a execução específica, ou a presunção de a afastar é ilidível.",
+    "id": "admissivel",
+    "label": "Admissível"
+   },
+   {
+    "definition": "Havendo sinal, a execução específica está afastada, salvo convenção expressa em contrário.",
+    "id": "afastada",
+    "label": "Afastada"
+   }
+  ],
+  "split": "test",
+  "title": "Sinal e execução específica"
+ }
+]

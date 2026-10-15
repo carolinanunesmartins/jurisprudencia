@@ -5,3 +5,4 @@ min_support = 2      # k: judgments per position in a window
 dominance = 0.60     # share of the window's positioned judgments
 first_year = 2000
 last_year = 2025
+pair_rule = "v2"  # SPEC §6.2: v1 = date adjacency; v2 = skip partial quotes, closest whole pair

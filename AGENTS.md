@@ -33,7 +33,7 @@ AGENTS.md SPEC.md ROADMAP.md README.md NOTA.md IA.md AI_LOG.md CHANGELOG.md LICE
 1. **Agents never contact dgsi.pt.** Crawling is HUMAN-run (`make index`, `make fetch`). Agents work from HTML fixtures saved in `pipeline/tests/fixtures/`.
 2. Crawler behaviour is fixed by SPEC §3 (single connection, ≥2.5 s delay, cache, stop on 429/503). Do not add concurrency, retries on rejection, header spoofing, or ways around blocks.
 3. **Never commit full judgment texts** or the HTML cache. Committed data = metadata, model labels, and quotes ≤ 400 characters with a link.
-4. **Quote grounding is a hard gate**: any quote shown must be a verbatim substring (after whitespace normalisation) of the stored text. Accepted fabrications must be 0; rejected ones are counted and reported.
+4. **Quote grounding is a hard gate**: any quote shown must be a verbatim substring (after whitespace normalisation) of the stored text. The stored quote is the text's own span, located as in SPEC §6.1, never the model's copy. Accepted fabrications must be 0; rejected ones are counted and reported.
 5. LLM output is untrusted: validate with pydantic, never execute or render it as HTML.
 6. Agents never see or request `LLM_API_KEY`. Live LLM calls are HUMAN-run. Agents use the replay provider (SPEC §7).
 7. No legal-advice claims anywhere. The UI states "sinal para revisão, não é parecer jurídico".

@@ -16,6 +16,106 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Deploy gated by data-check
+- Tool / model: Claude Code (Opus 5.5)
+- Task: the owner asked for the deploy job. One already existed (`deploy.yml`, M0: build on push to `main`, upload, deploy to Pages); Pages is enabled and serves the old `main`. Added a `data-check` job that the build needs, so data failing `make data-check` is never published.
+- What failed or needed correction: the agent had told the owner there was no deploy job, after grepping `ci.yml` only; corrected in ROADMAP and in the reply.
+- How it was fixed: workflow parsed with a YAML parser (jobs data-check → build → deploy); `make data-check` passes locally. Not run on GitHub yet: it runs on the merge to `main`.
+- Human verification (what was checked by a person): pending (owner merges, then checks the URL).
+
+### 2026-10-15 — Divergences documented by the STJ (AUJ cards)
+- Tool / model: Claude Code (Opus 5.5)
+- Task: option A chosen by the owner. Read the 3 AUJ texts in the subset (4/2014 of 20-03-2014, 12-02-2019, 27-04-2021) and the sumários of the STJ judgments they name; curated `data/auj/auj.json` with, per AUJ, the passages stating the question, the conflict, each side and the ruling, plus for each side the named judgments with a passage of their own sumário. `juris/export/auj.py` exports `aujs.json` with processo/date/link from the database; data-check verifies links and that every quote is in the stored text; the snapshot keeps the metadata, so a fresh clone reproduces it. UI: `/uniformizacoes` and related cards on q8/q9; strings in `messages.pt.ts`.
+- What failed or needed correction: the first 2019 "conflict" quote described only the appealed judgment's side; replaced by the court's own statement that the opposition was recognised, with the relator's synthesis ("conceção ampla" vs "conceção mais restrita") as the two sides. The 2014 AUJ was a julgamento ampliado on divided case law, not an appeal between two STJ judgments; its second side (hipoteca prevails) is attributed by the AUJ to Relação decisions, so the card says no STJ judgment is cited there instead of inventing one. A `
+` in a generated f-string broke `check.py` again (fixed by Edit).
+- How it was fixed: all 19 quotes grounded (0 errors with the database); 3 unit tests (metadata from DB, ungrounded quote rejected, unknown judgment fails the export); 2 web tests; visual check of `/uniformizacoes` in the preview (only console message: favicon 404). Selection of passages is agent-made: verifiable through the links but not reviewed by a jurist.
+- Human verification (what was checked by a person): none yet.
+
+### 2026-10-15 — Judge on pair rule v2; "resolved" label made factual
+- Tool / model: Claude Code (Opus 5.5); judge claude-sonnet-5-5 (owner-run, 9 new calls, 14 verdicts reused).
+- Task: v1 showed 3 (q3 dev; q7, q9 test). v2 shows 4 split/shift, all on test questions: q7 shift 2004–2009 and q9 split 2013–2021 (pairs unchanged), q8 split 2014–2024 (new pair, Oct/Nov 2019: "depende da sua qualidade de consumidor" vs "não se exige… a qualidade de consumidor"; judge alta, rule alta) and q10 shift 2003–2008 (new: sinal "implica convenção contrária" vs "presunção relativa, iuris tantum"). q3 dropped: v2 chose two same-day judgments where neither excerpt takes a position (classifier over-assignment). Gate G3 stays decided on v1 (SPEC §6.2); v1 and v2 both reported. The owner fetched the 4 AUJ-cited judgments (3 with text, 1 sumário only).
+- What failed or needed correction: the UI called a `resolved` divergence "Uniformizada", but SPEC §6.2 only defines it as an AUJ in or after the period. For q8 the AUJ is 4/2014 while the shown contradiction is from 2019, so "uniformizada" would be false.
+- How it was fixed: label changed to "Acórdão de uniformização no período" (a fact, dates shown). Export + data-check 0 errors; snapshot re-dumped (now with `quote_match`).
+- Human verification (what was checked by a person): owner ran fetch and judge.
+
+### 2026-10-15 — Why divergences are hidden; AUJ evidence; pair rule v2 (pre-registered)
+- Tool / model: Claude Code (Opus 5.5)
+- Task: on the owner's question, read all 20 hidden verdicts: 18 have an excerpt that takes no position (or is about another legal ground), 2 have both excerpts agreeing; 3 cite a truncated excerpt. Root causes: the classifier positions judgments that only touch the question (8 of 28 on the labels) and v1 picks the pair by date adjacency. Searched the full STJ index for uniformização descriptors: contrato-promessa is among the substantive themes with most activity; 3 real AUJs are in the 813 with text (4/2014, 2019, 2021), and their texts name the conflicting judgments and both camps. The owner chose: AUJ-anchored divergences first (option A), then a pre-registered pair rule (option B).
+- What failed or needed correction: AUJ 4/2014 was not flagged as uniformização because dgsi.pt misspells its meio processual ("UNIFORMIZAÇÃO DE JURSIPRUDÊNCIA"); the field check now needs only "uniformiz" (SPEC §6.3, regression test). `make detect` re-run: the q8 "resolved" entries now point at AUJ 4/2014 itself; all 23 verdicts kept. `make fetch` gained `--ids-file` (same polite client) and `data/auj/fetch_ids.txt` lists the 4 indexed-but-unfetched judgments the AUJs cite.
+- How it was fixed: pair rule v2 written into SPEC §6.2 and committed before any v2 verdict exists; classification now stores `quote_match` (how grounding located the quote) so detect can avoid partial quotes; v1 stays reproducible (`pair_rule = "v1"`).
+- Human verification (what was checked by a person): pending (owner's fetch and `make judge`).
+
+### 2026-10-15 — Judge run, Gate G3 and the committed snapshot (T5.3)
+- Tool / model: Claude Code (Opus 5.5); judge claude-sonnet-5-5 (owner-run).
+- Task: read the 23 verdicts (20 hidden: mostly one excerpt does not take a position on the question, i.e. the classifier positioned judgments that only touch it); record Gate G3 = STAY (2 confirmed on test questions: q7 shift 2004–2009, q9 split 2013–2021). T5.3: `juris/db/snapshot.py` dumps `data/classifications/{acordao,classification,divergence}.jsonl` (metadata, `texto_sha256`, grounded quotes, verdicts; no sumário, no text) and loads them into a new database. Snapshot databases have no text, so `acordao.uniformizacao` stores the flag. `make detect` now keeps a verdict while the evidence the judge saw is unchanged (removes the "detect after judge wipes verdicts" hazard).
+- What failed or needed correction: first fresh-clone test kept 0 verdicts (the snapshot writes sorted keys, detect compared the evidence string byte for byte → now compared in canonical form) and reported 0 rejected quotes (withheld quotes are NULL; the export counted only non-empty ones).
+- How it was fixed: as above. Verified: snapshot → new database → `make detect` → `make export` gives byte-identical `web/public/data`; `make data-check` 0 errors; unit tests for no-text, withheld quotes, round trip, verdict keeping.
+- Human verification (what was checked by a person): the owner ran `make judge`, `make export`, `make data-check` (0 errors with grounding).
+
+### 2026-10-15 — Judge model rejects `temperature`
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `make judge` failed with "API error 400: invalid_request_error: `temperature` is deprecated for this model" (claude-sonnet-5-5). `AnthropicProvider` now takes `temperature` (default 0, `None` leaves it out); the judge passes `None`. The classifier is unchanged (temperature 0). SPEC §7 updated.
+- What failed or needed correction: SPEC §7 assumed temperature 0 for every call.
+- How it was fixed: as above, with a unit test. Consequence: judge verdicts are not guaranteed deterministic across live runs; they stay reproducible because each verdict is recorded as a replay fixture (`make judge-replay`).
+- Human verification (what was checked by a person): pending; the owner re-runs `make judge`.
+
+### 2026-10-15 — Full classification run and quote-grounding repairs
+- Tool / model: Claude Code (Opus 5.5); classifier claude-haiku-4-5-20251001 (owner-run).
+- Task: the owner ran `make classify` on all 813 judgments (100-judgment pilot first): 0 schema failures, 0 truncated, about 2.1 M tokens. 118 of 695 relevant quotes (17 %) were rejected by grounding, 10 of the pilot's 13 on test questions q6/q7. Diagnosed offline from the recorded answers: the model joined passages with "...", left out paragraph numbers ("II –"), wrote straight for curly quotes, mended spacing/hyphenation broken in the source ("promes-sa", "contratopromessa"), added a final full stop, or exceeded 400 characters.
+- Prompt / approach: kept prompt `classify_v1` (frozen; rewording after seeing answers on test questions would be tuning on results, rule 8, and would mean paying for the run again). Instead `grounding.ground` locates the quote with the named repairs in SPEC §6.1 and stores the text's own span; `is_grounded` (whitespace-only) still gates every stored quote and `make data-check` re-checks it. `--reground` re-applies grounding from the replay fixtures with no API calls.
+- What failed or needed correction: grounding compared the model's string verbatim, so faithful quotes with trivial differences were discarded and their positions lost. First attempt left 31 rejections; inspecting them showed source-text defects and "[...]", so a spacing/hyphen-insensitive fallback, bracketed ellipsis and trailing-stop rules were added.
+- How it was fixed: after re-grounding 11 rejected, 684 accepted (577 exact, 22 typography, 25 numbering, 9 spacing, 4 punctuation, 23 ellipsis = longest piece only, 41 trimmed at a sentence end; a quote can count in more than one). The 11 left are real misquotes (paraphrase, text not in the sumário, "codigo" for "código"). Limits to disclose: ellipsis and trimmed quotes show only part of what the model cited, so the shown excerpt may support the position less clearly. Database backed up to `data/juris.before-reground.db` first. `make detect`: 25 divergences, 20 split/shift on test questions.
+- Rule 8 (no tuning on results): the repairs were designed in two rounds after inspecting rejections that were mostly on test questions, and they change the input to Gate G3, so this is stated plainly. Evidence they do not favour a position: no repair reads `position_id`, and the position ratios barely move (pilot + full run before → after re-grounding): q6 absoluto:relativo 30:82 → 43:112; q7 detentor:possuidor 35:48 → 46:61; q8 exige:não exige 17:17 → 21:18; q9 não prevalece:prevalece 12:17 → 13:21; q10 admissível:afastada 16:12 → 18:13. Of the 46 quotes the judge will see (23 split/shift pairs), 39 are exact and 5 are partial (3 trimmed, 2 longest-piece-of-ellipsis), which if anything biases the judge towards "no real opposition". `make export` + `make data-check` on the real database: 0 errors with grounding.
+- Human verification (what was checked by a person): none yet; the judge pass and the evaluation against the 60 labels follow.
+
+### 2026-10-15 — Optional workspace header for keys not scoped to a workspace
+- Tool / model: Claude Code (Opus 5.5)
+- Task: the pilot re-run now showed the cause: "This API key is not scoped to a workspace, so this request must include the anthropic-workspace-id header". Added an optional `LLM_WORKSPACE_ID` env var; when set, `make classify` and `make judge` send it as `anthropic-workspace-id`. Documented in `.env.example` and runbook §1.
+- What failed or needed correction: the provider assumed a workspace-scoped key.
+- How it was fixed: as above; a unit test checks the header is sent only when set.
+- Human verification (what was checked by a person): pending; the owner re-runs the pilot.
+
+### 2026-10-15 — Show the API's error message on a failed live call
+- Tool / model: Claude Code (Opus 5.5)
+- Task: the owner's first `make classify ARGS="--pilot 100"` failed with a bare `400 Bad Request` traceback, which does not say why. `AnthropicProvider` now raises `ApiError` carrying the API's own error type and message (the response body never contains the key); `make classify` and `make judge` print it and exit without a traceback. Runbook §5 lists the usual 400 causes (no credit, wrong model name).
+- What failed or needed correction: `raise_for_status()` dropped the response body, so the cause of the 400 was lost.
+- How it was fixed: as above, with a unit test using a mocked 400 response.
+- Human verification (what was checked by a person): pending; the owner re-runs the pilot and reads the message.
+
+### 2026-10-15 — Evaluation labels (60 rows) filled by AI, not by a human
+- Tool / model: Claude Code (Opus 5.5)
+- Task: fill `data/eval/labels.csv` from `data/labelling/sheet.md` (ROADMAP M3, a `HUMAN:` task). The owner had no time and no legal training and asked the agent to do it; the agent first declined, then did it on explicit owner instruction.
+- Prompt / approach: read each sumário only (no model output exists yet, no dgsi.pt access); one label per row; `unclear` when the sumário distinguishes cases or decides only the concrete case; reasons in `notes`.
+- What failed or needed correction: nothing technical. Methodological limits: (1) the gold labels are not human; (2) labeller and classifier are both Claude models, so errors may be correlated and agreement inflated; (3) no legal expert reviewed them. Result: 60 labels (29 position labels, 29 nao_decide, 2 unclear).
+- How it was fixed: disclosed in `data/eval/labeller.md`; must be stated in `data/eval/report.md` and `IA.md`. The labels are still blind to the classifier (committed before any classification run).
+- Human verification (what was checked by a person): none. A jurist's review of the 29 position labels and the 2 `unclear` rows is recommended.
+
+### 2026-10-15 — Cost guards for the live run
+- Tool / model: Claude Code (Opus 5.5)
+- Task: on the owner's request, bound the worst-case API cost. Changes: answers capped at 1 200 tokens (was 2 000); an answer cut at the cap (`stop_reason=max_tokens`) is not retried; `make classify` stops at a token budget (default 3 M, about 2x the estimate) and prints progress every 50 judgments; the judge treats a cut answer as invalid instead of crashing.
+- Prompt / approach (one line): the run is resumable, so stopping on budget loses nothing.
+- What failed or needed correction: the first version retried truncated answers, which would pay twice for the same cut-off output.
+- How it was fixed: a separate `Truncated` exception that the retry loop does not catch. Tests use a mock HTTP transport for the truncation case and for budget stop plus resume.
+- Human verification (what was checked by a person): none yet.
+
+### 2026-10-15 — M4 T4.2 export, data-check and minimal UI
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `juris/export/` (pydantic schemas, deterministic `make export`, `make data-check` added to CI) and the web app routes `/`, `/perguntas`, `/perguntas/:id` (hand-rolled SVG timeline, no d3 dependency; Okabe-Ito colours plus a marker shape per position; divergence cards; judgments table as the chart's data-table alternative).
+- Prompt / approach (one line): publish only grounded quotes ≤ 400 characters and links; a split/shift is published only with a confirming judge verdict (unjudged/hidden become counts); quotes rendered as text, never HTML.
+- What failed or needed correction: the existing tests rendered `<App />` without a router; they were wrapped in `MemoryRouter`, and the disclaimer regression now checks every route. There was an act() warning in one test, and the rule confidence showed "media" without the accent.
+- How it was fixed: tests are async; the confidence labels are in `messages.pt.ts`. 3 Python tests (export filters, determinism and an empty database, data-check catching bad links, long quotes and ungrounded quotes) and 10 web tests. Visual check: built the site, served it with `vite preview` using the export-test data, and took a screenshot of `/perguntas/q6` in Chrome. The only console error was a 404 for the missing favicon.
+- Human verification (what was checked by a person): none yet. The live site stays empty until the owner classifies and exports.
+
+### 2026-10-15 — M5 T5.2 judge pass and LLM runbook
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `juris/detect/judge.py`. The judge pass sees only the question, the two quotes, their dates and assigned positions (SPEC §6.4), covering at most 40 divergences, weakest-side support first. It adds rule confidence (§6.5), the UI label rule, and the Gate G3 verdict. Also `make judge` / `make judge-replay`, and `docs/llm-runbook.md` for the owner (key, spend limit, env vars, order, cost estimate).
+- Prompt / approach (one line): verdicts are cached as replay fixtures (replay first, live on a miss), so rerunning detect and the judge does not pay twice.
+- What failed or needed correction: a `
+` inside an f-string became a literal line break when generated through a script (syntax error). On an empty database the gate printed "PIVOT", which is misleading before any classification exists.
+- Review fix (same day, before any judge run): the first version showed the judge each excerpt's assigned position. SPEC §6.4 gives the judge only the quotes, the dates and the question, and the labels would prime it toward confirming, which biases Gate G3. Removed from the input and the prompt.
+- How it was fixed: rewritten; the gate now says it is not decidable while nothing is classified. 8 new unit tests (rule confidence, ranking, display, gate counting test questions only, cache).
+- Human verification (what was checked by a person): none yet.
+
 ### 2026-10-15 — M5 T5.1 detection
 - Tool / model: Claude Code (Opus 5.5)
 - Task: `pipeline/juris/detect/` (pure functions for split, shift and resolved, plus the uniformização marker), `detect.toml` with the SPEC §6.2 defaults, and `make detect` writing the `divergence` table. Written before any classification exists, so nothing was tuned on results.
