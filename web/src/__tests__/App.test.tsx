@@ -155,6 +155,18 @@ describe("App (unit)", () => {
     );
   });
 
+  // security regression: only dgsi.pt links are rendered as links, never a javascript: URL
+  it("renders a non-dgsi.pt URL as plain text, not as a link", async () => {
+    const [a, b] = fixture.judgments;
+    at("/perguntas/q6", {
+      ...fixture,
+      judgments: [{ ...a!, url: "javascript:alert(1)" }, b!, ...fixture.judgments.slice(2)],
+    });
+    expect(await screen.findAllByText("1/10")).not.toHaveLength(0);
+    const hrefs = [...document.querySelectorAll("a")].map((x) => x.getAttribute("href") ?? "");
+    expect(hrefs.some((h) => h.startsWith("javascript:"))).toBe(false);
+  });
+
   it("shows related uniformização cards on the question page", async () => {
     at("/perguntas/q6");
     expect(await screen.findByRole("heading", { name: messages.auj.related })).toBeInTheDocument();

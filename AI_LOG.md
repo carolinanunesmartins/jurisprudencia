@@ -1,386 +1,359 @@
 # AI_LOG.md
 
-Living record of how AI tools were used in this project. It is the source for `IA.md` (ROADMAP M8).
-**Keep it up to date: every change made with AI assistance needs an entry in the same PR** (AGENTS.md §4 rule 11).
+How AI tools were used, one entry per change, newest first. Source for `IA.md`.
+**Every change made with AI assistance adds an entry in the same PR** (AGENTS.md rule 11).
+Entries up to 2026-10-15 were condensed on that date; the full original wording is in commit `fea31ad`.
 
-## Entry format (newest first)
 ```
 ### YYYY-MM-DD — <short title>
-- Tool / model:
+- Tool:
 - Task:
-- Prompt / approach (one line):
-- What failed or needed correction:
-- How it was fixed:
-- Human verification (what was checked by a person):
+- Failed:
+- Fix:
+- Human check:
 ```
 
 ---
 
-### 2026-10-15 — Minimal reading: less text, emphasis, explanations one click away
-- Tool / model: Claude Code (Opus 5.5); the same first-time-visitor subagent (browser only) judged the result twice.
-- Task: the owner found the site a wall of text, unorganised and unprioritised, and asked for colour, highlights and type contrast, simpler text, and later details behind later clicks.
-- Prompt / approach (one line): measured the visible words per route (all `<details>` closed) before editing, then rewrote the copy and the page structure. Every page now shows what it is (bold, coloured by position), then the two quotes, then the evidence; everything that explains sits in a `<More>` disclosure.
-- What changed:
-  - Position names appear bold in their position colour everywhere (weight is the non-colour cue).
-  - Mudança is a filled badge and Divisão an outlined one, so shape tells them apart.
-  - The headline highlights "num sentido" and "no sentido oposto" with soft position-colour marks (tokens derived with `color-mix`, so dark mode follows).
-  - Key numbers are bold or large. The detection page shows the counts as bars.
-  - Method numbers are stat tiles. Definitions, the "como foi detetada" text, the uniformização sides, the accuracy table, the survey and the limitations moved behind a click.
-  - The "Uniformização no período" card was dropped from question pages; it repeated the uniformização section below it.
-  - Quotes are never styled inside. Every caveat is kept (disclaimer, "escrita por um modelo e não verificada", IA-not-human labelling).
-- What failed or needed correction: the visitor's review of the first pass found five problems.
-  - The chart legend had lost the position names.
-  - The q8 dates note had lost "o sistema não diz porquê".
-  - On /metodo, "4 confirmadas" next to "2 de 3 corretas" read as a contradiction, and the v1 pair-rule line was jargon.
-  - The evidence bars were not in the headline's order.
-  - /uniformizacoes cards did not say what question they were about.
-  - All five were fixed: the legend names the positions, the note keeps its "why", the tile gives the breakdown that adds up to 4, the pair-rule change is explained in plain words behind the accuracy click, the bars are in pair order, and each card has a "Sobre" link (compact on question pages).
-- Result (visible words before → after): home 421 → 314, /perguntas 177 → 113, q7 245 → 177, q8 792 → 223, q7 detection page 314 → 119, /uniformizacoes 888 → 259, /metodo 503 → 198. The visitor confirmed all 5 claims of the brief in 0–1 clicks. No overflow at a true 360 px in light or dark. 28 web tests (rewritten to match text across bold and coloured parts; every earlier regression case kept), typecheck, lint, build.
-- Human verification (what was checked by a person): pending (the owner reviews on the local dev server before pushing).
+### 2026-10-15 — Housekeeping, ADRs 0001–0004, security review, shorter docs
+- Tool: Claude Code (Opus 5.5); `/security-review` run as a subagent over the whole repository.
+- Task: review the deliverables, simplify README, IA.md and this log, remove what the repo does not need, review security.
+- Failed: SPEC §11 requires ADRs for static site, supervised taxonomy, quote grounding, polite crawl and hosting, but the repo only had 0005–0008 (0001–0004 never existed). This log had grown to 9 384 words.
+- Fix: 0001–0004 written from SPEC text only, marked as recorded retroactively. This log condensed: same 48 entries, the required fields kept in each, wording shortened; the template's sixth field ("prompt / approach") folded into Task. Removed the two `.gitkeep` files in non-empty folders and a stale Makefile comment. Kept the spike and discovery tools and prompts: ROADMAP M1.5/M3 and NOTA refer to them. Security: no finding at confidence ≥ 8 (React escapes all text; SQL parameterised; no shell/eval/pickle; cache and fixture file names are hashes; crawler host allow-listed; workflows read-only with SHA-pinned actions and no `pull_request_target`). Hardening: `DgsiLink` now renders a link only for `https://www.dgsi.pt/` URLs, like the deploy gate, so data that skipped the gate cannot become a `javascript:` link (regression test). 29 web tests.
+- Human check: pending (owner reads the ADRs and the shortened docs).
 
-### 2026-10-15 — Make the brief verifiable at a glance; load speed and SEO
-- Tool / model: Claude Code (Opus 5.5); a separate first-time-visitor subagent (no source code, browser only, Chrome DevTools MCP); Lighthouse and a performance trace through the same MCP.
-- Task: check how easily a newcomer can verify the brief ("agregar acórdãos por tema e identificar decisões divergentes ao longo do tempo… onde e quando os tribunais mudaram de entendimento"), make it as easy as possible, and improve load speed and SEO.
-- Prompt / approach (one line): the visitor agent judged five claims (by theme, divergences, when, where, change on the same question) and ranked 8 fixes; the fixes were checked against `detect/core.py` and the data before coding; the agent then re-checked the result.
-- What failed or needed correction: the visitor found "change over time" hard to verify. The home page showed only a split (two judgments 12 days apart). The list said "1 divergência" without the kind. A shift had no before/after, and its totals (12 vs 10) read as a tie. The detection page said "confiança média" and then "Confiança alta." with no hint that these are two different confidences. "Pergunta de teste" read as "placeholder". The mini strips had no years. The chart's year labels were about 6 px on a phone. The q8 split did not mention the 2014 uniformização inside its years. Lighthouse: the CSP blocked a Cyrillic-ext font that Vite had inlined as `data:` (console error, Best Practices 92), there was no meta description (SEO 82), and on a throttled phone LCP was 3.6 s because the data requests waited for the JS bundle and `evaluation.json` waited for the other five.
-- How it was fixed: the home page has an index of the confirmed divergences (kind, years, "De X para Y" or "X e Y nos mesmos anos"), and the lead defines divisão and mudança. The list rows link "Mudança 2004–2009" and "Divisão 2014–2024". The shift quotes are labelled Antes and Depois, and the detection page shows each 3-year window's counts, computed from `judgments.json`, which match `support` in the data. Both confidences are named. The split tag is renamed. The chart has a colour key and HTML year labels. A split that contains an uniformização says so, without guessing why. Each route sets `document.title`. `index.html` has a description, canonical and Open Graph tags, and preloads the six JSON files; `evaluation.json` loads in parallel; fonts are never inlined (`assetsInlineLimit`). Results: Lighthouse mobile Accessibility 100, Best Practices 100, SEO 92; throttled LCP 2.6 s; each JSON requested once. The divergence band has a dashed outline, because the fill alone was nearly invisible. 25 web tests (4 new regression cases), typecheck, lint, build.
-- Second visitor pass (on the changed site): all 5 claims verified in 0–1 clicks. Seven of the 8 points were fixed and the sparkline key was only partly fixed. Three new issues were found and fixed. The q8 note named only one of the two uniformizações inside the split (2014 and 2019); it now names both, sorted by date (regression test added). In q7, Possuidor dominates again after 2010; a shift now says it only describes its own years and links to the chart. Each list row now has a colour key with per-position counts. Checked again at a true 360 px: no overflow on 5 routes. 26 web tests.
-- Not changed: the featured quote's "dodireito" is verbatim from the source, and the grounding rule forbids correcting it. The remaining SEO item is `robots.txt`. A GitHub Pages project site cannot serve one at the origin root, so it is not fixable here. Hash routes are not indexed separately by search engines.
-- Human verification (what was checked by a person): pending (the owner reviews on the local dev server before pushing).
+### 2026-10-15 — Minimal reading: less text, emphasis, explanations one click away
+- Tool: Claude Code (Opus 5.5); a browser-only first-time-visitor subagent judged it twice.
+- Task: owner found the site a wall of text. Measured visible words per route first; then: position names bold in their colour, Mudança (filled) vs Divisão (outlined) badges, headline highlight marks, bold key numbers, evidence as bars, /metodo as stat tiles; definitions, "como foi detetada", uniformização sides, accuracy, survey and limitations behind a click. Quotes never styled; every caveat kept.
+- Failed: the visitor's review found five regressions: chart legend without position names; q8 note without "o sistema não diz porquê"; "4 confirmadas" next to "2 de 3 corretas" read as a contradiction; bars not in the headline's order; uniformização cards without their question.
+- Fix: all five fixed. Visible words before → after: home 421 → 314, q8 792 → 223, /uniformizacoes 888 → 259, /metodo 503 → 198, q7 detection page 314 → 119. No overflow at 360 px, light and dark. 28 web tests.
+- Human check: pending (owner review on the dev server).
+
+### 2026-10-15 — Brief verifiable at a glance; load speed and SEO
+- Tool: Claude Code (Opus 5.5); first-time-visitor subagent; Lighthouse and a performance trace via Chrome DevTools MCP.
+- Task: check how easily a newcomer verifies the brief (5 claims: by theme, divergences, when, where, change on the same question) and make it easier; improve speed and SEO.
+- Failed: "change over time" took 3 clicks: home showed only a split, list rows said "1 divergência", a shift had no before/after and its totals (12 vs 10) read as a tie, two confidences contradicted each other, "Pergunta de teste" read as a placeholder. A second pass found the q8 note named only one of two uniformizações. Lighthouse: CSP blocked a `data:` font (Best Practices 92), no meta description (SEO 82), throttled LCP 3.6 s.
+- Fix: divergence index on home, kind and years in list rows, Antes/Depois with per-window counts, both confidences named, chart key and readable year labels; JSON preloaded and fetched in parallel, fonts never inlined, description/canonical/Open Graph, per-route titles. Result: Best Practices 100, SEO 92, LCP 2.6 s; all 5 claims in 0–1 clicks. `robots.txt` cannot be served by a Pages project site.
+- Human check: pending.
 
 ### 2026-10-15 — Site revamp: identity "duas vozes"
-- Tool / model: Claude Code (Opus 5.5) with the skills frontend-design, emil-design-eng, ui-ux-pro-max (its search script is not installed, so only its checklists were used) and humanizer (for the pt-PT copy).
-- Task: owner asked for a more minimal, stylish site with an identity. Plan reviewed against the brief before coding. Identity: colour means a position and nothing else (teal and ochre; everything else is ink on cool paper); the question chart redrawn as a mirrored year histogram (one position above the axis, the other below), repeated as a mini strip in the question list; the home page opens with the strongest confirmed divergence as two facing quotes, chosen from the data by judge and rule confidence; quotes set in Literata, interface in Hanken Grotesk, self-hosted (ADR 0008). The judgments table is collapsed by default; divergence headings say what kind they are; light and dark themes from one token set. Copy rewritten in plain pt-PT (no dashes in sentences, no "·" strings, no arrows).
-- What failed or needed correction: base `a` styles outside a cascade layer beat Tailwind 4's utilities (the wordmark kept its underline), moved into `@layer base`; a `#conteudo` skip link would have changed the HashRouter route, so it moves focus instead; dates came out as 29/10/2019, now built from month names; the mini strips were flattened by one busy year (square-root scale); the old label called every confirmed divergence "Mudança de entendimento", including splits; nav links were 42 px tall (now 44+).
-- How it was fixed: checked in the dev server at 1280 px and 360 px, light and dark: no horizontal overflow on the 6 routes, lowest text contrast 5.3:1 (light) and 7.9:1 (dark), no heading skips, all links named. 21 web tests (one new: the home hero), typecheck, lint, build.
-- Human verification (what was checked by a person): pending (the owner reviews on the local dev server before pushing).
+- Tool: Claude Code (Opus 5.5) with design skills (frontend-design, emil-design-eng, ui-ux-pro-max checklists, humanizer).
+- Task: colour means a position and nothing else; mirrored year histogram; home opens with the strongest confirmed divergence; Literata and Hanken Grotesk self-hosted (ADR 0008); light and dark from one token set; plain pt-PT copy.
+- Failed: base `a` styles outside a cascade layer beat Tailwind utilities; a `#conteudo` skip link would change the HashRouter route; dates rendered 29/10/2019; one busy year flattened the mini strips; every divergence was labelled "Mudança", splits included; nav links 42 px tall.
+- Fix: `@layer base`; skip link moves focus; month names; square-root scale; kind-specific labels; 44 px targets. Lowest contrast 5.3:1 light, 7.9:1 dark. 21 web tests.
+- Human check: pending.
 
 ### 2026-10-15 — Live check after #22; /metodo arithmetic fixed
-- Tool / model: Claude Code (Opus 5.5)
-- Task: check the deployed site after the M6–M8 merge: 6 data files equal `main`, new bundle live, `/divergencias/...` and `/metodo` render, no overflow at 360 px, disclaimer present.
-- What failed or needed correction: `/metodo` said "2 de 4 consideradas corretas" while the report says 2/3: the page counted `unclear` in the denominator. The favicon returned 404 although it is in the build: a 404 cached by the CDN from a request made before the deploy finished (`X-Cache: HIT`). The labeller text produced nested brackets.
-- How it was fixed: the page uses the report's arithmetic (correct / decided, unclear stated separately), with a regression test; wording uses a dash. Favicon: no code change, re-checked after the cache expired.
-- Human verification (what was checked by a person): the owner merged #22 and confirmed the deploy.
+- Tool: Claude Code (Opus 5.5).
+- Task: check the deployed site after the M6–M8 merge.
+- Failed: `/metodo` said "2 de 4 corretas" while the report says 2/3 (`unclear` counted in the denominator). Favicon 404 was a CDN-cached 404 from before the deploy finished.
+- Fix: report's arithmetic with a regression test; favicon re-checked after the cache expired.
+- Human check: owner merged #22 and confirmed the deploy.
 
 ### 2026-10-15 — M8 docs: README, NOTA.md, IA.md
-- Tool / model: Claude Code (Opus 5.5)
-- Task: rewrite the stale README (it still said M0 and that fetch/classify were not implemented) with the live URL, what the site shows, a quickstart without crawl or API key, reproduction from `data/classifications/` and the full HUMAN pipeline; NOTA.md (one page: subset and criterion, grouping, detection, results, limitations); IA.md summarised from all AI_LOG entries; CHANGELOG by milestone.
-- What failed or needed correction: self-review of the drafts found two statements not supported by the record: IA.md listed a judge "memory" bug caught by tests that never happened, and NOTA.md implied the theme was chosen for its uniformização activity (that was found later). Both corrected; model attribution made less precise where the dates were not exact.
-- How it was fixed: as above; the README's "byte for byte" claim re-checked (snapshot → new database → detect → export equals `web/public/data`).
-- Human verification (what was checked by a person): pending (the owner reads the three documents before the submission).
+- Tool: Claude Code (Opus 5.5).
+- Task: rewrite the stale README; write NOTA.md (one page) and IA.md from this log; CHANGELOG by milestone.
+- Failed: self-review found two unsupported statements: a judge "memory" bug that never happened, and NOTA implying the theme was chosen for its uniformização activity (found later).
+- Fix: both corrected; the "byte for byte" claim re-checked.
+- Human check: pending (owner reads the three documents).
 
 ### 2026-10-15 — Divergence labels: wrong rows, then AI labels disclosed
-- Tool / model: Claude Code (Opus 5.5)
-- Task: the agent asked the owner to label "rows 2, 12, 17, 23" (the shown divergences, column `n`); the labels landed on file lines 2, 12, 17, 23, i.e. `n` = 1, 11, 16, 22 (hidden divergences), and were made by GitHub Copilot (entry below). The owner chose to keep AI labels, disclosed. The agent labelled the 4 shown rows from the two quotes (q10 correct, q7 unclear, q8 correct, q9 incorrect: different legal grounds) and added a `labeller` column.
-- What failed or needed correction: the instruction was ambiguous (row number vs `n`); the report and `/metodo` were written for a human labeller and would have misattributed AI labels to a person.
-- How it was fixed: report section 6 names the labeller of each set and states it is not SPEC §9.2's human check; `/metodo` says the shown divergences were reviewed by AI models, not by a person; `evaluation.json` records the shown set's labellers. Result: shown 2 correct, 1 incorrect, 1 unclear (2/3 of decided); hidden 1 of 4 correct (q10 shift 2000–2005: a real divergence the judge hid, per Copilot). The agent's labels are not blind: it had read the judge's verdicts.
-- Human verification (what was checked by a person): none of the divergence labels.
+- Tool: Claude Code (Opus 5.5).
+- Task: the agent asked for labels on "rows 2, 12, 17, 23" meaning column `n`; they landed on file lines, i.e. 4 hidden divergences, labelled by GitHub Copilot. The owner kept AI labels, disclosed; the agent labelled the 4 shown ones (not blind: it had read the verdicts) and added a `labeller` column.
+- Failed: the instruction was ambiguous; report and `/metodo` would have attributed AI labels to a person.
+- Fix: report §6 names each labeller and says it is not SPEC §9.2's human check. Shown: 2 correct, 1 incorrect, 1 unclear (2/3); hidden: 1 of 4 correct (q10 shift 2000–2005, a real divergence the judge hid).
+- Human check: none of the divergence labels.
 
 ### 2026-10-15 — Label four detected divergences
-- Tool / model: GitHub Copilot.
-- Task: label divergence rows 1, 11, 16 and 22 in `data/eval/divergence_labels.csv` from the quote pair and frozen taxonomy.
-- Prompt / approach (one line): `correct` only for direct opposing answers to the same question; distinguish non-position, different legal points, and legislative change.
-- What failed or needed correction: none.
-- How it was fixed: labels set to `correct` for q10 and `incorrect` for q6, q8 and q9; the q9 pair compares judicial-sale survival with priority over an earlier mortgage.
-- Human verification (what was checked by a person): the owner requested these specific rows and supplied the labelling criteria; this judgement is not legal-expert reviewed.
+- Tool: GitHub Copilot.
+- Task: label rows 1, 11, 16, 22 of `data/eval/divergence_labels.csv` from the quote pair and the frozen taxonomy; `correct` only for direct opposing answers.
+- Failed: none.
+- Fix: q10 `correct`; q6, q8, q9 `incorrect` (q9 compares survival after judicial sale with priority over an earlier mortgage).
+- Human check: owner chose the rows and the criteria; not reviewed by a jurist.
 
 ### 2026-10-15 — M6: divergence page, /metodo, a11y pass
-- Tool / model: Claude Code (Opus 5.5)
-- Task: `/divergencias/:id` with both quotes side by side and how the divergence was detected; `/metodo` rendered from `evaluation.json`, which `make evaluate` now writes next to `report.md` (schema `EvaluationOut`, validated by `make data-check` when present); favicon (SVG, light/dark aware). A11y measured in the preview with scripted checks at 360 px and in light/dark emulation.
-- What failed or needed correction: a stray `cat >> /dev/null` in a shell command waited on stdin and hung the run (stopped, re-run). Token counts were first published as floats (typed `CostOut`). `judge.confidence` was typed as a plain string on the web side (narrowed to the three values the schema allows, removing a cast).
-- How it was fixed: 20 web tests (detail page, card link, not-found, /metodo with and without evaluation) + disclaimer regression on the new routes; 181 pytest; data-check 0 errors.
-- Human verification (what was checked by a person): none yet (the owner is labelling the 4 shown divergences).
+- Tool: Claude Code (Opus 5.5).
+- Task: `/divergencias/:id`, `/metodo` from `evaluation.json` (written by `make evaluate`, checked by `make data-check`), favicon; a11y checked at 360 px, light and dark.
+- Failed: a stray `cat >> /dev/null` hung a run; token counts published as floats; `judge.confidence` typed as plain string.
+- Fix: typed `CostOut`, narrowed type. 20 web tests, 181 pytest, data-check 0 errors.
+- Human check: none.
 
-### 2026-10-15 — Evaluation report (M7 T7.2) and divergence sheet (T7.1)
-- Tool / model: Claude Code (Opus 5.5)
-- Task: SPEC §9.4's baseline was only loosely defined, so it was operationalised (label-pool relevance + cue phrases from the frozen position definitions, negated cues ignored, both/none → nao_decide) and committed (`7ed0291`) before being run. `juris/evaluate` writes `data/eval/report.md` (pt-PT, for `/metodo`) from committed data plus the local database (baseline texts) and `data/replay/` (re-derives pair rule v1 from recorded verdicts, no API calls). Run-log numbers the database does not hold are in `data/eval/runs.json`; the survey-recovery table is curated in `data/eval/survey.json`. The label pools moved from `tools/labelsheet.py` to `juris/evaluate/pools.py` (shared, unchanged).
-- What failed or needed correction: the survey notes first stated a made-up rejection reason for seed 4 and missed that seed 5's own question (q5) was rejected; both corrected to the reasons recorded in `taxonomy.json`. Numbers were first printed in English format.
-- How it was fixed: results — test questions: model 33/42 exact vs baseline 24/42; labelled positions recovered 20/21 vs 4/21; model positions agreeing with the label 20/28 (the over-assignment). Dev: 13/16 vs 7/16. v1 re-derived: 3 shown (q3, q7, q9), equal to the live v1 run; v2: 4 (q7, q8, q9, q10). Survey: seed 5 recovered (q10 shift 2003–2008 around the survey's 06B3805), seeds 2 and 3 partial, seeds 1 and 4 not evaluable. Cost ≈ 4 USD at assumed list prices (to confirm in the console); judge tokens and minutes per stage were not recorded.
-- Human verification (what was checked by a person): none yet; divergence labelling is a HUMAN task.
+### 2026-10-15 — Evaluation report (M7) and divergence sheet
+- Tool: Claude Code (Opus 5.5).
+- Task: operationalise and commit the keyword baseline (`7ed0291`) before running it; `juris/evaluate` writes `data/eval/report.md` from committed data, the local database and replay fixtures (no API calls).
+- Failed: survey notes first gave a made-up rejection reason for seed 4 and missed that q5 was rejected; numbers in English format.
+- Fix: reasons from `taxonomy.json`; pt-PT numbers. Test questions: model 33/42 exact vs baseline 24/42; positions recovered 20/21 vs 4/21; model positions agreeing with the label 20/28. Dev: 13/16 vs 7/16. v1 re-derived = 3 shown (equal to the live run); v2 = 4. Survey: seed 5 recovered (q10 shift 2003–2008, around the survey's 06B3805), 2 and 3 partial, 1 and 4 not evaluable. Cost ≈ 4 USD.
+- Human check: none.
 
 ### 2026-10-15 — Merge conflicts and the first deploy with data (M4 done)
-- Tool / model: Claude Code (Opus 5.5)
-- Task: resolve the PR conflicts, then verify the deployed site. `main` (#20) was the squash of branch commit 5d33321 (identical tree), so all 14 conflicts resolved to the branch version; the merged tree was checked equal to the branch and the tests re-run. After the owner merged (#21) and the deploy ran: compared the 5 live data files with the committed ones (equal once CRLF/LF is ignored) and checked `/`, `/perguntas/q8`, `/uniformizacoes` in a browser via scripted DOM reads.
-- What failed or needed correction: the full-page screenshot timed out in the browser tool, so the check read the rendered DOM instead; resizing to 360 px did not take effect, so the phone layout is not verified yet.
-- How it was fixed: n/a (left to the M6 a11y pass). Console: only a `/favicon.ico` 404.
-- Human verification (what was checked by a person): the owner merged and confirmed the deploy.
+- Tool: Claude Code (Opus 5.5).
+- Task: resolve 14 PR conflicts (main was a squash of the same tree) and verify the deployed site.
+- Failed: full-page screenshot timed out; 360 px resize did not apply.
+- Fix: read the rendered DOM instead; live data files equal the committed ones; phone layout left to M6.
+- Human check: owner merged and confirmed the deploy.
 
 ### 2026-10-15 — Deploy gated by data-check
-- Tool / model: Claude Code (Opus 5.5)
-- Task: the owner asked for the deploy job. One already existed (`deploy.yml`, M0: build on push to `main`, upload, deploy to Pages); Pages is enabled and serves the old `main`. Added a `data-check` job that the build needs, so data failing `make data-check` is never published.
-- What failed or needed correction: the agent had told the owner there was no deploy job, after grepping `ci.yml` only; corrected in ROADMAP and in the reply.
-- How it was fixed: workflow parsed with a YAML parser (jobs data-check → build → deploy); `make data-check` passes locally. Not run on GitHub yet: it runs on the merge to `main`.
-- Human verification (what was checked by a person): pending (owner merges, then checks the URL).
+- Tool: Claude Code (Opus 5.5).
+- Task: add a `data-check` job that the Pages build needs.
+- Failed: the agent first said there was no deploy job, having grepped only `ci.yml`.
+- Fix: corrected; workflow parsed (data-check → build → deploy); data-check passes locally.
+- Human check: pending at the time; confirmed with the next merge.
 
 ### 2026-10-15 — Divergences documented by the STJ (AUJ cards)
-- Tool / model: Claude Code (Opus 5.5)
-- Task: option A chosen by the owner. Read the 3 AUJ texts in the subset (4/2014 of 20-03-2014, 12-02-2019, 27-04-2021) and the sumários of the STJ judgments they name; curated `data/auj/auj.json` with, per AUJ, the passages stating the question, the conflict, each side and the ruling, plus for each side the named judgments with a passage of their own sumário. `juris/export/auj.py` exports `aujs.json` with processo/date/link from the database; data-check verifies links and that every quote is in the stored text; the snapshot keeps the metadata, so a fresh clone reproduces it. UI: `/uniformizacoes` and related cards on q8/q9; strings in `messages.pt.ts`.
-- What failed or needed correction: the first 2019 "conflict" quote described only the appealed judgment's side; replaced by the court's own statement that the opposition was recognised, with the relator's synthesis ("conceção ampla" vs "conceção mais restrita") as the two sides. The 2014 AUJ was a julgamento ampliado on divided case law, not an appeal between two STJ judgments; its second side (hipoteca prevails) is attributed by the AUJ to Relação decisions, so the card says no STJ judgment is cited there instead of inventing one. A `
-` in a generated f-string broke `check.py` again (fixed by Edit).
-- How it was fixed: all 19 quotes grounded (0 errors with the database); 3 unit tests (metadata from DB, ungrounded quote rejected, unknown judgment fails the export); 2 web tests; visual check of `/uniformizacoes` in the preview (only console message: favicon 404). Selection of passages is agent-made: verifiable through the links but not reviewed by a jurist.
-- Human verification (what was checked by a person): none yet.
+- Tool: Claude Code (Opus 5.5).
+- Task: curate `data/auj/auj.json` for the 3 AUJs in the subset (2014, 2019, 2021): question, conflict, each side, ruling, and the named STJ judgments, every field a verbatim quote; export, data-check and `/uniformizacoes`.
+- Failed: the first 2019 "conflict" quote showed only one side; the 2014 AUJ's second side is attributed to Relação decisions, not STJ ones; a generated `\n` broke `check.py`.
+- Fix: court's own statement of the opposition used; card says no STJ judgment is cited for that side. All 19 quotes grounded; 3 unit and 2 web tests. Passage selection is agent-made, not reviewed by a jurist.
+- Human check: none.
 
 ### 2026-10-15 — Judge on pair rule v2; "resolved" label made factual
-- Tool / model: Claude Code (Opus 5.5); judge claude-sonnet-5-5 (owner-run, 9 new calls, 14 verdicts reused).
-- Task: v1 showed 3 (q3 dev; q7, q9 test). v2 shows 4 split/shift, all on test questions: q7 shift 2004–2009 and q9 split 2013–2021 (pairs unchanged), q8 split 2014–2024 (new pair, Oct/Nov 2019: "depende da sua qualidade de consumidor" vs "não se exige… a qualidade de consumidor"; judge alta, rule alta) and q10 shift 2003–2008 (new: sinal "implica convenção contrária" vs "presunção relativa, iuris tantum"). q3 dropped: v2 chose two same-day judgments where neither excerpt takes a position (classifier over-assignment). Gate G3 stays decided on v1 (SPEC §6.2); v1 and v2 both reported. The owner fetched the 4 AUJ-cited judgments (3 with text, 1 sumário only).
-- What failed or needed correction: the UI called a `resolved` divergence "Uniformizada", but SPEC §6.2 only defines it as an AUJ in or after the period. For q8 the AUJ is 4/2014 while the shown contradiction is from 2019, so "uniformizada" would be false.
-- How it was fixed: label changed to "Acórdão de uniformização no período" (a fact, dates shown). Export + data-check 0 errors; snapshot re-dumped (now with `quote_match`).
-- Human verification (what was checked by a person): owner ran fetch and judge.
+- Tool: Claude Code (Opus 5.5); judge claude-sonnet-5-5 (owner-run, 9 new calls, 14 reused).
+- Task: v2 shows 4 split/shift, all on test questions: q7 shift 2004–2009, q8 split 2014–2024 (new pair), q9 split 2013–2021, q10 shift 2003–2008 (new); q3 dropped (both excerpts took no position). Gate G3 stays decided on v1; both reported.
+- Failed: the UI called `resolved` "Uniformizada", but for q8 the AUJ (2014) precedes the shown contradiction (2019).
+- Fix: label "Acórdão de uniformização no período"; export and data-check 0 errors; snapshot re-dumped.
+- Human check: owner ran fetch and judge.
 
 ### 2026-10-15 — Why divergences are hidden; AUJ evidence; pair rule v2 (pre-registered)
-- Tool / model: Claude Code (Opus 5.5)
-- Task: on the owner's question, read all 20 hidden verdicts: 18 have an excerpt that takes no position (or is about another legal ground), 2 have both excerpts agreeing; 3 cite a truncated excerpt. Root causes: the classifier positions judgments that only touch the question (8 of 28 on the labels) and v1 picks the pair by date adjacency. Searched the full STJ index for uniformização descriptors: contrato-promessa is among the substantive themes with most activity; 3 real AUJs are in the 813 with text (4/2014, 2019, 2021), and their texts name the conflicting judgments and both camps. The owner chose: AUJ-anchored divergences first (option A), then a pre-registered pair rule (option B).
-- What failed or needed correction: AUJ 4/2014 was not flagged as uniformização because dgsi.pt misspells its meio processual ("UNIFORMIZAÇÃO DE JURSIPRUDÊNCIA"); the field check now needs only "uniformiz" (SPEC §6.3, regression test). `make detect` re-run: the q8 "resolved" entries now point at AUJ 4/2014 itself; all 23 verdicts kept. `make fetch` gained `--ids-file` (same polite client) and `data/auj/fetch_ids.txt` lists the 4 indexed-but-unfetched judgments the AUJs cite.
-- How it was fixed: pair rule v2 written into SPEC §6.2 and committed before any v2 verdict exists; classification now stores `quote_match` (how grounding located the quote) so detect can avoid partial quotes; v1 stays reproducible (`pair_rule = "v1"`).
-- Human verification (what was checked by a person): pending (owner's fetch and `make judge`).
+- Tool: Claude Code (Opus 5.5).
+- Task: read the 20 hidden verdicts (18 have an excerpt that takes no position; 3 truncated). Causes: the classifier positions judgments that only touch the question (8 of 28 on the labels) and v1 picks the pair by date adjacency; find the 3 AUJs in the subset; owner chose AUJ cards first, then a pre-registered pair rule.
+- Failed: AUJ 4/2014 was not flagged because dgsi.pt misspells its meio processual ("JURSIPRUDÊNCIA").
+- Fix: field check needs only "uniformiz" (regression test). Pair rule v2 committed to SPEC §6.2 before any v2 verdict; `quote_match` stored; v1 reproducible. `make fetch --ids-file` and `data/auj/fetch_ids.txt` for 4 cited judgments.
+- Human check: pending at the time (owner's fetch and judge).
 
-### 2026-10-15 — Judge run, Gate G3 and the committed snapshot (T5.3)
-- Tool / model: Claude Code (Opus 5.5); judge claude-sonnet-5-5 (owner-run).
-- Task: read the 23 verdicts (20 hidden: mostly one excerpt does not take a position on the question, i.e. the classifier positioned judgments that only touch it); record Gate G3 = STAY (2 confirmed on test questions: q7 shift 2004–2009, q9 split 2013–2021). T5.3: `juris/db/snapshot.py` dumps `data/classifications/{acordao,classification,divergence}.jsonl` (metadata, `texto_sha256`, grounded quotes, verdicts; no sumário, no text) and loads them into a new database. Snapshot databases have no text, so `acordao.uniformizacao` stores the flag. `make detect` now keeps a verdict while the evidence the judge saw is unchanged (removes the "detect after judge wipes verdicts" hazard).
-- What failed or needed correction: first fresh-clone test kept 0 verdicts (the snapshot writes sorted keys, detect compared the evidence string byte for byte → now compared in canonical form) and reported 0 rejected quotes (withheld quotes are NULL; the export counted only non-empty ones).
-- How it was fixed: as above. Verified: snapshot → new database → `make detect` → `make export` gives byte-identical `web/public/data`; `make data-check` 0 errors; unit tests for no-text, withheld quotes, round trip, verdict keeping.
-- Human verification (what was checked by a person): the owner ran `make judge`, `make export`, `make data-check` (0 errors with grounding).
+### 2026-10-15 — Judge run, Gate G3 and the committed snapshot
+- Tool: Claude Code (Opus 5.5); judge claude-sonnet-5-5 (owner-run).
+- Task: read 23 verdicts; record Gate G3 = STAY (q7 shift 2004–2009 and q9 split 2013–2021 confirmed on test questions). `juris/db/snapshot.py` dumps metadata, hashes, grounded quotes and verdicts (no text) and loads them into a new database; detect keeps verdicts while the evidence is unchanged.
+- Failed: fresh-clone test kept 0 verdicts (evidence compared byte for byte) and counted 0 rejected quotes (NULLs ignored).
+- Fix: canonical comparison and NULL-aware count. Snapshot → detect → export gives byte-identical site data.
+- Human check: owner ran judge, export and data-check (0 errors with grounding).
 
 ### 2026-10-15 — Judge model rejects `temperature`
-- Tool / model: Claude Code (Opus 5.5)
-- Task: `make judge` failed with "API error 400: invalid_request_error: `temperature` is deprecated for this model" (claude-sonnet-5-5). `AnthropicProvider` now takes `temperature` (default 0, `None` leaves it out); the judge passes `None`. The classifier is unchanged (temperature 0). SPEC §7 updated.
-- What failed or needed correction: SPEC §7 assumed temperature 0 for every call.
-- How it was fixed: as above, with a unit test. Consequence: judge verdicts are not guaranteed deterministic across live runs; they stay reproducible because each verdict is recorded as a replay fixture (`make judge-replay`).
-- Human verification (what was checked by a person): pending; the owner re-runs `make judge`.
+- Tool: Claude Code (Opus 5.5).
+- Task: `make judge` failed: "`temperature` is deprecated for this model".
+- Failed: SPEC §7 assumed temperature 0 for every call.
+- Fix: `temperature=None` for the judge (unit test). Verdicts are not deterministic across live runs but stay reproducible from replay fixtures.
+- Human check: owner re-ran `make judge`.
 
 ### 2026-10-15 — Full classification run and quote-grounding repairs
-- Tool / model: Claude Code (Opus 5.5); classifier claude-haiku-4-5-20251001 (owner-run).
-- Task: the owner ran `make classify` on all 813 judgments (100-judgment pilot first): 0 schema failures, 0 truncated, about 2.1 M tokens. 118 of 695 relevant quotes (17 %) were rejected by grounding, 10 of the pilot's 13 on test questions q6/q7. Diagnosed offline from the recorded answers: the model joined passages with "...", left out paragraph numbers ("II –"), wrote straight for curly quotes, mended spacing/hyphenation broken in the source ("promes-sa", "contratopromessa"), added a final full stop, or exceeded 400 characters.
-- Prompt / approach: kept prompt `classify_v1` (frozen; rewording after seeing answers on test questions would be tuning on results, rule 8, and would mean paying for the run again). Instead `grounding.ground` locates the quote with the named repairs in SPEC §6.1 and stores the text's own span; `is_grounded` (whitespace-only) still gates every stored quote and `make data-check` re-checks it. `--reground` re-applies grounding from the replay fixtures with no API calls.
-- What failed or needed correction: grounding compared the model's string verbatim, so faithful quotes with trivial differences were discarded and their positions lost. First attempt left 31 rejections; inspecting them showed source-text defects and "[...]", so a spacing/hyphen-insensitive fallback, bracketed ellipsis and trailing-stop rules were added.
-- How it was fixed: after re-grounding 11 rejected, 684 accepted (577 exact, 22 typography, 25 numbering, 9 spacing, 4 punctuation, 23 ellipsis = longest piece only, 41 trimmed at a sentence end; a quote can count in more than one). The 11 left are real misquotes (paraphrase, text not in the sumário, "codigo" for "código"). Limits to disclose: ellipsis and trimmed quotes show only part of what the model cited, so the shown excerpt may support the position less clearly. Database backed up to `data/juris.before-reground.db` first. `make detect`: 25 divergences, 20 split/shift on test questions.
-- Rule 8 (no tuning on results): the repairs were designed in two rounds after inspecting rejections that were mostly on test questions, and they change the input to Gate G3, so this is stated plainly. Evidence they do not favour a position: no repair reads `position_id`, and the position ratios barely move (pilot + full run before → after re-grounding): q6 absoluto:relativo 30:82 → 43:112; q7 detentor:possuidor 35:48 → 46:61; q8 exige:não exige 17:17 → 21:18; q9 não prevalece:prevalece 12:17 → 13:21; q10 admissível:afastada 16:12 → 18:13. Of the 46 quotes the judge will see (23 split/shift pairs), 39 are exact and 5 are partial (3 trimmed, 2 longest-piece-of-ellipsis), which if anything biases the judge towards "no real opposition". `make export` + `make data-check` on the real database: 0 errors with grounding.
-- Human verification (what was checked by a person): none yet; the judge pass and the evaluation against the 60 labels follow.
+- Tool: Claude Code (Opus 5.5); classifier claude-haiku-4-5-20251001 (owner-run).
+- Task: 813 judgments classified: 0 schema failures, ≈ 2.1 M tokens. Prompt `classify_v1` kept frozen (rule 8).
+- Failed: 118 of 695 quotes (17 %) rejected for trivial differences ("...", left-out paragraph numbers, quote marks, broken hyphenation, final stop, > 400 chars), losing their positions.
+- Fix: `grounding.ground` with named repairs, storing the text's own span; `--reground` from replay. A first attempt left 31 rejections; inspecting them added the spacing, "[...]" and final-stop rules. Result: 684 accepted, 11 rejected (real misquotes). Disclosed: repairs designed after inspecting rejections mostly on test questions; no repair reads the position, and position ratios barely moved (e.g. q8 17:17 → 21:18). Of 46 judge quotes, 39 exact, 5 partial.
+- Human check: none at the time.
 
-### 2026-10-15 — Optional workspace header for keys not scoped to a workspace
-- Tool / model: Claude Code (Opus 5.5)
-- Task: the pilot re-run now showed the cause: "This API key is not scoped to a workspace, so this request must include the anthropic-workspace-id header". Added an optional `LLM_WORKSPACE_ID` env var; when set, `make classify` and `make judge` send it as `anthropic-workspace-id`. Documented in `.env.example` and runbook §1.
-- What failed or needed correction: the provider assumed a workspace-scoped key.
-- How it was fixed: as above; a unit test checks the header is sent only when set.
-- Human verification (what was checked by a person): pending; the owner re-runs the pilot.
+### 2026-10-15 — Optional workspace header
+- Tool: Claude Code (Opus 5.5).
+- Task: pilot failed: "API key is not scoped to a workspace".
+- Failed: provider assumed a workspace-scoped key.
+- Fix: optional `LLM_WORKSPACE_ID` sent as `anthropic-workspace-id` (unit test; `.env.example`, runbook).
+- Human check: owner re-ran the pilot.
 
 ### 2026-10-15 — Show the API's error message on a failed live call
-- Tool / model: Claude Code (Opus 5.5)
-- Task: the owner's first `make classify ARGS="--pilot 100"` failed with a bare `400 Bad Request` traceback, which does not say why. `AnthropicProvider` now raises `ApiError` carrying the API's own error type and message (the response body never contains the key); `make classify` and `make judge` print it and exit without a traceback. Runbook §5 lists the usual 400 causes (no credit, wrong model name).
-- What failed or needed correction: `raise_for_status()` dropped the response body, so the cause of the 400 was lost.
-- How it was fixed: as above, with a unit test using a mocked 400 response.
-- Human verification (what was checked by a person): pending; the owner re-runs the pilot and reads the message.
+- Tool: Claude Code (Opus 5.5).
+- Task: first pilot failed with a bare `400 Bad Request`.
+- Failed: `raise_for_status()` dropped the response body.
+- Fix: `ApiError` carries the API's error type and message (never the key); runbook lists usual causes. Unit test with a mocked 400.
+- Human check: owner re-ran the pilot.
 
 ### 2026-10-15 — Evaluation labels (60 rows) filled by AI, not by a human
-- Tool / model: Claude Code (Opus 5.5)
-- Task: fill `data/eval/labels.csv` from `data/labelling/sheet.md` (ROADMAP M3, a `HUMAN:` task). The owner had no time and no legal training and asked the agent to do it; the agent first declined, then did it on explicit owner instruction.
-- Prompt / approach: read each sumário only (no model output exists yet, no dgsi.pt access); one label per row; `unclear` when the sumário distinguishes cases or decides only the concrete case; reasons in `notes`.
-- What failed or needed correction: nothing technical. Methodological limits: (1) the gold labels are not human; (2) labeller and classifier are both Claude models, so errors may be correlated and agreement inflated; (3) no legal expert reviewed them. Result: 60 labels (29 position labels, 29 nao_decide, 2 unclear).
-- How it was fixed: disclosed in `data/eval/labeller.md`; must be stated in `data/eval/report.md` and `IA.md`. The labels are still blind to the classifier (committed before any classification run).
-- Human verification (what was checked by a person): none. A jurist's review of the 29 position labels and the 2 `unclear` rows is recommended.
+- Tool: Claude Code (Opus 5.5).
+- Task: fill `data/eval/labels.csv` (a HUMAN task in ROADMAP M3). The owner had no time or legal training; the agent first declined, then did it on explicit instruction, from sumários only.
+- Failed: methodological: labels are not human, labeller and classifier are both Claude models (agreement may be inflated), no jurist reviewed them. 29 position, 29 nao_decide, 2 unclear.
+- Fix: disclosed in `data/eval/labeller.md`, the report and IA.md; still blind to the classifier (committed before any run).
+- Human check: none; a jurist's review is recommended.
 
 ### 2026-10-15 — Cost guards for the live run
-- Tool / model: Claude Code (Opus 5.5)
-- Task: on the owner's request, bound the worst-case API cost. Changes: answers capped at 1 200 tokens (was 2 000); an answer cut at the cap (`stop_reason=max_tokens`) is not retried; `make classify` stops at a token budget (default 3 M, about 2x the estimate) and prints progress every 50 judgments; the judge treats a cut answer as invalid instead of crashing.
-- Prompt / approach (one line): the run is resumable, so stopping on budget loses nothing.
-- What failed or needed correction: the first version retried truncated answers, which would pay twice for the same cut-off output.
-- How it was fixed: a separate `Truncated` exception that the retry loop does not catch. Tests use a mock HTTP transport for the truncation case and for budget stop plus resume.
-- Human verification (what was checked by a person): none yet.
+- Tool: Claude Code (Opus 5.5).
+- Task: bound worst-case cost: 1 200-token answers, no retry of cut answers, 3 M-token budget per run, progress every 50.
+- Failed: the first version retried truncated answers, paying twice.
+- Fix: separate `Truncated` exception; tests for truncation and budget stop plus resume.
+- Human check: none.
 
-### 2026-10-15 — M4 T4.2 export, data-check and minimal UI
-- Tool / model: Claude Code (Opus 5.5)
-- Task: `juris/export/` (pydantic schemas, deterministic `make export`, `make data-check` added to CI) and the web app routes `/`, `/perguntas`, `/perguntas/:id` (hand-rolled SVG timeline, no d3 dependency; Okabe-Ito colours plus a marker shape per position; divergence cards; judgments table as the chart's data-table alternative).
-- Prompt / approach (one line): publish only grounded quotes ≤ 400 characters and links; a split/shift is published only with a confirming judge verdict (unjudged/hidden become counts); quotes rendered as text, never HTML.
-- What failed or needed correction: the existing tests rendered `<App />` without a router; they were wrapped in `MemoryRouter`, and the disclaimer regression now checks every route. There was an act() warning in one test, and the rule confidence showed "media" without the accent.
-- How it was fixed: tests are async; the confidence labels are in `messages.pt.ts`. 3 Python tests (export filters, determinism and an empty database, data-check catching bad links, long quotes and ungrounded quotes) and 10 web tests. Visual check: built the site, served it with `vite preview` using the export-test data, and took a screenshot of `/perguntas/q6` in Chrome. The only console error was a 404 for the missing favicon.
-- Human verification (what was checked by a person): none yet. The live site stays empty until the owner classifies and exports.
+### 2026-10-15 — M4: export, data-check and minimal UI
+- Tool: Claude Code (Opus 5.5).
+- Task: `juris/export` (pydantic schemas, deterministic export, data-check in CI) and routes `/`, `/perguntas`, `/perguntas/:id`; only grounded quotes and judge-confirmed divergences published; quotes as text.
+- Failed: tests rendered `<App />` without a router; an act() warning; "media" without its accent.
+- Fix: `MemoryRouter`, async tests, labels in `messages.pt.ts`. 3 Python and 10 web tests; screenshot check in `vite preview`.
+- Human check: none.
 
-### 2026-10-15 — M5 T5.2 judge pass and LLM runbook
-- Tool / model: Claude Code (Opus 5.5)
-- Task: `juris/detect/judge.py`. The judge pass sees only the question, the two quotes, their dates and assigned positions (SPEC §6.4), covering at most 40 divergences, weakest-side support first. It adds rule confidence (§6.5), the UI label rule, and the Gate G3 verdict. Also `make judge` / `make judge-replay`, and `docs/llm-runbook.md` for the owner (key, spend limit, env vars, order, cost estimate).
-- Prompt / approach (one line): verdicts are cached as replay fixtures (replay first, live on a miss), so rerunning detect and the judge does not pay twice.
-- What failed or needed correction: a `
-` inside an f-string became a literal line break when generated through a script (syntax error). On an empty database the gate printed "PIVOT", which is misleading before any classification exists.
-- Review fix (same day, before any judge run): the first version showed the judge each excerpt's assigned position. SPEC §6.4 gives the judge only the quotes, the dates and the question, and the labels would prime it toward confirming, which biases Gate G3. Removed from the input and the prompt.
-- How it was fixed: rewritten; the gate now says it is not decidable while nothing is classified. 8 new unit tests (rule confidence, ranking, display, gate counting test questions only, cache).
-- Human verification (what was checked by a person): none yet.
+### 2026-10-15 — M5: judge pass and LLM runbook
+- Tool: Claude Code (Opus 5.5).
+- Task: `juris/detect/judge.py` (≤ 40 divergences, rule confidence, UI label, Gate G3), `make judge`/`judge-replay`, `docs/llm-runbook.md`; verdicts cached as replay fixtures.
+- Failed: a generated `\n` broke an f-string; empty database printed "PIVOT"; the first version showed the judge the assigned positions, which SPEC §6.4 excludes and which would bias it.
+- Fix: rewritten; gate says "not decidable" when empty; positions removed from the judge's input before any run. 8 unit tests.
+- Human check: none.
 
-### 2026-10-15 — M5 T5.1 detection
-- Tool / model: Claude Code (Opus 5.5)
-- Task: `pipeline/juris/detect/` (pure functions for split, shift and resolved, plus the uniformização marker), `detect.toml` with the SPEC §6.2 defaults, and `make detect` writing the `divergence` table. Written before any classification exists, so nothing was tuned on results.
-- Prompt / approach (one line): SPEC §6.2 leaves open how overlapping windows count; chosen: merge overlapping split windows, one shift per change of dominant position, a dominant position also needs `k`, ties have none. Recorded in SPEC §6.2.
-- What failed or needed correction: 5 of my first test expectations were wrong, not the code. Window spans were off by a year (a 2010–2011 split lights up windows 2009–2012), and a case I called "flicker" (A in 2005, B in 2007) is a real shift under the SPEC definition. The split-pair code was first written convolutedly and was simplified.
-- How it was fixed: expectations recomputed by hand and the test renamed (`test_adjacent_periods_count_as_a_shift`); 12 tests on synthetic data plus a database test. `make detect` on the real database prints 0 divergences, as expected with no classifications yet.
-- Human verification (what was checked by a person): none yet.
+### 2026-10-15 — M5: detection
+- Tool: Claude Code (Opus 5.5).
+- Task: pure split/shift/resolved functions, `detect.toml` with SPEC §6.2 defaults, `make detect`; written before any classification existed. Open choices fixed in SPEC §6.2 (merge overlapping splits, one shift per change, dominant also needs `k`).
+- Failed: 5 of the agent's own test expectations were wrong (window spans off by a year; a "flicker" case is a real shift).
+- Fix: expectations recomputed by hand; 12 synthetic tests plus a database test.
+- Human check: none.
 
 ### 2026-10-15 — Gate G3 fixed before results
-- Tool / model: Claude Code (Opus 5.5)
-- Task: record the owner's pivot rule (SPEC §2 Gate G3, ROADMAP M5) before any classification exists, per AGENTS.md rule 8.
-- Prompt / approach (one line): options offered: ≥ 1 or ≥ 2 judge-confirmed divergences, or never pivot; the owner chose ≥ 1 on a test question.
-- What failed or needed correction: nothing.
-- How it was fixed: n/a.
-- Human verification (what was checked by a person): the owner chose the rule.
+- Tool: Claude Code (Opus 5.5).
+- Task: record the owner's pivot rule before any classification (rule 8): stay if ≥ 1 judge-confirmed divergence on a test question.
+- Failed: nothing.
+- Fix: n/a.
+- Human check: owner chose the rule.
 
-### 2026-10-15 — M4 T4.1 classification module
-- Tool / model: Claude Code (Opus 5.5)
-- Task: `juris/llm/provider.py` (provider interface, ReplayProvider keyed by sha256 of the canonical request, Anthropic adapter over `httpx` with temperature 0, cached system block and a replay fixture recorded per answer); `juris/classify/schema.py` (pydantic validation of the untrusted answer against the approved questions); `juris/classify/run.py` + `__main__` (sumário first per ADR 0007, one retry on schema failure only, grounding check against the text actually sent, resume by prompt version, stratified `--pilot`).
-- Prompt / approach (one line): no new dependency; the live run refuses to start until all 60 blind labels are filled (`--not-blind` overrides), so model output cannot precede the labels.
-- What failed or needed correction: two lines over the ruff limit. SPEC §7's `generate_json(prompt_id, input)` had no place for the rendered prompt, so the signature gained `system`.
-- How it was fixed: wrapped; SPEC §7 updated. Unit tests cover the schema, grounding rejection, the text fallback, resume, the retry, the HTTP adapter (mock transport) and the label guard. `make classify-replay` was smoke-run on the real database: 0 fixtures exist yet, as expected.
-- Human verification (what was checked by a person): none yet. The live pilot (`make classify ARGS="--pilot 100"`) is HUMAN-run after the labels are committed.
+### 2026-10-15 — M4: classification module
+- Tool: Claude Code (Opus 5.5).
+- Task: provider interface, replay provider, Anthropic adapter over `httpx`; pydantic validation of the untrusted answer; classify run (sumário first, one retry on schema failure, grounding, resume, stratified pilot). The live run refuses to start until the 60 blind labels exist.
+- Failed: two lines over the ruff limit; SPEC §7's signature had no place for the rendered prompt.
+- Fix: wrapped; `system` added to the signature in SPEC §7. Unit tests incl. mock HTTP transport.
+- Human check: none.
 
-### 2026-10-15 — Taxonomy frozen (v1) and blind label sheet (M3 T3.3)
-- Tool / model: Claude Code (Opus 5.5)
-- Task: freeze the taxonomy (`v1`) and the classification prompt (`pipeline/juris/llm/prompts/classify_v1.md`, rendered by `juris/llm/prompt.py` with approved questions only), and generate the 60-row blind label sheet (`pipeline/tools/labelsheet.py`). Owner decisions taken before any model output: the model classifies from the sumário (ADR 0007, amends ADR 0006), and the dev set is q2 + q3 (SPEC §9.7).
-- Prompt / approach (one line): fixed keyword pools per approved question, 8–9 rows each, evenly spaced by date, excluding the 195 judgments already shown to the owner with an LLM answer (spike, discovery); sheet with sumários is local (`data/labelling/`, gitignored), `data/eval/labels.csv` holds ids and empty labels only.
-- What failed or needed correction: SPEC §9.1 said "12 per seed question", but only 2 of the 5 seeds were approved, and ROADMAP T7.1 said discovered questions are not evaluated. Both were rewritten for the 7 approved questions before generating the sheet. The earlier `render_questions` in the discovery tool also renders rejected questions; the classification prompt uses its own renderer that keeps only `approved`. One test expectation was wrong (Python rounds 12.5 to 12).
-- How it was fixed: SPEC §6.1, §9.1 and §9.7, ROADMAP T3.3/T7.1 updated; ADR 0007 added; tests for the allocation, exclusion, label validation and the approved-only prompt.
-- Human verification (what was checked by a person): owner read and accepted the q6–q10 position definitions and chose the model input and the dev split. Pending: owner labels the 60 rows from the sumário and records their legal background in `data/eval/labeller.md`.
+### 2026-10-15 — Taxonomy frozen (v1) and blind label sheet
+- Tool: Claude Code (Opus 5.5).
+- Task: freeze taxonomy `v1` and prompt `classify_v1`; generate the 60-row blind sheet (keyword pools, 8–9 rows per question, excluding the 195 judgments the owner had seen with an LLM answer); sheet with sumários kept local.
+- Failed: SPEC §9.1 and ROADMAP T7.1 assumed 5 seed questions (only 2 approved); the discovery renderer also renders rejected questions; one test expected wrong rounding.
+- Fix: SPEC/ROADMAP rewritten for the 7 approved questions before generating; approved-only renderer; ADR 0007.
+- Human check: owner accepted the q6–q10 definitions, the model input and the dev split.
 
 ### 2026-10-15 — Taxonomy approved (7 questions)
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: write the approved `data/taxonomy.json` from the owner's decision on the discovery results: approved q2, q3 (kept for the survey comparison), q6 prazo absoluto/relativo, q7 possuidor/detentor, q8 retenção exige consumidor, q9 retenção vs hipoteca, q10 sinal e execução específica; rejected q1, q4, q5.
-- What failed or needed correction: before writing the position definitions I re-read the quotes: for q10 both found judgments (2008, 2013) sit on the same side, so it is not yet two-sided as I had first presented it; kept because the full classification will show whether the other side exists. Position definitions are drafted from the quotes, not checked by a lawyer.
-- How it was fixed: stated in the seed_source of q10; test now checks the approved ids. Note for M4: classification must use only `status == "approved"` questions (the discovery packs rendered all of them).
-- Human verification: the owner chose the list; still pending: read the position definitions of q6-q10.
+- Tool: Claude Code (Sonnet 5.5).
+- Task: write `data/taxonomy.json` from the owner's decision: q2, q3, q6–q10 approved; q1, q4, q5 rejected.
+- Failed: q10's two found judgments sit on the same side, so it was not yet two-sided as first presented; definitions drafted from quotes, not checked by a lawyer.
+- Fix: stated in q10's `seed_source`; test checks the approved ids.
+- Human check: owner chose the list.
 
 ### 2026-10-14 — M3 discovery pass result (150 judgments)
-- Tool / model: owner ran the 3 packs in an LLM chat (human-run); Claude Code (Sonnet 5.5) ran `discovery.py check` and read the output.
-- Task: gate G2 measurement and new-question proposals.
-- What failed or needed correction: 0 of the 150 sumários had a quote rejected. The five seed questions show no split: q1 1 position (1 judgment), q2 only basta_mora (4), q3 only exige_definitivo (7), q4 and q5 nothing. The tool printed "10 proposed questions with >= 2 positions", but that count is inflated: position labels are free text, so near-identical labels ("pressupõe resolução" / "pressupõe resolução, implícita no pedido") count as two positions. After merging by hand, about 5 questions look like real two-sided cases (prazo absoluto/relativo, possuidor/detentor, retenção exige consumidor, retenção vs hipoteca, sinal e execução específica), each with only 1-3 judgments on the minority side.
-- How it was fixed: `check` now also prints the years behind each label. The G2 criterion was not changed; the owner decides which proposed questions to approve.
-- Human verification: pending (owner approves, edits or rejects the questions).
+- Tool: owner ran 3 packs in an LLM chat; Claude Code (Sonnet 5.5) ran `discovery.py check`.
+- Task: Gate G2 and new-question proposals.
+- Failed: no seed question shows a split; the tool's "10 proposed questions" was inflated by free-text labels; about 5 real two-sided questions remain. 0 quotes rejected.
+- Fix: `check` prints the years behind each label; G2 criterion unchanged.
+- Human check: owner approved the questions.
 
-### 2026-10-14 — Taxonomy: allow 2-4 positions per question
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: owner asked why a question may have at most 3 positions; relaxed to 4 in the validator and SPEC §5.1, with a test.
-- What failed or needed correction: the limit was a SPEC choice I had enforced as written, not a detection requirement (split/shift/resolved work with any number of positions).
-- How it was fixed: `2 <= positions <= 4`; tradeoff noted (labelling accuracy, UI readability).
-- Human verification: the owner made the decision.
+### 2026-10-14 — Taxonomy: allow 2–4 positions per question
+- Tool: Claude Code (Sonnet 5.5).
+- Task: owner asked why at most 3; relaxed to 4 (validator, SPEC §5.1, test).
+- Failed: the limit was a SPEC choice, not a detection requirement.
+- Fix: `2 <= positions <= 4`.
+- Human check: owner decided.
 
-### 2026-10-14 — M3 start: seed taxonomy and discovery pass kit
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: T3.1 `data/taxonomy.json` (5 seed questions from SPEC §5.2) with a pydantic loader/validator; T3.2 kit for the discovery pass: `pipeline/tools/discovery.py pack|check`, prompt `discovery_v0.md`, 150 random judgments (stratified by year, seed 20261015) in 3 packs of 50.
-- What failed or needed correction: a long shell heredoc failed to parse again and wrote nothing (files then written with the file tool). `data/discovery/` was not gitignored although it holds sumários; caught before committing and added to `.gitignore`.
-- How it was fixed: as above. `check` verifies every quote against the stored sumário and prints positions per seed question (gate G2) plus the proposed new questions. The position wording of q4 and q5 is my draft from the survey summary, not checked by a lawyer; owner approval is the T3.2 HUMAN step.
-- Human verification: pending. The owner runs the three packs in an LLM chat, saves answer_1..3.json, runs `check`, and approves, edits or rejects the questions and positions.
+### 2026-10-14 — M3 start: seed taxonomy and discovery kit
+- Tool: Claude Code (Sonnet 5.5).
+- Task: 5 seed questions with a pydantic validator; `discovery.py pack|check`, prompt `discovery_v0.md`, 150 random judgments in 3 packs.
+- Failed: a long heredoc wrote nothing; `data/discovery/` (holds sumários) was not gitignored.
+- Fix: files written with the file tool; ignore added before committing.
+- Human check: owner ran the packs and approved the questions.
 
 ### 2026-10-14 — M1.5 spike result (questions 1 and 2)
-- Tool / model: owner ran both packs in an LLM chat (human-run); Claude Code (Sonnet 5.5) ran `spike.py check -q q1|q2` and read the notes.
-- Task: check quotes and count positions for seed questions 1 and 2 on the full fetched pool.
-- What failed or needed correction: both fail the criterion (at least 2 positions). Q1: 1 A, 19 nenhuma; the keyword filter (execução específica + alienação/terceiro/eficácia real) mostly caught judgments on other points (insolvência, penhora, propriedade horizontal), so Q1 is not really tested. Q2: 6 A, 0 B. 0 invented quotes in both. Positions are read from sumários only.
-- How it was fixed: not a code problem; criterion not changed. Options put to the owner: go on to the M3 discovery pass (G2), tighten the Q1 filter, or switch to the fallback subset.
-- Human verification: pending (owner reads a few sumários, in particular Q2 judgments from 2008–2013 that the survey cites).
+- Tool: owner ran the packs in an LLM chat; Claude Code (Sonnet 5.5) ran `spike.py check`.
+- Task: check quotes and positions on the full fetched pool.
+- Failed: both fail the ≥ 2 positions criterion (Q1: 1 A, 19 none, its keyword filter caught other topics; Q2: 6 A, 0 B). 0 invented quotes.
+- Fix: criterion unchanged; owner went on to M3 discovery.
+- Human check: pending at the time (reading Q2 sumários).
 
 ### 2026-10-14 — M1.5 spike kit for questions 1 and 2
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: generalise `pipeline/tools/spike.py` to `-q q1|q2|q3` (per-question pack and ids files) and write draft prompts `spike_q1_v0.md` (execução específica vs alienação a terceiro) and `spike_q2_v0.md` (mora vs incumprimento definitivo).
-- What failed or needed correction: nothing failed. Candidate keywords were fixed before any model output (full pool of 810 fetched: q1 38 candidates, q2 59, q3 161). The position wording for q1/q2 is my neutral draft from SPEC §5.2, not checked by a lawyer.
-- How it was fixed: n/a.
-- Human verification: pending. The owner should read the two position definitions in the prompts, run the packs in an LLM chat and run `check`.
+- Tool: Claude Code (Sonnet 5.5).
+- Task: `spike.py -q q1|q2|q3` and prompts `spike_q1_v0.md`, `spike_q2_v0.md`; keywords fixed before any model output.
+- Failed: nothing; position wording is the agent's draft.
+- Fix: n/a.
+- Human check: owner ran the packs.
 
 ### 2026-10-14 — Full `make fetch`: 3 processo mismatches
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: read the owner's last `make fetch` output (3 left of 813, all FAILED with `processo mismatch: index '04S4759' vs '04S4759ver acórdão T REL'`).
-- What failed or needed correction: parser bug, not a site problem. On some pages the Processo cell holds a nested table with the number plus a link "ver acórdão T REL" (the related Relação judgment), and `cell_text` joined both. The safety check against the index row caught it, so nothing wrong was stored.
-- How it was fixed: `_processo_text` takes only the first cell of the nested table; unit test on a synthetic page; all cached pages with such a link re-parse to the plain number. The 3 rows are in the cache, so re-running `make fetch` stores them with 0 requests.
-- Human verification: pending; the owner re-runs `make fetch` and confirms 0 failures.
+- Tool: Claude Code (Sonnet 5.5).
+- Task: read the owner's fetch output (3 of 813 failed).
+- Failed: parser bug: a nested table added "ver acórdão T REL" to the processo; the safety check caught it, nothing wrong was stored.
+- Fix: `_processo_text` takes the first cell; unit test; re-run from cache with 0 requests.
+- Human check: pending at the time (owner re-runs fetch and confirms 0 failures).
 
 ### 2026-10-14 — M1.5 spike result (question 3)
-- Tool / model: owner ran the pack in an LLM chat (human-run, per AGENTS.md); Claude Code (Sonnet 5.5) ran `spike.py check` and read the answers.
-- Task: classify 20 pilot sumários on "sinal e mora" and verify the quotes.
-- What failed or needed correction: criterion failed: only position B (9), no A, 11 "nenhuma". The 11 are off-question or silent per the model's notes (interpelação admonitória, tu quoque, direito de retenção, insolvência). No invented quotes (0 of 9 rejected). A forked agent correctly refused to answer the pack itself (HUMAN task).
-- How it was fixed: not a code problem. Result recorded in ROADMAP M1.5; next step is a larger pool (fetch the rest of the subset) and questions 1 and 2, not an immediate subset switch, because one question over 20 keyword-picked sumários is weak evidence. The pass criterion was not changed after seeing the result.
-- Human verification: pending; the owner should read the sumários of judgments 1, 2, 11 and 15 and say whether the model's B reading is right.
+- Tool: owner ran the pack in an LLM chat; Claude Code (Sonnet 5.5) ran `spike.py check`.
+- Task: 20 pilot sumários on "sinal e mora".
+- Failed: criterion failed (9 B, 0 A, 11 none); 0 invented quotes. A forked agent correctly refused to answer the pack itself.
+- Fix: none needed; criterion unchanged; next: larger pool and questions 1 and 2.
+- Human check: pending at the time (spot-read 4 sumários).
 
 ### 2026-10-14 — Repo hygiene and security review
-- Tool / model: Claude Code (Sonnet 5.5), `/security-review` with a hygiene brief.
-- Task: look for loose env files, committed secrets or data, missing ignores and stale files; review the branch diff for vulnerabilities.
-- What failed or needed correction: `data/*.db` did not cover SQLite sidecar files (`-journal`, `-wal`, `-shm`), which can hold judgment text and would break AGENTS.md rule 3 if added by accident. Local tool settings and editor/OS files were also not ignored. `docs/adr/.gitkeep` was stale.
-- How it was fixed: added the ignore patterns and removed the `.gitkeep`. Checked tracked files, history and content: no `.env`, keys, tokens, databases, cache or personal paths were ever committed; no code vulnerabilities found (SQL is parameterised, the crawler host is allow-listed, cache file names are hashes).
-- Human verification: pending; the owner should confirm GitHub secret scanning stays enabled.
+- Tool: Claude Code (Sonnet 5.5), `/security-review`.
+- Task: look for env files, secrets, data, missing ignores, stale files, vulnerabilities.
+- Failed: SQLite sidecar files and editor/OS files were not ignored; stale `docs/adr/.gitkeep`.
+- Fix: ignores added, `.gitkeep` removed; history checked: no secrets, data or databases ever committed; no vulnerabilities found.
+- Human check: owner to keep GitHub secret scanning enabled.
 
 ### 2026-10-14 — M1.5 spike kit
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: choose spike judgments from the pilot, write the draft prompt (`pipeline/juris/llm/prompts/spike_q3_v0.md`, seed question 3: sinal e mora) and a `pack`/`check` tool that builds the paste-in file and verifies the model's quotes against the stored sumário.
-- What failed or needed correction: nothing yet; the model pass has not run. Choice made without results: question 3 because the pilot has 23 sumários mentioning sinal plus mora/definitivo across 2002–2025, against 4–5 for questions 1 and 2. The pass criterion is ROADMAP's (at least 2 positions observed); the report also prints the support per position.
-- How it was fixed: n/a.
-- Human verification: pending. The owner runs the prompt in an LLM chat, saves the JSON answer and runs `check`; the owner should also read a few of the 20 sumários to judge whether the model's positions are right.
+- Tool: Claude Code (Sonnet 5.5).
+- Task: spike prompt `spike_q3_v0.md` (sinal e mora) and `pack`/`check` tool; question 3 chosen because the pilot has the most matching sumários.
+- Failed: nothing.
+- Fix: n/a.
+- Human check: owner ran the pack.
 
-### 2026-10-14 — Pilot completed: 91% complete, gaps are on the site
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: read the owner's resume output (37 stored, 7 incomplete) and classify all 9 incomplete pilot rows from the DB and cached HTML (no network).
-- What failed or needed correction: the acceptance bar (≥95% with sumário and texto) is missed: 91/100. I first suspected the parser; the cached pages show an empty "Decisão Texto Integral" cell (7 rows) or an empty "Sumário" (2 rows from 2003), so the data is missing at the source. Gaps concentrate in 2000–2003 (7 of 13 judgments) and two 2010 rows.
-- How it was fixed: nothing to fix in code; the real rate is reported as ROADMAP asks, with the breakdown. The owner chose to classify sumário-only judgments from the sumário, flagged (ADR 0006, SPEC §6.1).
-- Human verification: the owner made the policy decision; still pending: open one 2000–2001 judgment on dgsi.pt and confirm no full text is shown.
+### 2026-10-14 — Pilot completed: 91 % complete, gaps are on the site
+- Tool: Claude Code (Sonnet 5.5).
+- Task: inspect 9 incomplete pilot rows from the cache.
+- Failed: acceptance bar (≥ 95 %) missed: 91/100; the cells are empty on dgsi.pt itself (mostly 2000–2003).
+- Fix: no code change; owner chose to classify sumário-only judgments, flagged (ADR 0006).
+- Human check: owner made the policy decision.
 
-### 2026-10-14 — First live `make fetch` pilot run
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: read the owner's pilot output and inspect the two "incomplete" rows from the local cache (no network).
-- What failed or needed correction: the run stopped after 63 stored because the server dropped 3 requests in a row ("Server disconnected without sending a response"). The two incomplete rows (`69/10.0YFLSB`, `3655/1998.L1.S1`, both 2010-05-20) are not a parser bug: the saved pages have an empty "Decisão Texto Integral" cell, so the site itself has no full text for them.
-- How it was fixed: nothing worked around (SPEC §3 forbids it). Added `--delay` (can only be raised above 2.5 s) so the owner can be gentler on the resume. Judgments without full text must be excluded from classification in M4 (no text to ground a quote in).
-- Human verification: pending. The owner should resume later and check that the two rows really show no text in the browser.
+### 2026-10-14 — First live `make fetch` pilot
+- Tool: Claude Code (Sonnet 5.5).
+- Task: read the pilot output and the 2 incomplete rows.
+- Failed: the server dropped 3 requests in a row and the run stopped (as SPEC §3 requires); the 2 rows have no full text on the site.
+- Fix: nothing worked around; `--delay` can only be raised above 2.5 s.
+- Human check: owner resumed later.
 
 ### 2026-10-14 — Review of the subset justification
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: explain why STJ, the descriptors, 600–1 500 judgments and 2000–2025.
-- What failed or needed correction: the SPEC gives no reason for the 2000 start; the 1998 judgment cited by seed question 1 falls outside the window.
-- How it was fixed: the owner chose to keep 2000–2025; the limitation is recorded in ADR 0005 (alternative 1995–2025 = 1 144 judgments).
-- Human verification: the owner made the window decision.
+- Tool: Claude Code (Sonnet 5.5).
+- Task: explain why STJ, the descriptors, the size and 2000–2025.
+- Failed: no reason for the 2000 start; seed question 1's 1998 judgment falls outside.
+- Fix: owner kept 2000–2025; limitation recorded in ADR 0005 (1995–2025 would be 1 144).
+- Human check: owner decided.
 
-### 2026-10-13 — Subset decision (T1.3)
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: from the full index, count descriptors and years, apply the SPEC §2 rule, write ADR 0005, and make `make fetch` use only the subset.
-- What failed or needed correction: my first count matched descriptors by substring and was badly inflated (`EXTRADIÇÃO`, `CONTRADIÇÃO…` contain `TRADIÇÃO`; `SINALAGMÁTICO` contains `SINAL`). I also noticed that `make fetch` would have sampled the pilot from all 71 760 judgments instead of the subset.
-- How it was fixed: whole-descriptor regex in `pipeline/juris/db/subset.py` with unit tests for the false positives; `fetch` restricts the pilot and the full run to the subset (`--all-index` opts out).
-- Human verification: pending. The owner should skim the `[theme]`-marked descriptor list printed by `pipeline/tools/subset_counts.py` and confirm none is off-theme (for example `CONTRATO-PROMESSA DE TRABALHO`).
+### 2026-10-13 — Subset decision
+- Tool: Claude Code (Sonnet 5.5).
+- Task: count descriptors and years in the full index, write ADR 0005, restrict `make fetch` to the subset.
+- Failed: first count matched by substring (`EXTRADIÇÃO` contains `TRADIÇÃO`); fetch would have sampled all 71 760 judgments.
+- Fix: whole-descriptor regex with tests; fetch restricted to the subset.
+- Human check: pending at the time (skim the theme descriptors).
 
-### 2026-10-13 — `make fetch` (M2 T2.1)
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: document fetch loop on top of the polite fetcher: stratified pilot sampling, resume via `fetched_at` and cache, per-document failures listed, parse results stored; tests through a mock transport on the saved judgment fixtures.
-- What failed or needed correction: nothing failed; the pilot is chosen over all rows (not only pending ones) so it stays identical across interrupted runs.
-- How it was fixed: n/a. Also added `ARGS` to the `fetch` Makefile target.
-- Human verification: pending. Never run against the live site; the owner should run `make fetch ARGS="--pilot 100"` after the index finishes and report the failure and empty-field counts it prints.
+### 2026-10-13 — `make fetch`
+- Tool: Claude Code (Sonnet 5.5).
+- Task: fetch loop on the polite fetcher: stratified pilot, resume, failures listed; mock-transport tests.
+- Failed: nothing.
+- Fix: n/a; `ARGS` added to the Makefile target.
+- Human check: owner ran the pilot.
 
-### 2026-10-13 — `make index` live test and a key correction
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: implement the index crawl loop (follow "Seguinte", store rows per page, resume via cache, stop rules) and tests on the saved pages through a mock transport.
-- What failed or needed correction: my first test expected 298 rows but got 297 plus a "conflict": the real saved pages show one case number (`1748/25.2T8OAZ.P1.S1`) with two different judgments, so SPEC §4's `processo` primary key was wrong.
-- How it was fixed: `acordao` and `classification` are now keyed by `doc_id` (the id in the URL), `processo` is an indexed non-unique column; SPEC and ROADMAP updated; tests added for both cases. The SPEC request budget was also corrected (≈740 index requests).
-- Human verification: pending. The loop has only run against saved pages; the owner should do a `--max-pages 3` live run first and compare the stored rows with the browser.
+### 2026-10-13 — `make index` and a key correction
+- Tool: Claude Code (Sonnet 5.5).
+- Task: index crawl loop (follow "Seguinte", resume, stop rules) with mock-transport tests.
+- Failed: one case number has two judgments, so SPEC §4's `processo` key was wrong.
+- Fix: keyed by `doc_id`; SPEC/ROADMAP updated; request budget corrected (≈ 740).
+- Human check: pending at the time (owner to do a `--max-pages 3` live run first).
 
 ### 2026-10-13 — M1 parsers on saved fixtures
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: write index, judgment and descriptor-list parsers from the 8 HTML pages the owner saved; trim fixtures for committing; unit and golden tests; correct SPEC §3 facts.
-- What failed or needed correction: `selectolax` default (modest) backend is deprecated and raises on import, so the lexbor backend is used; the fixtures contained full judgment texts, which AGENTS.md rule 3 forbids committing.
-- How it was fixed: switched to `selectolax.lexbor`; added `pipeline/tools/trim_fixture.py` and kept the raw saves in a gitignored folder. Found that SPEC assumptions were wrong (page size about 100 not 138, `Start` values are not multiples of page size, pages overlap by one row) and updated SPEC.
-- Human verification: pending. The golden JSON was checked by eye against the parsed values of the saved pages only; the owner should spot-check one judgment against the live page.
+- Tool: Claude Code (Sonnet 5.5).
+- Task: index, judgment and descriptor parsers from 8 saved pages; trimmed fixtures; unit and golden tests.
+- Failed: `selectolax`'s default backend raises on import; the fixtures held full texts (rule 3); SPEC page-size and pagination assumptions were wrong.
+- Fix: lexbor backend; `trim_fixture.py`; SPEC §3 corrected.
+- Human check: pending at the time (spot-check one judgment live).
 
 ### 2026-10-13 — M1 crawler core and DB schema
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: SPEC §3 polite fetcher (delay, cache, stop rules, host allowlist, request cap) with tests on httpx.MockTransport; SQLite schema from SPEC §4.
-- What failed or needed correction: (1) a very long shell heredoc command failed to parse, nothing was written; (2) the first `canonical_url` re-encoded the query and turned `?OpenDocument` into `?OpenDocument=`, caught by a unit test.
-- How it was fixed: wrote files with the file tool; canonical_url now filters raw query segments. Added a regression golden file for it.
-- Human verification: pending. The fetcher has never run against the real site (agents must not); the owner should check the first live run against SPEC §3.
+- Tool: Claude Code (Sonnet 5.5).
+- Task: polite fetcher (delay, cache, stop rules, host allowlist, cap) and SQLite schema.
+- Failed: a long heredoc wrote nothing; `canonical_url` turned `?OpenDocument` into `?OpenDocument=`.
+- Fix: file tool; raw query segments kept; regression golden file.
+- Human check: pending at the time (owner to check the first live run against SPEC §3).
 
 ### 2026-10-12 — GitHub Pages deploy and README
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: switch deploy workflow from Cloudflare to GitHub Pages (SHA-pinned actions, CSP via meta tag), rewrite README in pt-PT.
-- What failed or needed correction: `make` on this machine resolved to the npm package `make` (v0.8.1), not GNU Make, and `uv` was not on PATH in the session, so `make verify` could not be run here.
-- How it was fixed: documented the distinction in the README; verification left to the owner / CI.
-- Human verification: pending (owner to run `make verify`, enable Pages, check the CI run).
+- Tool: Claude Code (Sonnet 5.5).
+- Task: deploy to GitHub Pages (SHA-pinned actions, CSP meta tag); README in pt-PT.
+- Failed: `make` resolved to the npm package, and `uv` was not on PATH, so `make verify` could not run.
+- Fix: documented in the README; verification left to the owner and CI.
+- Human check: pending at the time (owner to run `make verify`, enable Pages, check the CI run).
 
 ### 2026-10-12 — Scope/roadmap review and edits
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: analyse SPEC/ROADMAP against the project goal; apply agreed improvements (feasibility spike, stratified pilot, earlier labelling, committed classification snapshot, buffer note).
-- What failed or needed correction: original brief not available to the model, so the review could not check against the test's evaluation criteria.
-- How it was fixed: stated as a limitation; owner to compare against the brief.
-- Human verification: pending (owner to read the ROADMAP/SPEC diff).
+- Tool: Claude Code (Sonnet 5.5).
+- Task: review SPEC/ROADMAP against the goal; add the feasibility spike, stratified pilot, earlier labelling, committed snapshot.
+- Failed: the original brief was not available to the model.
+- Fix: stated as a limitation.
+- Human check: pending at the time (owner to read the SPEC/ROADMAP diff against the brief).
 
 ### 2026-10-12 — Repo scaffold
-- Tool / model: Claude Code (Sonnet 5.5)
-- Task: read SPEC/ROADMAP/AGENTS, clone the repo, create AI_LOG.md, project structure, unit + regression test layout, CI workflows.
-- Prompt / approach: single instruction asking for a starting structure to extend later.
-- What failed or needed correction: `git clone` cannot target a non-empty folder; `uv` and `make` are not installed on this machine, so the Python side and Makefile were not executed here.
-- How it was fixed: used `git init` + `fetch` + `checkout` to attach the existing files to `origin/main`.
-- Human verification: pending (owner to run `make setup && make verify`).
+- Tool: Claude Code (Sonnet 5.5).
+- Task: project structure, test layout, CI workflows, this log.
+- Failed: `git clone` cannot target a non-empty folder; `uv` and `make` not installed.
+- Fix: `git init` + fetch + checkout onto `origin/main`.
+- Human check: pending at the time (owner to run `make setup && make verify`).

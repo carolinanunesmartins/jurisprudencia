@@ -11,6 +11,8 @@ Resumo do [AI_LOG.md](AI_LOG.md), onde cada alteração feita com IA tem uma ent
 | Juiz das divergências | Claude Sonnet 5.5 (API), corrido pelo responsável |
 | Prova de viabilidade e descoberta de perguntas | um modelo numa conversa, com pacotes preparados pelo agente, corrida pelo responsável |
 | Etiquetas de 4 divergências ocultas | GitHub Copilot |
+| Teste de usabilidade do sítio | um subagente do Claude Code que só usa o navegador, como visitante novo |
+| Revisão de segurança | `/security-review` do Claude Code, sobre o repositório inteiro |
 
 ## Como se trabalhou
 
@@ -23,8 +25,9 @@ Resumo do [AI_LOG.md](AI_LOG.md), onde cada alteração feita com IA tem uma ent
 ## O que funcionou
 
 - **Verificação das citações:** 0 citações inventadas publicadas. A primeira regra (substring exata) rejeitava 17 % por diferenças triviais; reparações nomeadas (aspas, números de parágrafo, hifenização do texto-fonte, reticências) reduziram para 11 rejeitadas em 695, sempre guardando o texto do acórdão e não o do modelo.
-- **Testes como rede:** mais de 180 testes Python e 20 do site; vários erros reais foram apanhados por testes (URL canónico que estragava `?OpenDocument`, chave primária repetida no índice, veredictos do juiz perdidos ao reconstruir a partir do instantâneo).
+- **Testes como rede:** mais de 180 testes Python e 29 do site; vários erros reais foram apanhados por testes (URL canónico que estragava `?OpenDocument`, chave primária repetida no índice, veredictos do juiz perdidos ao reconstruir a partir do instantâneo).
 - **Custo controlado:** limite de tokens por resposta, sem repetição de respostas cortadas, orçamento por corrida; ≈ 4 USD para 813 acórdãos.
+- **Verificar o objetivo como um visitante:** um agente que só via o sítio confirmou as 5 partes do objetivo (por tema, divergências, quando, onde, mudança na mesma questão); a primeira versão exigia 3 cliques para ver uma mudança e passou a 1. Depois, menos texto no ecrã (por exemplo 792 → 223 palavras visíveis na pergunta q8) sem perder nenhum aviso.
 - **Encontrar evidência independente do modelo:** os acórdãos de uniformização mostram divergências reconhecidas pelo próprio STJ, com citações literais verificadas.
 
 ## O que falhou ou precisou de correção
