@@ -88,6 +88,23 @@ describe("App (unit)", () => {
     expect(await screen.findByText(messages.divergence.notFound)).toBeInTheDocument();
   });
 
+  it("explains the method and shows the measured numbers", async () => {
+    at("/metodo");
+    expect(await screen.findByRole("heading", { name: messages.method_page.heading })).toBeInTheDocument();
+    expect(screen.getByText(messages.method_page.grounding(10, 9, 1))).toBeInTheDocument();
+    expect(screen.getByText("3/4 (75 %)")).toBeInTheDocument();
+    expect(screen.getByText(messages.method_page.noLabels)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: messages.method_page.report })).toHaveAttribute(
+      "href",
+      messages.method_page.reportUrl,
+    );
+  });
+
+  it("still explains the method when the evaluation is not published", async () => {
+    at("/metodo", empty);
+    expect(await screen.findByText(messages.method_page.unavailable)).toBeInTheDocument();
+  });
+
   it("says when there is no data yet", async () => {
     at("/perguntas", empty);
     expect(await screen.findByText(messages.noData)).toBeInTheDocument();

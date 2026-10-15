@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — M6: divergence page, /metodo, a11y pass
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `/divergencias/:id` with both quotes side by side and how the divergence was detected; `/metodo` rendered from `evaluation.json`, which `make evaluate` now writes next to `report.md` (schema `EvaluationOut`, validated by `make data-check` when present); favicon (SVG, light/dark aware). A11y measured in the preview with scripted checks at 360 px and in light/dark emulation.
+- What failed or needed correction: a stray `cat >> /dev/null` in a shell command waited on stdin and hung the run (stopped, re-run). Token counts were first published as floats (typed `CostOut`). `judge.confidence` was typed as a plain string on the web side (narrowed to the three values the schema allows, removing a cast).
+- How it was fixed: 20 web tests (detail page, card link, not-found, /metodo with and without evaluation) + disclaimer regression on the new routes; 181 pytest; data-check 0 errors.
+- Human verification (what was checked by a person): none yet (the owner is labelling the 4 shown divergences).
+
 ### 2026-10-15 — Evaluation report (M7 T7.2) and divergence sheet (T7.1)
 - Tool / model: Claude Code (Opus 5.5)
 - Task: SPEC §9.4's baseline was only loosely defined, so it was operationalised (label-pool relevance + cue phrases from the frozen position definitions, negated cues ignored, both/none → nao_decide) and committed (`7ed0291`) before being run. `juris/evaluate` writes `data/eval/report.md` (pt-PT, for `/metodo`) from committed data plus the local database (baseline texts) and `data/replay/` (re-derives pair rule v1 from recorded verdicts, no API calls). Run-log numbers the database does not hold are in `data/eval/runs.json`; the survey-recovery table is curated in `data/eval/survey.json`. The label pools moved from `tools/labelsheet.py` to `juris/evaluate/pools.py` (shared, unchanged).

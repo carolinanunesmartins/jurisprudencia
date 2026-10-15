@@ -27,11 +27,13 @@ from juris.detect.judge import JUDGE, Verdict, display
 from juris.detect.judge import run as judge_run
 from juris.evaluate.baseline import predict
 from juris.evaluate.pools import POOLS
+from juris.export.model import EvaluationOut
 from juris.llm.prompt import PROMPTS
 from juris.llm.provider import ReplayProvider
 from juris.taxonomy.model import load_taxonomy
 
 EVAL = Path("data/eval")
+WEB = Path("web/public/data")
 SNAP = Path("data/classifications")
 
 
@@ -153,7 +155,9 @@ def precision_section(labelled: list[dict[str, str]]) -> list[str]:
     return out
 
 
-def report(db: Path, tax_path: Path, replay: Path) -> str:
+def report(db: Path, tax_path: Path, replay: Path) -> tuple[str, dict]:
+    """The markdown report and the key numbers published for `/metodo`."""
+    ev: dict = {}
     conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
     model = _model_predictions()
     rows = _labels()
@@ -175,6 +179,7 @@ def report(db: Path, tax_path: Path, replay: Path) -> str:
     price = runs["price_usd_per_mtok_assumed"]
     usd = tin / 1e6 * price["classify_in"] + tout / 1e6 * price["classify_out"]
     judged = ", ".join(f"{j['run']}: {j['calls']} chamadas" for j in runs["judge"])
+    ev["cost"] = {"input_tokens": tin, "output_tokens": tout, "usd_estimate": round(usd, 2)}
     out += [
         "## 1. Dados e custo",
         "",
@@ -199,6 +204,12 @@ def report(db: Path, tax_path: Path, replay: Path) -> str:
     accepted = [r for r in snap if r["relevant"] and r["quote_ok"]]
     rejected = [r for r in snap if not r["quote_ok"] and r["quote"] is None]
     how = Counter(t for r in accepted for t in (r.get("quote_match") or "").split("+") if t)
+    ev["grounding"] = {
+        "proposed": len(accepted) + len(rejected),
+        "accepted": len(accepted),
+        "rejected": len(rejected),
+    }
+    ev["position"] = []
     out += [
         "## 2. Citações (regra de verificação)",
         "",
@@ -237,6 +248,15 @@ def report(db: Path, tax_path: Path, replay: Path) -> str:
         ):
             pairs = [(r["label"], pred(r)) for r in sub]
             s = score(pairs)
+            ev["position"].append(
+                {
+                    "set": "dev" if name.startswith("dev") else "test",
+                    "system": "model" if system == "modelo" else "baseline",
+                    "rows": len(sub),
+                    "unclear": unclear,
+                    **{k: list(v) for k, v in s.items()},
+                }
+            )
             out.append(
                 f"| {name} ({len(sub)}; {unclear} unclear) | {system} | "
                 f"{_pct(*s['exact'])} | {_pct(*s['recall'])} | {_pct(*s['precision'])} |"
@@ -275,6 +295,12 @@ def report(db: Path, tax_path: Path, replay: Path) -> str:
         out.append(
             f"\n{name}: {len(shown)} de {len(vs)} mostradas, {len(test)} em perguntas de teste."
         )
+    ev["divergences"] = {
+        "judged": len(v2),
+        "shown_v1": sum(d["shown"] for d in v1.values()),
+        "shown_v2": sum(d["shown"] for d in v2.values()),
+        "shown_v2_test": sum(d["shown"] for k, d in v2.items() if k[0] not in DEV),
+    }
     out += [
         "",
         "Gate G3 (≥ 1 divergência confirmada numa pergunta de teste): **ficar** no "
@@ -284,6 +310,7 @@ def report(db: Path, tax_path: Path, replay: Path) -> str:
 
     # 5. AUJ
     aujs = json.loads(Path("data/auj/auj.json").read_text(encoding="utf-8"))
+    ev["aujs"] = len(aujs)
     out += [
         "## 5. Divergências reconhecidas pelo STJ",
         "",
@@ -300,9 +327,12 @@ def report(db: Path, tax_path: Path, replay: Path) -> str:
         with sheet.open(encoding="utf-8-sig", newline="") as f:
             labelled = [r for r in csv.DictReader(f) if (r["label"] or "").strip()]
     out += precision_section(labelled)
+    shown = Counter(r["label"].strip() for r in labelled if r["shown"] == "yes")
+    ev["divergence_labels"] = dict(sorted(shown.items())) or None
 
     # 7. survey recovery
     survey = json.loads((EVAL / "survey.json").read_text(encoding="utf-8"))
+    ev["survey"] = [{k: s[k] for k in ("seed", "topic", "question", "result")} for s in survey]
     out += [
         "## 7. Recuperação do inquérito (5 perguntas-semente)",
         "",
@@ -325,7 +355,7 @@ def report(db: Path, tax_path: Path, replay: Path) -> str:
         "- Subconjunto por descritor (ADR 0005); só 2000–2025.",
         "",
     ]
-    return "\n".join(out)
+    return "\n".join(out), ev
 
 
 SHEET_FIELDS = [
@@ -411,8 +441,15 @@ def main() -> int:
     if not a.db.exists():
         print(f"{a.db} not found: the baseline needs the local texts", file=sys.stderr)
         return 2
-    text = report(a.db, a.taxonomy, a.replay_dir)
+    text, ev = report(a.db, a.taxonomy, a.replay_dir)
     (EVAL / "report.md").write_text(text, encoding="utf-8", newline="\n")
+    # the key numbers for /metodo, validated against the published schema
+    published = EvaluationOut.model_validate(ev).model_dump()
+    (WEB / "evaluation.json").write_text(
+        json.dumps(published, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
     print(text)
     return 0
 

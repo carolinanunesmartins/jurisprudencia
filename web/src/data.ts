@@ -84,12 +84,34 @@ export type Auj = {
   ruling_quote: string;
 };
 
+// Key numbers of data/eval/report.md (written by `make evaluate`); null when not published.
+export type Score = {
+  set: "test" | "dev";
+  system: "model" | "baseline";
+  rows: number;
+  unclear: number;
+  exact: [number, number];
+  recall: [number, number];
+  precision: [number, number];
+};
+
+export type Evaluation = {
+  cost: { input_tokens: number; output_tokens: number; usd_estimate: number };
+  grounding: { proposed: number; accepted: number; rejected: number };
+  position: Score[];
+  divergences: { judged: number; shown_v1: number; shown_v2: number; shown_v2_test: number };
+  aujs: number;
+  divergence_labels: Record<string, number> | null;
+  survey: { seed: number; topic: string; question: string | null; result: string }[];
+};
+
 export type Data = {
   meta: Meta;
   questions: Question[];
   judgments: Judgment[];
   divergences: Divergence[];
   aujs: Auj[];
+  evaluation: Evaluation | null;
 };
 
 async function getJson<T>(name: string): Promise<T> {
@@ -107,5 +129,6 @@ export async function loadData(): Promise<Data> {
     getJson<Divergence[]>("divergences.json"),
     getJson<Auj[]>("aujs.json"),
   ]);
-  return { meta, questions, judgments, divergences, aujs };
+  const evaluation = await getJson<Evaluation>("evaluation.json").catch(() => null);
+  return { meta, questions, judgments, divergences, aujs, evaluation };
 }

@@ -3,7 +3,59 @@ export const messages = {
   appTitle: "Jurisprudência",
   tagline: "Onde e quando a jurisprudência do STJ divergiu.",
   disclaimer: "Sinal para revisão, não é parecer jurídico.",
-  nav: { home: "Início", questions: "Perguntas", aujs: "Divergências reconhecidas pelo STJ" },
+  nav: {
+    home: "Início",
+    questions: "Perguntas",
+    aujs: "Divergências reconhecidas pelo STJ",
+    method: "Método e avaliação",
+  },
+  method_page: {
+    heading: "Método e avaliação",
+    stepsHeading: "Como funciona",
+    steps: [
+      "Subconjunto: os acórdãos do STJ sobre contrato-promessa publicados no dgsi.pt, escolhidos pelos descritores, de 2000 a 2025.",
+      "Perguntas: sete questões jurídicas, cada uma com duas posições definidas por escrito antes de qualquer classificação.",
+      "Classificação: um modelo de linguagem lê o sumário de cada acórdão e indica, para cada pergunta, a posição tomada e o excerto que a sustenta. O excerto mostrado é sempre texto do próprio sumário, verificado palavra a palavra; se não for encontrado, a resposta é descartada.",
+      "Deteção: em janelas de 3 anos procuram-se divisões (as duas posições com pelo menos 2 acórdãos) e mudanças (a posição dominante passa a ser outra).",
+      "Juiz: um segundo modelo lê só a pergunta e os dois excertos, sem saber o que o classificador decidiu, e diz se há oposição real. Só as divergências confirmadas aparecem no sítio.",
+      "Uniformizações: os acórdãos de uniformização são divergências reconhecidas pelo próprio STJ e mostram-se com citações literais, sem depender do modelo.",
+    ],
+    numbersHeading: "Resultados medidos",
+    grounding: (p: number, a: number, r: number) =>
+      `Citações: ${p} respostas com posição; ${a} aceites, ${r} rejeitadas por não estarem no texto. Nenhuma citação inventada é mostrada.`,
+    accuracyHeading: "Exatidão da posição (amostra de 60 acórdãos)",
+    accuracyNote:
+      "Comparação com etiquetas feitas por um modelo de IA, sem revisão humana: a concordância pode estar inflacionada. A «base» é uma regra simples de palavras-chave, fixada antes de ser medida.",
+    cols: {
+      set: "Conjunto",
+      system: "Sistema",
+      exact: "Concordância",
+      recall: "Posição da etiqueta encontrada",
+      precision: "Posição dada correta",
+    },
+    set: { test: "teste", dev: "afinação" },
+    system: { model: "modelo", baseline: "base" },
+    divergences: (j: number, v1: number, v2: number, t: number) =>
+      `Divergências: ${j} detetadas e avaliadas pelo juiz; ${v2} confirmadas e mostradas (${t} em perguntas de teste). Com a primeira regra de escolha dos excertos eram ${v1}.`,
+    labels: (correct: number, total: number) =>
+      `Revisão humana (sem formação jurídica) das divergências mostradas: ${correct} de ${total} consideradas corretas.`,
+    noLabels: "As divergências mostradas ainda não foram revistas por uma pessoa.",
+    aujs: (n: number) => `${n} divergências reconhecidas pelo próprio STJ (acórdãos de uniformização).`,
+    cost: (tokens: string, usd: string) =>
+      `Custo da classificação: ${tokens} tokens, cerca de ${usd} USD (estimativa a preços de tabela).`,
+    surveyHeading: "Comparação com um levantamento prévio da jurisprudência",
+    limitsHeading: "Limitações",
+    limits: [
+      "As etiquetas de avaliação foram feitas por IA, da mesma família do classificador.",
+      "As divergências são confirmadas por um modelo (o juiz), não por um jurista.",
+      "A classificação usa o sumário: o que o sumário omite não é visto.",
+      "O classificador por vezes atribui posição a acórdãos que só tocam a pergunta; o juiz filtra esses casos, ocultando também algumas divergências reais.",
+      "Só acórdãos de 2000 a 2025 com os descritores escolhidos.",
+    ],
+    report: "Relatório completo de avaliação (GitHub)",
+    reportUrl: "https://github.com/carolinanunesmartins/jurisprudencia/blob/main/data/eval/report.md",
+    unavailable: "A avaliação ainda não foi publicada.",
+  },
   auj: {
     heading: "Divergências reconhecidas pelo próprio STJ",
     intro:

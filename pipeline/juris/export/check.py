@@ -14,7 +14,14 @@ from pydantic import TypeAdapter, ValidationError
 
 from juris.classify.grounding import is_grounded
 from juris.export.auj import quotes
-from juris.export.model import AujOut, DivergenceOut, JudgmentOut, Meta, QuestionOut
+from juris.export.model import (
+    AujOut,
+    DivergenceOut,
+    EvaluationOut,
+    JudgmentOut,
+    Meta,
+    QuestionOut,
+)
 
 DATA = Path("web/public/data")
 SOURCE = "https://www.dgsi.pt/"
@@ -39,6 +46,8 @@ def check(data: Path = DATA, db: Path | None = None) -> list[str]:
     judgments = load("judgments.json", TypeAdapter(list[JudgmentOut])) or []
     divergences = load("divergences.json", TypeAdapter(list[DivergenceOut])) or []
     aujs = load("aujs.json", TypeAdapter(list[AujOut])) or []
+    if (data / "evaluation.json").exists():  # written by `make evaluate`, needs the local db
+        load("evaluation.json", TypeAdapter(EvaluationOut))
     if meta is None:
         return errors
     positions = {q.id: {p.id for p in q.positions} for q in questions}

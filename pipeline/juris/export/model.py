@@ -111,3 +111,38 @@ class AujOut(_Strict):
     conflict_quote: str = Quote
     sides: list[AujSideOut]
     ruling_quote: str = Quote
+
+
+class ScoreOut(_Strict):
+    set: Literal["test", "dev"]
+    system: Literal["model", "baseline"]
+    rows: int
+    unclear: int
+    exact: tuple[int, int]
+    recall: tuple[int, int]  # label has a position -> same position
+    precision: tuple[int, int]  # system gives a position -> label agrees
+
+
+class CostOut(_Strict):
+    input_tokens: int
+    output_tokens: int
+    usd_estimate: float  # at assumed list prices (data/eval/runs.json)
+
+
+class SurveyOut(_Strict):
+    seed: int
+    topic: str
+    question: str | None
+    result: str
+
+
+class EvaluationOut(_Strict):
+    """Key numbers of data/eval/report.md for /metodo (written by `make evaluate`)."""
+
+    cost: CostOut
+    grounding: dict[str, int]
+    position: list[ScoreOut]
+    divergences: dict[str, int]
+    aujs: int
+    divergence_labels: dict[str, int] | None
+    survey: list[SurveyOut]
