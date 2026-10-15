@@ -110,6 +110,49 @@ def _verdicts(db: Path, rule: str, tax_path: Path, replay: Path) -> list[dict]:
     return out
 
 
+def precision_section(labelled: list[dict[str, str]]) -> list[str]:
+    """Section 6 from the filled rows of the divergence sheet (SPEC §9.2)."""
+    out = ["## 6. Precisão das divergências", ""]
+    if not labelled:
+        out += [
+            "Pendente: requer etiquetagem humana das divergências (SPEC §9.2). Sem ela, a "
+            "única verificação das divergências mostradas é o juiz (outro modelo).",
+            "",
+        ]
+    else:
+        out += [
+            "Etiquetas de uma pessoa sem formação jurídica (o responsável do projeto), "
+            "a partir dos dois excertos e das ligações ao dgsi.pt; só as divergências "
+            "etiquetadas entram na contagem.",
+            "",
+            "| Conjunto | correct | incorrect | legislative_change | unclear | Precisão |",
+            "|---|---|---|---|---|---|",
+        ]
+        for name, want in (("mostradas no sítio", "yes"), ("ocultadas pelo juiz", "no")):
+            rs = [r for r in labelled if r["shown"] == want]
+            if not rs:
+                continue
+            c = Counter(r["label"].strip() for r in rs)
+            decided = c["correct"] + c["incorrect"] + c["legislative_change"]
+            out.append(
+                f"| {name} ({len(rs)}) | {c['correct']} | {c['incorrect']} | "
+                f"{c['legislative_change']} | {c['unclear']} | "
+                f"{_pct(c['correct'], decided)} |"
+            )
+        notes = [
+            f"- {r['question']} {r['type']} {r['window']}: {r['notes'].strip()}"
+            for r in labelled
+            if (r["notes"] or "").strip()
+        ]
+        out += [
+            "",
+            "Precisão = correct / (correct + incorrect + legislative_change); `unclear` excluído.",
+            *(["", "Notas:", *notes] if notes else []),
+            "",
+        ]
+    return out
+
+
 def report(db: Path, tax_path: Path, replay: Path) -> str:
     conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
     model = _model_predictions()
@@ -251,13 +294,12 @@ def report(db: Path, tax_path: Path, replay: Path) -> str:
     ]
 
     # 6. divergence precision
-    out += [
-        "## 6. Precisão das divergências",
-        "",
-        "Pendente: requer etiquetagem humana das divergências (SPEC §9.2). Sem ela, a "
-        "única verificação das divergências mostradas é o juiz (outro modelo).",
-        "",
-    ]
+    sheet = EVAL / "divergence_labels.csv"
+    labelled = []
+    if sheet.exists():
+        with sheet.open(encoding="utf-8-sig", newline="") as f:
+            labelled = [r for r in csv.DictReader(f) if (r["label"] or "").strip()]
+    out += precision_section(labelled)
 
     # 7. survey recovery
     survey = json.loads((EVAL / "survey.json").read_text(encoding="utf-8"))
