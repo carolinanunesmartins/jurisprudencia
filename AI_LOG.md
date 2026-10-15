@@ -16,6 +16,14 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Taxonomy frozen (v1) and blind label sheet (M3 T3.3)
+- Tool / model: Claude Code (Opus 5.5)
+- Task: freeze the taxonomy (`v1`) and the classification prompt (`pipeline/juris/llm/prompts/classify_v1.md`, rendered by `juris/llm/prompt.py` with approved questions only), and generate the 60-row blind label sheet (`pipeline/tools/labelsheet.py`). Owner decisions taken before any model output: the model classifies from the sumário (ADR 0007, amends ADR 0006), and the dev set is q2 + q3 (SPEC §9.7).
+- Prompt / approach (one line): fixed keyword pools per approved question, 8–9 rows each, evenly spaced by date, excluding the 195 judgments already shown to the owner with an LLM answer (spike, discovery); sheet with sumários is local (`data/labelling/`, gitignored), `data/eval/labels.csv` holds ids and empty labels only.
+- What failed or needed correction: SPEC §9.1 said "12 per seed question", but only 2 of the 5 seeds were approved, and ROADMAP T7.1 said discovered questions are not evaluated. Both were rewritten for the 7 approved questions before generating the sheet. The earlier `render_questions` in the discovery tool also renders rejected questions; the classification prompt uses its own renderer that keeps only `approved`. One test expectation was wrong (Python rounds 12.5 to 12).
+- How it was fixed: SPEC §6.1, §9.1 and §9.7, ROADMAP T3.3/T7.1 updated; ADR 0007 added; tests for the allocation, exclusion, label validation and the approved-only prompt.
+- Human verification (what was checked by a person): owner read and accepted the q6–q10 position definitions and chose the model input and the dev split. Pending: owner labels the 60 rows from the sumário and records their legal background in `data/eval/labeller.md`.
+
 ### 2026-10-15 — Taxonomy approved (7 questions)
 - Tool / model: Claude Code (Sonnet 5.5)
 - Task: write the approved `data/taxonomy.json` from the owner's decision on the discovery results: approved q2, q3 (kept for the survey comparison), q6 prazo absoluto/relativo, q7 possuidor/detentor, q8 retenção exige consumidor, q9 retenção vs hipoteca, q10 sinal e execução específica; rejected q1, q4, q5.

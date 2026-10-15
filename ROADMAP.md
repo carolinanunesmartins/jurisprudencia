@@ -19,13 +19,15 @@ Note: the saved judgments are not on the contrato-promessa theme (recent civil/p
 - HUMAN: `make index` (≈30 min, evening). Then T1.3: list descriptors, count candidates per descriptor and year, apply SPEC §2 decision rule, write `docs/adr/0005-subset.md` with the real numbers.
 - Accept: index of the whole STJ in SQLite; subset chosen with counts; ADR written.
 
-## M1.5 — Feasibility spike (1 h) · doing · day 1–2 · deps: M1 fixtures
+## M1.5 — Feasibility spike (1 h) · done · day 1–2 · deps: M1 fixtures
+Closed 2026-10-15: the spike failed on all three seed questions; the owner chose to go to M3 discovery instead of switching subset, and gate G2 passed there (see M3).
 Result 2026-10-14, seed question 3 (sinal e mora), 20 pilot judgments spread over 2002–2025, classified from the sumário by an LLM chat pass (owner): **FAIL on the criterion** — 9 judgments position B (incumprimento definitivo required), 0 position A (mora is enough), 11 do not decide the question; 0 quotes rejected. B appears in every period (2002 to 2025), so in this sample the question looks settled, not split. One question and a keyword-selected pool of 100 fetched judgments is thin evidence; next: fetch the rest of the subset (needed anyway), rerun the spike on questions 1 and 2 (survey splits 2005 and 2008–2013) with the larger pool, before any decision to switch subset. G2 at M3 remains the real gate.
 Result 2026-10-14, questions 1 and 2 on the full pool (810 fetched, 20 sumários each, same LLM-chat method, 0 quotes rejected): **both FAIL the criterion**. Q1 (execução específica vs alienação a terceiro): 1 position A, 19 nenhuma; the keyword pool was mostly off-question (precision about 1 in 20), so Q1 is untested rather than settled. Q2 (mora vs definitivo for execução específica): 6 position A (2003–2024), 0 position B; no split visible in the sumários, although the survey cites 2008–2013 judgments. Across the three seed questions only one position was ever seen per question. Pass criterion unchanged. Decision pending with the owner (see AI_LOG).
 - HUMAN: take ~20 saved judgments on seed question 1 or 3 and run one LLM pass (human-run, key needed) with a draft prompt.
 - Accept: at least 2 positions observed in the sample, or decide early to switch to the fallback subset (SPEC §2). Gate G2 still applies at M3 with the 150 sample, but this spike catches a bad subset before M2.
 
-## M2 — Document crawl and parser (4 h) · todo · days 2–3 · deps: M1
+## M2 — Document crawl and parser (4 h) · done · days 2–3 · deps: M1
+Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with full text, 736 with both (90.5%, below the 95% bar). The gaps are empty on dgsi.pt itself, not parser failures; handled by ADR 0006 and ADR 0007 (classify from the sumário). The "ver acórdão T REL" processo mismatch was a parser bug, fixed with a test.
 - T2.1 Document fetcher (same rules), `--max-requests`. *Progress: `make fetch ARGS="--pilot 100"` implemented and tested offline (stratified pilot, resume, failures listed). Pilot done 2026-10-14 (100 stored, 0 failures after one stop on server disconnects). **Real parse rate: 91/100 with non-empty sumário and texto, below the 95% bar.** All 9 gaps are missing on the site itself (verified in the cached HTML), not parser bugs: 5 from 2000–2001 have a sumário but no full text, 2 from 2003 have full text but no sumário, 2 from 2010 have no full text. From 2004 on: 81/83 complete (97.6%). Owner decision: sumário-only judgments are classified from the sumário and flagged (ADR 0006).*
 - T2.2 Parser (fixtures from M1) → `acordao.sumario/texto/decisao`; tests on ≥ 5 fixtures including footnotes and anonymised text.
 - HUMAN: `make fetch` for a **pilot of 100, random and stratified by year** (not the first 100 fetched; otherwise M4 shows no time effect) (evening) and later the rest (overnight, possibly across several runs).
@@ -35,7 +37,7 @@ Result 2026-10-14, questions 1 and 2 on the full pool (810 fetched, 20 sumários
 - T3.1 Seed `taxonomy.json` from SPEC §5.2. *Done 2026-10-14 (`data/taxonomy.json` + validator; q4/q5 positions are drafts for owner review).*
 - T3.2 Discovery pass on 150 sampled judgments (HUMAN-run, needs key) → ≤ 3 proposed questions. *Done 2026-10-15: G2 passes on the SPEC rule (about 5 two-sided questions, thin support); owner approved 7 questions. Kit 2026-10-14: `python pipeline/tools/discovery.py pack|check`, 3 packs of 50 in `data/discovery/`; owner pastes each into an LLM chat and saves `answer_<k>.json`.*
 - HUMAN (≈45 min): approve/edit/reject questions and positions. Gate G2 (SPEC §2).
-- T3.3 Freeze taxonomy + prompt version (tag it). Generate the blind label sheet for the 60-judgment position-accuracy sample now (moved from M7: it does not depend on model output).
+- T3.3 Freeze taxonomy + prompt version (tag it). Generate the blind label sheet for the 60-judgment position-accuracy sample now (moved from M7: it does not depend on model output). *Done 2026-10-15: taxonomy `v1` + prompt `classify_v1`, git tag `taxonomy-v1`. Sheet: `python pipeline/tools/labelsheet.py make` → `data/labelling/sheet.md` (local) and `data/eval/labels.csv` (committed, labels empty); `labelsheet.py validate` checks the filled labels. Allocation and dev/test split (dev = q2, q3) written into SPEC §9 before any model output; model input = sumário (ADR 0007).*
 - HUMAN (≈2 h, days 4–5): fill the 60 labels. Record the labeller's legal background in the report; single annotator is a stated limitation; allow an `unclear` label.
 - Accept: `taxonomy.json` with 5–8 approved questions, each with ≥ 2 positions and definitions; taxonomy/prompt frozen before labelling.
 
@@ -60,7 +62,7 @@ Result 2026-10-14, questions 1 and 2 on the full pool (810 fetched, 20 sumários
 - Accept: all routes work offline-static; a11y checks have no serious issues; CSP headers applied.
 
 ## M7 — Evaluation (3 h) · todo · day 8 · deps: M5 (parallel with M6)
-- T7.1 Label sheet for ≤ 30 divergences (the 60 position labels are already done in M3). Report counts alongside percentages; no confidence-interval claims at this sample size. Discovered questions beyond the 5 seeds are listed as not evaluated.
+- T7.1 Label sheet for ≤ 30 divergences (the 60 position labels are already done in M3). Report counts alongside percentages; no confidence-interval claims at this sample size. All 7 approved questions are evaluated (5 of them came from discovery, not the survey); the 3 rejected seeds appear only in the survey-recovery table.
 - HUMAN (≈1 h): label the divergences.
 - T7.2 Metrics script and baseline; `data/eval/report.md`; survey-recovery table.
 - Accept: report with measured numbers, dev/test split respected, limitations listed.

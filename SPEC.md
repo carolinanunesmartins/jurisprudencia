@@ -52,8 +52,8 @@ M3 runs one LLM pass over a random sample of 150 judgments to propose up to 3 fu
 
 ## 6. Classification and detection
 ### 6.1 Per-judgment classification (REQ-CLS)
-Judgments with no full text are classified from the sumário alone and flagged `text_source=sumario` (ADR 0006); those with neither are excluded and counted.
-One call per judgment, all approved questions at once. Input: header fields, sumário, and the reasoning sections truncated to ≈ 6 000 tokens. Output (pydantic): for each question `{relevant: bool, position_id | null, quote, note}`. `quote` ≤ 400 chars, verbatim. Rejected if not a substring (after whitespace normalisation) → stored as `relevant=false` with `quote_ok=false` and counted.
+Judgments are classified from the sumário (`text_source=sumario`); only those without a sumário use the full text (`text_source=texto`) (ADR 0007, amending ADR 0006). Those with neither are excluded and counted.
+One call per judgment, all approved questions at once (prompt `classify_v1`, frozen with taxonomy `v1`, git tag `taxonomy-v1`). Input: header fields and the sumário, or, without a sumário, the reasoning sections truncated to ≈ 6 000 tokens. Output (pydantic): for each question `{relevant: bool, position_id | null, quote, note}`. `quote` ≤ 400 chars, verbatim. Rejected if not a substring (after whitespace normalisation) → stored as `relevant=false` with `quote_ok=false` and counted.
 Temperature 0, one retry on schema failure only, prompts versioned in `pipeline/juris/llm/prompts/*.md`.
 ### 6.2 Detection (REQ-DET), pure functions over `classification`
 Definitions use calendar-year windows and are configurable (`detect.toml`). Defaults, fixed before looking at results:
@@ -86,13 +86,13 @@ Quality bar: keyboard navigable, visible focus, colour-blind-safe palette with n
 CSP via `<meta http-equiv>` in `web/index.html` (GitHub Pages cannot set headers; `frame-ancestors` is therefore not enforceable): `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self'`.
 
 ## 9. Evaluation (REQ-EVAL), outputs in `data/eval/report.md`
-1. **Position accuracy:** owner labels 60 judgments (stratified: 12 per seed question) blind to model output → accuracy and confusion matrix vs the model.
+1. **Position accuracy:** owner labels 60 (judgment, question) rows from the sumário, blind to model output → accuracy and confusion matrix vs the model. Stratified over the 7 approved questions (changed 2026-10-15, before any model output, because only 2 of the 5 seeds were approved): 8 each for q2, q3, q10 and 9 each for the two-sided discovered q6–q9, drawn from fixed keyword pools in `pipeline/tools/labelsheet.py`, evenly spaced by date, excluding judgments the owner already saw with an LLM answer (spike, discovery). Labels: a position id, `nao_decide` or `unclear`. Keyword pools are noisy, so many rows will be `nao_decide`; report counts next to percentages.
 2. **Divergence precision:** owner labels up to 30 detected divergences as correct / incorrect / legislative-change / unclear → precision per type.
 3. **Survey recovery:** for each of the five seed questions, does the system find the split or shift the survey describes? Table of yes/partial/no with evidence.
 4. **Baseline:** keyword heuristic (opposing decision words within the same descriptor) on the same labelled set.
 5. **Grounding:** quotes proposed, accepted, rejected (hard gate: accepted fabrications = 0).
 6. **Cost and time:** tokens, currency, minutes per stage.
-7. **Split:** two questions are the dev set (tune `detect.toml` here); the rest are the test set. Report test results only for the test set; report dev separately.
+7. **Split:** two questions are the dev set (tune `detect.toml` here); the rest are the test set. Fixed 2026-10-15 by the owner, before any classification: dev = q2, q3 (the approved survey seeds); test = q6–q10. Report test results only for the test set; report dev separately.
 No target numbers are invented in advance; report what is measured.
 
 ## 10. Security and privacy

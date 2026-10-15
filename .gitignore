@@ -6,6 +6,8 @@ data/*.db-*
 data/*.sqlite*
 data/spike/
 data/discovery/
+# blind label sheet holds sumários; data/eval/labels.csv (ids and labels only) is committed
+data/labelling/
 .env
 .env.*
 !.env.example
