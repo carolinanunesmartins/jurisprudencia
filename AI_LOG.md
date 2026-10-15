@@ -16,6 +16,14 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — M4 T4.1 classification module
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `juris/llm/provider.py` (provider interface, ReplayProvider keyed by sha256 of the canonical request, Anthropic adapter over `httpx` with temperature 0, cached system block and a replay fixture recorded per answer); `juris/classify/schema.py` (pydantic validation of the untrusted answer against the approved questions); `juris/classify/run.py` + `__main__` (sumário first per ADR 0007, one retry on schema failure only, grounding check against the text actually sent, resume by prompt version, stratified `--pilot`).
+- Prompt / approach (one line): no new dependency; the live run refuses to start until all 60 blind labels are filled (`--not-blind` overrides), so model output cannot precede the labels.
+- What failed or needed correction: two lines over the ruff limit. SPEC §7's `generate_json(prompt_id, input)` had no place for the rendered prompt, so the signature gained `system`.
+- How it was fixed: wrapped; SPEC §7 updated. Unit tests cover the schema, grounding rejection, the text fallback, resume, the retry, the HTTP adapter (mock transport) and the label guard. `make classify-replay` was smoke-run on the real database: 0 fixtures exist yet, as expected.
+- Human verification (what was checked by a person): none yet. The live pilot (`make classify ARGS="--pilot 100"`) is HUMAN-run after the labels are committed.
+
 ### 2026-10-15 — Taxonomy frozen (v1) and blind label sheet (M3 T3.3)
 - Tool / model: Claude Code (Opus 5.5)
 - Task: freeze the taxonomy (`v1`) and the classification prompt (`pipeline/juris/llm/prompts/classify_v1.md`, rendered by `juris/llm/prompt.py` with approved questions only), and generate the 60-row blind label sheet (`pipeline/tools/labelsheet.py`). Owner decisions taken before any model output: the model classifies from the sumário (ADR 0007, amends ADR 0006), and the dev set is q2 + q3 (SPEC §9.7).

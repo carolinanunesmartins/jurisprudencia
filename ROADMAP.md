@@ -42,7 +42,7 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 - Accept: `taxonomy.json` with 5–8 approved questions, each with ≥ 2 positions and definitions; taxonomy/prompt frozen before labelling.
 
 ## M4 — Vertical slice online ★ (3 h) · todo · day 4 · deps: M3 (code may start once T3.3 is done; the live run waits for the labels)
-- T4.1 Classification module + `ReplayProvider` + schema + grounding check (tests with fixtures).
+- T4.1 Classification module + `ReplayProvider` + schema + grounding check (tests with fixtures). *Done 2026-10-15 (`juris/classify/`, `juris/llm/provider.py`): `make classify ARGS="--pilot 100"` (HUMAN) refuses to run until the 60 labels are filled; `make classify-replay` offline. Columns `note`, `text_source` added to `classification` (auto-migrated).*
 - HUMAN: run classification on the 100-judgment pilot; measure tokens/cost; set the API spend limit. **Only after the commit with the 60 filled labels (`data/eval/labels.csv`) exists**: that commit, dated before any classification output, is the evidence that the labels are blind.
 - T4.2 Export `web/public/data/*.json` for the pilot; minimal UI: `/perguntas` and one question timeline; deploy.
 - Accept: a public URL showing real pilot data with quotes and links. If this fails, cut scope now (see Cuts).

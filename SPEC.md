@@ -70,7 +70,7 @@ For the ≤ 40 strongest divergences: a larger model receives only the two quote
 `alta` = support ≥ 3 on both sides and judge agrees; `média` = support ≥ 2 and judge agrees; `baixa` = otherwise. Displayed next to every divergence.
 
 ## 7. LLM access
-- Provider interface `LlmProvider.generate_json(prompt_id, input) -> dict`. First adapter: Anthropic (env `LLM_API_KEY`, models from `CLASSIFY_MODEL`, `JUDGE_MODEL`).
+- Provider interface `LlmProvider.generate_json(prompt_id, system, input) -> dict` (`juris/llm/provider.py`). First adapter: Anthropic over the existing `httpx` dependency, no SDK (env `LLM_API_KEY`, models from `CLASSIFY_MODEL`, `JUDGE_MODEL`); a live run records each answer as a replay fixture in `data/replay/` (gitignored).
 - `ReplayProvider`: fixtures keyed by sha256 of the canonical request JSON, used in tests and `make classify-replay`.
 - Cost control: measure tokens on the 100-judgment pilot, extrapolate, and set a spend limit on the API key before the full run (HUMAN). Prefer prompt caching of the taxonomy and instructions, and the provider's batch endpoint if it fits.
 

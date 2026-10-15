@@ -31,9 +31,9 @@ index:
 fetch:
 	uv run python -m juris.crawl.fetch $(ARGS)
 classify:
-	uv run python -m juris.classify --provider live
+	uv run python -m juris.classify --provider live $(ARGS)
 classify-replay:
-	uv run python -m juris.classify --provider replay
+	uv run python -m juris.classify --provider replay $(ARGS)
 
 # --- local, deterministic
 detect:
