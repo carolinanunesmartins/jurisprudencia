@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Taxonomy approved (7 questions)
+- Tool / model: Claude Code (Sonnet 5.5)
+- Task: write the approved `data/taxonomy.json` from the owner's decision on the discovery results: approved q2, q3 (kept for the survey comparison), q6 prazo absoluto/relativo, q7 possuidor/detentor, q8 retenção exige consumidor, q9 retenção vs hipoteca, q10 sinal e execução específica; rejected q1, q4, q5.
+- What failed or needed correction: before writing the position definitions I re-read the quotes: for q10 both found judgments (2008, 2013) sit on the same side, so it is not yet two-sided as I had first presented it; kept because the full classification will show whether the other side exists. Position definitions are drafted from the quotes, not checked by a lawyer.
+- How it was fixed: stated in the seed_source of q10; test now checks the approved ids. Note for M4: classification must use only `status == "approved"` questions (the discovery packs rendered all of them).
+- Human verification: the owner chose the list; still pending: read the position definitions of q6-q10.
+
 ### 2026-10-14 — M3 discovery pass result (150 judgments)
 - Tool / model: owner ran the 3 packs in an LLM chat (human-run); Claude Code (Sonnet 5.5) ran `discovery.py check` and read the output.
 - Task: gate G2 measurement and new-question proposals.

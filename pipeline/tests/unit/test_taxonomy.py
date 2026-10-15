@@ -23,7 +23,15 @@ def question(qid="q", positions=("a", "b")):
 
 def test_committed_seed_taxonomy_is_valid():
     tax = load_taxonomy(ROOT / DEFAULT_PATH)
-    assert [q.id for q in tax.questions] == ["q1", "q2", "q3", "q4", "q5"]
+    assert [q.id for q in tax.questions if q.status == "approved"] == [
+        "q2",
+        "q3",
+        "q6",
+        "q7",
+        "q8",
+        "q9",
+        "q10",
+    ]
 
 
 def test_needs_two_positions():

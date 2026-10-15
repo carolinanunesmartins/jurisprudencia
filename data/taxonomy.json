@@ -1,65 +1,230 @@
 {
-  "version": "seed-0",
+  "version": "approved-0",
   "questions": [
     {
       "id": "q1",
       "title_pt": "Execução específica após alienação a terceiro",
       "description_pt": "Se o promitente-vendedor alienou o bem a terceiro antes do registo da ação, a execução específica continua possível?",
-      "norms": ["CC art. 413.º", "CC art. 830.º"],
-      "positions": [
-        {"id": "admite", "label_pt": "Admite a execução específica", "definition_pt": "A execução específica continua possível apesar da alienação a terceiro (por exemplo, promessa com eficácia real registada)."},
-        {"id": "exclui", "label_pt": "Exclui a execução específica", "definition_pt": "Alienado o bem a terceiro, a execução específica já não é possível."}
+      "norms": [
+        "CC art. 413.º",
+        "CC art. 830.º"
       ],
-      "seed_source": "SPEC 5.2 item 1 (survey: AUJ 05/11/1998 vs STJ 05/05/2005)",
-      "status": "seed"
+      "positions": [
+        {
+          "id": "admite",
+          "label_pt": "Admite a execução específica",
+          "definition_pt": "A execução específica continua possível apesar da alienação a terceiro (por exemplo, promessa com eficácia real registada)."
+        },
+        {
+          "id": "exclui",
+          "label_pt": "Exclui a execução específica",
+          "definition_pt": "Alienado o bem a terceiro, a execução específica já não é possível."
+        }
+      ],
+      "seed_source": "SPEC 5.2 item 1 (survey: AUJ 05/11/1998 vs STJ 05/05/2005); rejected 2026-10-15: too few judgments in the 150-sample discovery pass (q1: 1, q4/q5: 0)",
+      "status": "rejected"
     },
     {
       "id": "q2",
       "title_pt": "Execução específica: mora ou incumprimento definitivo",
       "description_pt": "Para a execução específica basta a mora do promitente ou exige-se incumprimento definitivo?",
-      "norms": ["CC art. 830.º"],
+      "norms": [
+        "CC art. 830.º"
+      ],
       "positions": [
-        {"id": "basta_mora", "label_pt": "Basta a mora", "definition_pt": "A mora do promitente é suficiente para a execução específica."},
-        {"id": "exige_definitivo", "label_pt": "Exige incumprimento definitivo", "definition_pt": "A execução específica pressupõe incumprimento definitivo, não bastando a mora."}
+        {
+          "id": "basta_mora",
+          "label_pt": "Basta a mora",
+          "definition_pt": "A mora do promitente é suficiente para a execução específica."
+        },
+        {
+          "id": "exige_definitivo",
+          "label_pt": "Exige incumprimento definitivo",
+          "definition_pt": "A execução específica pressupõe incumprimento definitivo, não bastando a mora."
+        }
       ],
       "seed_source": "SPEC 5.2 item 2 (survey: STJ 2008, 2010, 2013)",
-      "status": "seed"
+      "status": "approved"
     },
     {
       "id": "q3",
       "title_pt": "Sinal e mora",
       "description_pt": "Para as consequências do sinal basta a mora ou exige-se incumprimento definitivo?",
-      "norms": ["CC art. 442.º n.º 2"],
+      "norms": [
+        "CC art. 442.º n.º 2"
+      ],
       "positions": [
-        {"id": "basta_mora", "label_pt": "Basta a mora", "definition_pt": "A mora é suficiente para as consequências do sinal."},
-        {"id": "exige_definitivo", "label_pt": "Exige incumprimento definitivo", "definition_pt": "Só o incumprimento definitivo produz as consequências do sinal."}
+        {
+          "id": "basta_mora",
+          "label_pt": "Basta a mora",
+          "definition_pt": "A mora é suficiente para as consequências do sinal."
+        },
+        {
+          "id": "exige_definitivo",
+          "label_pt": "Exige incumprimento definitivo",
+          "definition_pt": "Só o incumprimento definitivo produz as consequências do sinal."
+        }
       ],
       "seed_source": "SPEC 5.2 item 3 (survey: STJ 2006-2012)",
-      "status": "seed"
+      "status": "approved"
     },
     {
       "id": "q4",
       "title_pt": "Redução equitativa da cláusula penal aplicada ao sinal",
       "description_pt": "O sinal que funciona como cláusula penal pode ser reduzido equitativamente?",
-      "norms": ["CC art. 812.º", "CC art. 442.º"],
-      "positions": [
-        {"id": "reduz", "label_pt": "Admite a redução", "definition_pt": "O art. 812.º aplica-se ao sinal, que pode ser reduzido equitativamente."},
-        {"id": "nao_reduz", "label_pt": "Não admite a redução", "definition_pt": "O sinal não pode ser reduzido nos termos do art. 812.º."}
+      "norms": [
+        "CC art. 812.º",
+        "CC art. 442.º"
       ],
-      "seed_source": "SPEC 5.2 item 4 (survey: STJ 18/11/2004 vs 1977, 1983)",
-      "status": "seed"
+      "positions": [
+        {
+          "id": "reduz",
+          "label_pt": "Admite a redução",
+          "definition_pt": "O art. 812.º aplica-se ao sinal, que pode ser reduzido equitativamente."
+        },
+        {
+          "id": "nao_reduz",
+          "label_pt": "Não admite a redução",
+          "definition_pt": "O sinal não pode ser reduzido nos termos do art. 812.º."
+        }
+      ],
+      "seed_source": "SPEC 5.2 item 4 (survey: STJ 18/11/2004 vs 1977, 1983); rejected 2026-10-15: too few judgments in the 150-sample discovery pass (q1: 1, q4/q5: 0)",
+      "status": "rejected"
     },
     {
       "id": "q5",
       "title_pt": "Sinal, tradição da coisa e afastamento da execução específica",
       "description_pt": "Havendo sinal, presume-se afastada a execução específica; a tradição da coisa altera essa presunção?",
-      "norms": ["CC art. 830.º n.º 2"],
-      "positions": [
-        {"id": "presuncao_mantem", "label_pt": "A presunção mantém-se", "definition_pt": "Com sinal presume-se afastada a execução específica, mesmo com tradição da coisa."},
-        {"id": "presuncao_afastada", "label_pt": "A tradição afasta a presunção", "definition_pt": "A tradição da coisa permite a execução específica apesar do sinal."}
+      "norms": [
+        "CC art. 830.º n.º 2"
       ],
-      "seed_source": "SPEC 5.2 item 5 (survey: STJ 19/12/2006; TRP 20/01/2005)",
-      "status": "seed"
+      "positions": [
+        {
+          "id": "presuncao_mantem",
+          "label_pt": "A presunção mantém-se",
+          "definition_pt": "Com sinal presume-se afastada a execução específica, mesmo com tradição da coisa."
+        },
+        {
+          "id": "presuncao_afastada",
+          "label_pt": "A tradição afasta a presunção",
+          "definition_pt": "A tradição da coisa permite a execução específica apesar do sinal."
+        }
+      ],
+      "seed_source": "SPEC 5.2 item 5 (survey: STJ 19/12/2006; TRP 20/01/2005); rejected 2026-10-15: too few judgments in the 150-sample discovery pass (q1: 1, q4/q5: 0)",
+      "status": "rejected"
+    },
+    {
+      "id": "q6",
+      "title_pt": "Prazo para celebrar o contrato prometido: absoluto ou relativo",
+      "description_pt": "O prazo fixado para a celebração do contrato definitivo é um termo absoluto (o seu decurso é incumprimento definitivo) ou relativo (o seu decurso é apenas mora)?",
+      "norms": [
+        "CC art. 777.º",
+        "CC art. 808.º"
+      ],
+      "positions": [
+        {
+          "id": "relativo",
+          "label_pt": "Prazo relativo",
+          "definition_pt": "O prazo é relativamente fixo: o seu decurso gera mora, não incumprimento definitivo."
+        },
+        {
+          "id": "absoluto",
+          "label_pt": "Prazo absoluto",
+          "definition_pt": "O prazo é absolutamente fixo: o seu decurso sem celebração do contrato é incumprimento definitivo."
+        }
+      ],
+      "seed_source": "Discovery pass 2026-10-15 (150-judgment sample, owner-approved)",
+      "status": "approved"
+    },
+    {
+      "id": "q7",
+      "title_pt": "Promitente-comprador com tradição: possuidor ou detentor",
+      "description_pt": "O promitente-comprador a quem foi entregue a coisa (tradição) é possuidor, com acesso à tutela possessória e à usucapião, ou mero detentor precário?",
+      "norms": [
+        "CC art. 1251.º",
+        "CC art. 1253.º"
+      ],
+      "positions": [
+        {
+          "id": "detentor",
+          "label_pt": "Mero detentor",
+          "definition_pt": "A tradição não confere posse: o promitente-comprador é detentor precário (ou possuidor em nome alheio)."
+        },
+        {
+          "id": "possuidor",
+          "label_pt": "Possuidor",
+          "definition_pt": "A tradição confere posse em nome próprio, ao menos quando acompanhada de certos factos (por exemplo, pagamento integral do preço)."
+        }
+      ],
+      "seed_source": "Discovery pass 2026-10-15 (150-judgment sample, owner-approved)",
+      "status": "approved"
+    },
+    {
+      "id": "q8",
+      "title_pt": "Direito de retenção do promitente-comprador: exige a qualidade de consumidor",
+      "description_pt": "O direito de retenção do promitente-comprador com tradição depende de ele ser consumidor?",
+      "norms": [
+        "CC art. 755.º n.º 1 al. f)"
+      ],
+      "positions": [
+        {
+          "id": "exige_consumidor",
+          "label_pt": "Exige consumidor",
+          "definition_pt": "O direito de retenção só beneficia o promitente-comprador que seja consumidor."
+        },
+        {
+          "id": "nao_exige",
+          "label_pt": "Não exige consumidor",
+          "definition_pt": "O direito de retenção existe independentemente da qualidade de consumidor."
+        }
+      ],
+      "seed_source": "Discovery pass 2026-10-15 (150-judgment sample, owner-approved)",
+      "status": "approved"
+    },
+    {
+      "id": "q9",
+      "title_pt": "Direito de retenção do promitente-comprador face a hipoteca anterior",
+      "description_pt": "O direito de retenção do promitente-comprador prevalece sobre uma hipoteca anteriormente registada?",
+      "norms": [
+        "CC art. 755.º n.º 1 al. f)",
+        "CC art. 759.º"
+      ],
+      "positions": [
+        {
+          "id": "prevalece",
+          "label_pt": "Prevalece",
+          "definition_pt": "O direito de retenção prevalece sobre a hipoteca, ainda que anteriormente registada."
+        },
+        {
+          "id": "nao_prevalece",
+          "label_pt": "Não prevalece",
+          "definition_pt": "O direito de retenção não prevalece sobre a hipoteca (pelo menos em certos casos, como a hipoteca legal)."
+        }
+      ],
+      "seed_source": "Discovery pass 2026-10-15 (150-judgment sample, owner-approved)",
+      "status": "approved"
+    },
+    {
+      "id": "q10",
+      "title_pt": "Sinal e execução específica",
+      "description_pt": "Havendo sinal, a execução específica é admissível ou presume-se afastada (art. 830.º n.º 2)? A presunção pode ser ilidida?",
+      "norms": [
+        "CC art. 830.º n.º 2"
+      ],
+      "positions": [
+        {
+          "id": "admissivel",
+          "label_pt": "Admissível",
+          "definition_pt": "O sinal não impede a execução específica, ou a presunção de a afastar é ilidível."
+        },
+        {
+          "id": "afastada",
+          "label_pt": "Afastada",
+          "definition_pt": "Havendo sinal, a execução específica está afastada, salvo convenção expressa em contrário."
+        }
+      ],
+      "seed_source": "Discovery pass 2026-10-15 (150-judgment sample, owner-approved); both judgments found so far sit on the first position",
+      "status": "approved"
     }
   ]
 }
