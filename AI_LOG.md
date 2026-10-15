@@ -16,6 +16,15 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — M5 T5.2 judge pass and LLM runbook
+- Tool / model: Claude Code (Opus 5.5)
+- Task: `juris/detect/judge.py`. The judge pass sees only the question, the two quotes, their dates and assigned positions (SPEC §6.4), covering at most 40 divergences, weakest-side support first. It adds rule confidence (§6.5), the UI label rule, and the Gate G3 verdict. Also `make judge` / `make judge-replay`, and `docs/llm-runbook.md` for the owner (key, spend limit, env vars, order, cost estimate).
+- Prompt / approach (one line): verdicts are cached as replay fixtures (replay first, live on a miss), so rerunning detect and the judge does not pay twice.
+- What failed or needed correction: a `
+` inside an f-string became a literal line break when generated through a script (syntax error). On an empty database the gate printed "PIVOT", which is misleading before any classification exists.
+- How it was fixed: rewritten; the gate now says it is not decidable while nothing is classified. 8 new unit tests (rule confidence, ranking, display, gate counting test questions only, cache).
+- Human verification (what was checked by a person): none yet.
+
 ### 2026-10-15 — M5 T5.1 detection
 - Tool / model: Claude Code (Opus 5.5)
 - Task: `pipeline/juris/detect/` (pure functions for split, shift and resolved, plus the uniformização marker), `detect.toml` with the SPEC §6.2 defaults, and `make detect` writing the `divergence` table. Written before any classification exists, so nothing was tuned on results.

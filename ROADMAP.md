@@ -50,7 +50,7 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 ## M5 — Full classification and detection (4 h) · todo · days 5–6 · deps: M4
 - HUMAN: full `make classify` (cost limit set); keep the run log.
 - T5.1 Detection per SPEC §6.2–6.5, config in `detect.toml`, unit tests on synthetic matrices (shift, split, resolved, ties, thin support). *Done 2026-10-15 (§6.2–6.3; `make detect` writes the `divergence` table and prints per question, dev/test). Rule confidence §6.5 needs the judge: T5.2.*
-- T5.2 Judge pass for the top divergences; store verdicts.
+- T5.2 Judge pass for the top divergences; store verdicts. *Done 2026-10-15 (code): `juris/detect/judge.py`, prompt `judge_v1`, `make judge` (HUMAN) / `make judge-replay`; rule confidence §6.5; prints the Gate G3 verdict. Runbook: `docs/llm-runbook.md`.*
 - Gate G3 (SPEC §2): ≥ 1 judge-confirmed split/shift on a test question → stay; 0 → pivot to arrendamento urbano. Decide by Sat 17/10.
 - T5.3 Commit `data/classifications` snapshot (metadata, position, quote, `texto_sha256`, url; no full texts) so `detect`, `export` and `data-check` run from a fresh clone.
 - Day-5 checkpoint: decide cuts (judge pass, `resolved`, filters) from actual progress, not at the end.

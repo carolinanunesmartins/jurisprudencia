@@ -1,5 +1,5 @@
 # Commands are part of the contract in AGENTS.md §2: keep names stable.
-.PHONY: setup verify lint test test-unit test-regression web-verify index fetch classify classify-replay detect export data-check web-dev
+.PHONY: setup verify lint test test-unit test-regression web-verify index fetch classify classify-replay detect judge judge-replay export data-check web-dev
 
 setup:
 	uv sync
@@ -34,6 +34,10 @@ classify:
 	uv run python -m juris.classify --provider live $(ARGS)
 classify-replay:
 	uv run python -m juris.classify --provider replay $(ARGS)
+judge:
+	uv run python -m juris.detect.judge --provider live
+judge-replay:
+	uv run python -m juris.detect.judge --provider replay
 
 # --- local, deterministic
 detect:
