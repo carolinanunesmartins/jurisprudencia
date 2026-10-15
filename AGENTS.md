@@ -25,7 +25,7 @@ pipeline/tests/{fixtures,unit,regression}/   unit = isolated logic; regression =
 data/                    committed: taxonomy.json, eval/labels.csv, eval/report.md
 data/raw/ data/*.db      gitignored (HTML cache, full texts)
 web/                     Vite + React + TS + Tailwind; reads web/public/data/*.json
-docs/{adr/,method.md}
+docs/{adr/,arquitetura.md,llm-runbook.md}
 AGENTS.md SPEC.md ROADMAP.md README.md NOTA.md IA.md AI_LOG.md CHANGELOG.md LICENSE
 ```
 

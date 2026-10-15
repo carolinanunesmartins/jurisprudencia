@@ -7,6 +7,9 @@ Agrupa acórdãos do Supremo Tribunal de Justiça (STJ), publicados no [dgsi.pt]
 **Sítio:** https://carolinanunesmartins.github.io/jurisprudencia/
 **Ler primeiro:** [NOTA.md](NOTA.md) (uma página) · [IA.md](IA.md) (uso de IA) · [relatório de avaliação](data/eval/report.md)
 
+> [!TIP]
+> **Arquitetura em duas imagens:** [como o MVP foi construído e como deve continuar](docs/arquitetura.md). Recolha, classificação com a citação como prova, deteção, publicação; e a seguir: vários tribunais, texto integral, atualização automática e um produto para advogados.
+
 ## O que mostra
 
 - **813 acórdãos** do STJ sobre contrato-promessa (2000–2025), em **7 perguntas**, com as posições ano a ano.
@@ -67,7 +70,7 @@ pipeline/tests/   unit/, regression/ (golden/), fixtures/ (HTML guardado)
 pipeline/tools/   scripts pontuais: spike, descoberta, folha de etiquetas, contagens
 web/              site (Vite + React + TypeScript + Tailwind); lê web/public/data/
 data/             taxonomy.json, classifications/, auj/, eval/  (raw/ e *.db ficam locais)
-docs/             adr/ (decisões), llm-runbook.md
+docs/             arquitetura.md, adr/ (decisões), llm-runbook.md
 ```
 
 CI em cada *pull request* (`ci-ok` é o *check* obrigatório). O deploy para o GitHub Pages só publica dados que passam o `data-check` ([ADR 0001](docs/adr/0001-static-site-github-pages.md)).

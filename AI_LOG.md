@@ -15,6 +15,13 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-15 — Architecture deliverable: how the MVP was built and how it continues
+- Tool: Claude Code (Opus 5.5).
+- Task: new deliverable `docs/arquitetura.md` (pt-PT) with Mermaid diagrams that GitHub renders: (1) the MVP in four stages (recolher, classificar, detetar, publicar); (2) the continuation, decided with the owner in two rounds of questions: for lawyers; more STJ themes, other courts, full text; scheduled incremental runs; AI-only review, disclosed; fully automatic, versioned questions; backend API + database + accounts; search by norm, ready citation, follow a question. Then a four-phase view with "ready when" criteria. README highlights it.
+- Failed: the first layouts were too wide or stair-stepped (Mermaid ignores a subgraph's direction when edges cross into it); bold labels were clipped.
+- Fix: stages linked subgraph to subgraph, an invisible link for side-by-side stores, shorter labels; every diagram rendered with Mermaid 11 and checked by screenshot. The risks the owner's choices bring are written next to the diagram: automatic questions drop the MVP's pre-registration, AI-only results for lawyers, personal data with accounts, cost of full text.
+- Human check: owner chose every direction and approved the phase order.
+
 ### 2026-10-15 — Housekeeping, ADRs 0001–0004, security review, shorter docs
 - Tool: Claude Code (Opus 5.5); `/security-review` run as a subagent over the whole repository.
 - Task: review the deliverables, simplify README, IA.md and this log, remove what the repo does not need, review security.

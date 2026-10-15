@@ -3,6 +3,7 @@
 All notable changes. Format: Conventional Commits, newest first. Details per step in AI_LOG.md.
 
 ## Unreleased
+- docs: `docs/arquitetura.md`, architecture of the MVP and of its continuation (Mermaid diagrams, four phases), highlighted in the README
 - chore: housekeeping; ADRs 0001–0004 (required by SPEC §11, recorded retroactively); README and AI_LOG condensed; `DgsiLink` renders only dgsi.pt links (security hardening)
 - feat(web): minimal reading (emphasis by position colour, badges, details behind a click); brief verifiable in 0–1 clicks; faster load and SEO (M9)
 - feat(web): visual identity "duas vozes", mirrored year chart, self-hosted type (ADR 0008) (M9)
