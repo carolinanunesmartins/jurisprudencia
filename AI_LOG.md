@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Merge conflicts and the first deploy with data (M4 done)
+- Tool / model: Claude Code (Opus 5.5)
+- Task: resolve the PR conflicts, then verify the deployed site. `main` (#20) was the squash of branch commit 5d33321 (identical tree), so all 14 conflicts resolved to the branch version; the merged tree was checked equal to the branch and the tests re-run. After the owner merged (#21) and the deploy ran: compared the 5 live data files with the committed ones (equal once CRLF/LF is ignored) and checked `/`, `/perguntas/q8`, `/uniformizacoes` in a browser via scripted DOM reads.
+- What failed or needed correction: the full-page screenshot timed out in the browser tool, so the check read the rendered DOM instead; resizing to 360 px did not take effect, so the phone layout is not verified yet.
+- How it was fixed: n/a (left to the M6 a11y pass). Console: only a `/favicon.ico` 404.
+- Human verification (what was checked by a person): the owner merged and confirmed the deploy.
+
 ### 2026-10-15 — Deploy gated by data-check
 - Tool / model: Claude Code (Opus 5.5)
 - Task: the owner asked for the deploy job. One already existed (`deploy.yml`, M0: build on push to `main`, upload, deploy to Pages); Pages is enabled and serves the old `main`. Added a `data-check` job that the build needs, so data failing `make data-check` is never published.
