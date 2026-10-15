@@ -32,10 +32,21 @@ def main() -> int:
         action="store_true",
         help="allow a live run before the 60 labels are filled (breaks the blind evaluation)",
     )
+    ap.add_argument(
+        "--reground",
+        action="store_true",
+        help="with --provider replay: re-check the quotes of judgments already classified",
+    )
     a = ap.parse_args()
     tax = load_taxonomy(a.taxonomy)
+    conn = connect(a.db)
+    if a.reground and a.provider != "replay":
+        print("--reground needs --provider replay (it makes no API calls)", file=sys.stderr)
+        return 2
     if a.provider == "replay":
-        provider = ReplayProvider(a.replay_dir)
+        # keep the model that produced the recorded answers
+        models = [r[0] for r in conn.execute("SELECT DISTINCT model FROM classification")]
+        provider = ReplayProvider(a.replay_dir, model=models[0] if len(models) == 1 else "replay")
     else:
         filled, total = labels_filled(LABELS)
         if (total == 0 or filled < total) and not a.not_blind:
@@ -54,12 +65,13 @@ def main() -> int:
         )
     try:
         stats = run(
-            connect(a.db),
+            conn,
             provider,
             tax,
             pilot=a.pilot,
             limit=a.limit,
             budget_tokens=a.budget_tokens,
+            reground=a.reground,
         )
     except ApiError as e:
         # judgments finished before the error are stored; re-running resumes (runbook §5)

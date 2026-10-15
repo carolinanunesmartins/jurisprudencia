@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
-from juris.classify.grounding import is_grounded
+from juris.classify.grounding import ground
 from juris.classify.schema import SchemaError, validate_answer
 from juris.crawl.fetch import select_pilot
 from juris.db.subset import subset_ids
@@ -34,6 +34,7 @@ class Stats:
     missing_fixtures: int = 0
     quotes_accepted: int = 0
     quotes_rejected: int = 0
+    repairs: Counter[str] = field(default_factory=Counter)
     by_source: Counter[str] = field(default_factory=Counter)
     positions: Counter[tuple[str, str]] = field(default_factory=Counter)
 
@@ -44,6 +45,7 @@ class Stats:
             f"answers cut at max_tokens (not retried): {self.truncated}",
             f"missing replay fixtures: {self.missing_fixtures}",
             f"quotes accepted: {self.quotes_accepted}; rejected: {self.quotes_rejected}",
+            f"  how accepted quotes were matched: {dict(sorted(self.repairs.items()))}",
         ]
         if self.stopped_by_budget:
             lines.append("STOPPED: token budget reached; run again to continue")
@@ -120,11 +122,14 @@ def classify_one(
     now = datetime.now(UTC).isoformat(timespec="seconds")
     out = []
     for qid, a in answers.items():
-        relevant, quote_ok = a.relevant, False
+        relevant, quote_ok, quote = a.relevant, False, a.quote
         if relevant:
-            quote_ok = is_grounded(a.quote, text)
-            if quote_ok:
+            span, how = ground(a.quote, text)
+            quote_ok = span is not None
+            if span is not None:
+                quote = span  # the text's own words, never the model's copy
                 stats.quotes_accepted += 1
+                stats.repairs.update(how)
                 stats.positions[(qid, a.position_id or "")] += 1
             else:
                 stats.quotes_rejected += 1
@@ -135,7 +140,7 @@ def classify_one(
                 qid,
                 int(relevant),
                 a.position_id if relevant else None,
-                a.quote,
+                quote,
                 int(quote_ok),
                 a.note,
                 source,
@@ -157,11 +162,15 @@ def run(
     limit: int | None = None,
     budget_tokens: int | None = None,
     progress_every: int = 50,
+    reground: bool = False,
 ) -> Stats:
+    """Classify the judgments not yet done; with `reground`, redo the ones already done (from
+    replay fixtures, so no API calls) to apply a change in grounding."""
     conn.row_factory = sqlite3.Row
     pool = eligible(conn)
     ids = select_pilot(conn, pilot, PILOT_SEED, population=pool) if pilot else sorted(pool)
-    todo = [d for d in ids if d not in done_ids(conn, CLASSIFY)][:limit]
+    done = done_ids(conn, CLASSIFY)
+    todo = [d for d in ids if (d in done) == reground][:limit]
     system = classify_prompt(tax)
     stats = Stats()
     for i, doc_id in enumerate(todo, 1):

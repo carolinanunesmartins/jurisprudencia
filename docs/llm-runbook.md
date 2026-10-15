@@ -40,3 +40,4 @@ That is about 1.5 M input tokens and at most about 0.5 M output tokens for the f
 - "STOPPED: token budget reached": expected if the estimate was low; check the printed tokens, then re-run (or raise `--budget-tokens`).
 - "schema failures" in the summary: the model answered in the wrong shape twice. Those judgments are not stored and are retried on the next run.
 - "quotes rejected": the model quoted text that is not in the sumário. Those answers are stored as not relevant and counted (AGENTS.md rule 4).
+- After a change to quote grounding, re-check every stored answer offline, with no API calls: `uv run python -m juris.classify --provider replay --reground` (back up `data/juris.db` first).

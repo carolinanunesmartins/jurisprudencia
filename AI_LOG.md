@@ -16,6 +16,14 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Full classification run and quote-grounding repairs
+- Tool / model: Claude Code (Opus 5.5); classifier claude-haiku-4-5-20251001 (owner-run).
+- Task: the owner ran `make classify` on all 813 judgments (100-judgment pilot first): 0 schema failures, 0 truncated, about 2.1 M tokens. 118 of 695 relevant quotes (17 %) were rejected by grounding, 10 of the pilot's 13 on test questions q6/q7. Diagnosed offline from the recorded answers: the model joined passages with "...", left out paragraph numbers ("II –"), wrote straight for curly quotes, mended spacing/hyphenation broken in the source ("promes-sa", "contratopromessa"), added a final full stop, or exceeded 400 characters.
+- Prompt / approach: kept prompt `classify_v1` (frozen; rewording after seeing answers on test questions would be tuning on results, rule 8, and would mean paying for the run again). Instead `grounding.ground` locates the quote with the named repairs in SPEC §6.1 and stores the text's own span; `is_grounded` (whitespace-only) still gates every stored quote and `make data-check` re-checks it. `--reground` re-applies grounding from the replay fixtures with no API calls.
+- What failed or needed correction: grounding compared the model's string verbatim, so faithful quotes with trivial differences were discarded and their positions lost. First attempt left 31 rejections; inspecting them showed source-text defects and "[...]", so a spacing/hyphen-insensitive fallback, bracketed ellipsis and trailing-stop rules were added.
+- How it was fixed: after re-grounding 11 rejected, 684 accepted (577 exact, 22 typography, 25 numbering, 9 spacing, 4 punctuation, 23 ellipsis = longest piece only, 41 trimmed at a sentence end; a quote can count in more than one). The 11 left are real misquotes (paraphrase, text not in the sumário, "codigo" for "código"). Limits to disclose: ellipsis and trimmed quotes show only part of what the model cited, so the shown excerpt may support the position less clearly. Database backed up to `data/juris.before-reground.db` first. `make detect`: 25 divergences, 20 split/shift on test questions.
+- Human verification (what was checked by a person): none yet; the judge pass and the evaluation against the 60 labels follow.
+
 ### 2026-10-15 — Optional workspace header for keys not scoped to a workspace
 - Tool / model: Claude Code (Opus 5.5)
 - Task: the pilot re-run now showed the cause: "This API key is not scoped to a workspace, so this request must include the anthropic-workspace-id header". Added an optional `LLM_WORKSPACE_ID` env var; when set, `make classify` and `make judge` send it as `anthropic-workspace-id`. Documented in `.env.example` and runbook §1.
