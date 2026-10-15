@@ -16,6 +16,14 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Evaluation labels (60 rows) filled by AI, not by a human
+- Tool / model: Claude Code (Opus 5.5)
+- Task: fill `data/eval/labels.csv` from `data/labelling/sheet.md` (ROADMAP M3, a `HUMAN:` task). The owner had no time and no legal training and asked the agent to do it; the agent first declined, then did it on explicit owner instruction.
+- Prompt / approach: read each sumário only (no model output exists yet, no dgsi.pt access); one label per row; `unclear` when the sumário distinguishes cases or decides only the concrete case; reasons in `notes`.
+- What failed or needed correction: nothing technical. Methodological limits: (1) the gold labels are not human; (2) labeller and classifier are both Claude models, so errors may be correlated and agreement inflated; (3) no legal expert reviewed them. Result: 60 labels (29 position labels, 29 nao_decide, 2 unclear).
+- How it was fixed: disclosed in `data/eval/labeller.md`; must be stated in `data/eval/report.md` and `IA.md`. The labels are still blind to the classifier (committed before any classification run).
+- Human verification (what was checked by a person): none. A jurist's review of the 29 position labels and the 2 `unclear` rows is recommended.
+
 ### 2026-10-15 — Cost guards for the live run
 - Tool / model: Claude Code (Opus 5.5)
 - Task: on the owner's request, bound the worst-case API cost. Changes: answers capped at 1 200 tokens (was 2 000); an answer cut at the cap (`stop_reason=max_tokens`) is not retried; `make classify` stops at a token budget (default 3 M, about 2x the estimate) and prints progress every 50 judgments; the judge treats a cut answer as invalid instead of crashing.
