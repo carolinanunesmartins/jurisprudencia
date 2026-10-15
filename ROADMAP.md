@@ -66,14 +66,15 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 - T6.3 `/metodo` (filled from `data/eval/report.md` later), disclaimer, a11y pass (keyboard, focus, contrast, 360 px).
 - Accept: all routes work offline-static; a11y checks have no serious issues; CSP headers applied.
 
-## M7 — Evaluation (3 h) · doing · day 8 · deps: M5 (parallel with M6)
+## M7 — Evaluation (3 h) · done · day 8 · deps: M5 (parallel with M6)
 - *2026-10-15: `make evaluate` writes `data/eval/report.md` (cost, grounding, position accuracy vs the pre-registered keyword baseline, v1/v2 divergences re-derived from recorded verdicts, AUJ, survey recovery, limitations). Divergence sheet `data/eval/divergence_labels.csv` (23 rows) generated; divergence precision waits for the HUMAN labels.*
 - T7.1 Label sheet for ≤ 30 divergences (the 60 position labels are already done in M3). Report counts alongside percentages; no confidence-interval claims at this sample size. All 7 approved questions are evaluated (5 of them came from discovery, not the survey); the 3 rejected seeds appear only in the survey-recovery table.
 - HUMAN (≈1 h): label the divergences.
 - T7.2 Metrics script and baseline; `data/eval/report.md`; survey-recovery table.
 - Accept: report with measured numbers, dev/test split respected, limitations listed.
 
-## M8 — Docs, video, submission ★ (3 h) · todo · day 9 · deps: M6, M7
+## M8 — Docs, video, submission ★ (3 h) · doing · day 9 · deps: M6, M7
+- *2026-10-15: T8.1 README (pt-PT: what it shows, quickstart without crawl, reproduction from the committed snapshot, full HUMAN reproduction), T8.2 NOTA.md (one page), T8.3 IA.md (from AI_LOG) done; fresh-clone reproduction re-checked. Remaining HUMAN: video, submission.*
 - T8.1 `README.md` (pt-PT): what it is, quickstart without crawling (uses committed data), full reproduction steps, crawl policy.
 - T8.2 `NOTA.md` (≤ 1 page): subset and criterion, grouping approach, divergence detection, main limitations.
 - T8.3 `IA.md` from `AI_LOG.md`: tools, workflow, what worked, what failed.

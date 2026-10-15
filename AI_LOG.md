@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — M8 docs: README, NOTA.md, IA.md
+- Tool / model: Claude Code (Opus 5.5)
+- Task: rewrite the stale README (it still said M0 and that fetch/classify were not implemented) with the live URL, what the site shows, a quickstart without crawl or API key, reproduction from `data/classifications/` and the full HUMAN pipeline; NOTA.md (one page: subset and criterion, grouping, detection, results, limitations); IA.md summarised from all AI_LOG entries; CHANGELOG by milestone.
+- What failed or needed correction: self-review of the drafts found two statements not supported by the record: IA.md listed a judge "memory" bug caught by tests that never happened, and NOTA.md implied the theme was chosen for its uniformização activity (that was found later). Both corrected; model attribution made less precise where the dates were not exact.
+- How it was fixed: as above; the README's "byte for byte" claim re-checked (snapshot → new database → detect → export equals `web/public/data`).
+- Human verification (what was checked by a person): pending (the owner reads the three documents before the submission).
+
 ### 2026-10-15 — Divergence labels: wrong rows, then AI labels disclosed
 - Tool / model: Claude Code (Opus 5.5)
 - Task: the agent asked the owner to label "rows 2, 12, 17, 23" (the shown divergences, column `n`); the labels landed on file lines 2, 12, 17, 23, i.e. `n` = 1, 11, 16, 22 (hidden divergences), and were made by GitHub Copilot (entry below). The owner chose to keep AI labels, disclosed. The agent labelled the 4 shown rows from the two quotes (q10 correct, q7 unclear, q8 correct, q9 incorrect: different legal grounds) and added a `labeller` column.
