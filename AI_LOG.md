@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Show the API's error message on a failed live call
+- Tool / model: Claude Code (Opus 5.5)
+- Task: the owner's first `make classify ARGS="--pilot 100"` failed with a bare `400 Bad Request` traceback, which does not say why. `AnthropicProvider` now raises `ApiError` carrying the API's own error type and message (the response body never contains the key); `make classify` and `make judge` print it and exit without a traceback. Runbook §5 lists the usual 400 causes (no credit, wrong model name).
+- What failed or needed correction: `raise_for_status()` dropped the response body, so the cause of the 400 was lost.
+- How it was fixed: as above, with a unit test using a mocked 400 response.
+- Human verification (what was checked by a person): pending; the owner re-runs the pilot and reads the message.
+
 ### 2026-10-15 — Evaluation labels (60 rows) filled by AI, not by a human
 - Tool / model: Claude Code (Opus 5.5)
 - Task: fill `data/eval/labels.csv` from `data/labelling/sheet.md` (ROADMAP M3, a `HUMAN:` task). The owner had no time and no legal training and asked the agent to do it; the agent first declined, then did it on explicit owner instruction.

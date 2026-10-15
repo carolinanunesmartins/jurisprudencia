@@ -9,7 +9,7 @@ from juris.classify.run import build_input, labels_filled, run
 from juris.classify.schema import SchemaError, validate_answer
 from juris.db.schema import connect
 from juris.llm.prompt import CLASSIFY, classify_prompt
-from juris.llm.provider import AnthropicProvider, ReplayProvider, request_key
+from juris.llm.provider import AnthropicProvider, ApiError, ReplayProvider, request_key
 from juris.taxonomy.model import load_taxonomy
 
 pytestmark = pytest.mark.unit
@@ -164,3 +164,14 @@ def test_run_stops_at_the_token_budget(tmp_path):
     assert stats.judgments == 2 and stats.stopped_by_budget
     rest = run(conn, AnthropicProvider("k", "m", client=client), TAX)
     assert rest.judgments == 3  # resumes with the remaining judgments
+
+
+def test_api_error_shows_the_api_message_not_only_the_status():
+    def handler(request):
+        body = {"type": "error", "error": {"type": "invalid_request_error", "message": "bad model"}}
+        return httpx.Response(400, json=body)
+
+    p = AnthropicProvider("k", "m", client=httpx.Client(transport=httpx.MockTransport(handler)))
+    with pytest.raises(ApiError, match="400: invalid_request_error: bad model") as e:
+        p.generate_json(CLASSIFY, "s", "i")
+    assert e.value.status == 400

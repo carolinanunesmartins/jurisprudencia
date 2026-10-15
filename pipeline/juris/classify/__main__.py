@@ -7,7 +7,7 @@ from pathlib import Path
 
 from juris.classify.run import labels_filled, run
 from juris.db.schema import connect
-from juris.llm.provider import AnthropicProvider, ReplayProvider
+from juris.llm.provider import AnthropicProvider, ApiError, ReplayProvider
 from juris.taxonomy.model import load_taxonomy
 
 LABELS = Path("data/eval/labels.csv")
@@ -50,9 +50,19 @@ def main() -> int:
             print("set LLM_API_KEY and CLASSIFY_MODEL (see .env.example)", file=sys.stderr)
             return 2
         provider = AnthropicProvider(key, model, record=a.replay_dir)
-    stats = run(
-        connect(a.db), provider, tax, pilot=a.pilot, limit=a.limit, budget_tokens=a.budget_tokens
-    )
+    try:
+        stats = run(
+            connect(a.db),
+            provider,
+            tax,
+            pilot=a.pilot,
+            limit=a.limit,
+            budget_tokens=a.budget_tokens,
+        )
+    except ApiError as e:
+        # judgments finished before the error are stored; re-running resumes (runbook §5)
+        print(f"{e}\nStopped. See docs/llm-runbook.md §5, then re-run.", file=sys.stderr)
+        return 1
     print(stats.report())
     if isinstance(provider, AnthropicProvider):
         print(f"tokens: {provider.usage}")

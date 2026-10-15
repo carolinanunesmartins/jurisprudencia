@@ -24,6 +24,23 @@ class Truncated(RuntimeError):
     """The answer hit max_tokens. Not retried: the same request would be cut again."""
 
 
+class ApiError(RuntimeError):
+    """The API refused the request; the message is the API's own (it never contains the key)."""
+
+    def __init__(self, status: int, message: str):
+        super().__init__(f"API error {status}: {message}")
+        self.status = status
+
+
+def api_error(resp: httpx.Response) -> ApiError:
+    try:
+        err = resp.json().get("error") or {}
+        message = f"{err.get('type', '?')}: {err.get('message', '')}"
+    except ValueError:
+        message = resp.text[:500]
+    return ApiError(resp.status_code, message)
+
+
 def tokens_used(provider: object) -> int:
     """Input + output tokens billed so far (0 for providers that do not bill)."""
     usage: dict[str, int] = getattr(provider, "usage", {})
@@ -100,7 +117,8 @@ class AnthropicProvider:
             "messages": [{"role": "user", "content": input}],
         }
         resp = self._client.post(ANTHROPIC_URL, headers=self._headers, json=body)
-        resp.raise_for_status()
+        if resp.is_error:
+            raise api_error(resp)
         data = resp.json()
         for k, v in (data.get("usage") or {}).items():
             if isinstance(v, int):

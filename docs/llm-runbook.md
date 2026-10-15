@@ -30,6 +30,8 @@ That is about 1.5 M input tokens and at most about 0.5 M output tokens for the f
 - The spend limit on the key is the final backstop.
 
 ## 5. If something fails
+- The run prints the API's own message (`API error <status>: <type>: <message>`); read it first.
+- `400 invalid_request_error`: most often "credit balance is too low" (buy credits in Settings → Billing) or a wrong model name in `CLASSIFY_MODEL` / `JUDGE_MODEL`. `404 not_found_error` with a model name also means a wrong model name.
 - `401`: wrong key. `429`/`529`: rate limit or overload; wait a minute and re-run (the run resumes).
 - "STOPPED: token budget reached": expected if the estimate was low; check the printed tokens, then re-run (or raise `--budget-tokens`).
 - "schema failures" in the summary: the model answered in the wrong shape twice. Those judgments are not stored and are retried on the next run.

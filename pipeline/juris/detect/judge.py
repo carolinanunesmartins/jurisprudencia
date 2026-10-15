@@ -20,6 +20,7 @@ from juris.db.schema import connect
 from juris.llm.prompt import PROMPTS
 from juris.llm.provider import (
     AnthropicProvider,
+    ApiError,
     LlmProvider,
     MissingFixture,
     ReplayProvider,
@@ -155,6 +156,9 @@ def main() -> int:
         print(run(conn, provider, load_taxonomy(a.taxonomy), system))
     except MissingFixture as e:
         print(f"no replay fixture for a divergence ({e}); run `make judge` live first")
+        return 1
+    except ApiError as e:
+        print(f"{e}\nStopped. See docs/llm-runbook.md §5, then re-run.", file=sys.stderr)
         return 1
     gate_g3(conn)
     return 0
