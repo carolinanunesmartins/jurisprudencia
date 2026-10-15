@@ -62,7 +62,7 @@ export type Divergence = {
     real_opposition: boolean;
     legislative_change_possible: boolean;
     rationale: string;
-    confidence: string;
+    confidence: "alta" | "media" | "baixa";
   } | null;
 };
 

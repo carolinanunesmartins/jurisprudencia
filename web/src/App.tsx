@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import { type Data, loadData } from "./data";
 import { messages } from "./messages.pt";
-import { AujPage, Home, QuestionPage, Questions } from "./pages";
+import { AujPage, DivergencePage, Home, QuestionPage, Questions } from "./pages";
 
 type State = { status: "loading" } | { status: "error" } | { status: "ready"; data: Data };
 
@@ -38,6 +38,7 @@ export function App({ load = loadData }: { load?: () => Promise<Data> }) {
           <Route path="/perguntas" element={<Questions data={state.data} />} />
           <Route path="/perguntas/:id" element={<QuestionPage data={state.data} />} />
           <Route path="/uniformizacoes" element={<AujPage data={state.data} />} />
+          <Route path="/divergencias/:id" element={<DivergencePage data={state.data} />} />
           <Route path="*" element={<Home data={state.data} />} />
         </Routes>
       )}

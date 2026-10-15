@@ -163,7 +163,74 @@ function DivergenceCard({ d, q }: { d: Divergence; q: Question }) {
           <p>«{p.quote}»</p>
         </blockquote>
       ))}
+      <p className="text-sm">
+        <Link
+          to={`/divergencias/${encodeURIComponent(d.id)}`}
+          className="underline text-[color:var(--color-accent)]"
+        >
+          {messages.divergence.detail}
+        </Link>
+      </p>
     </li>
+  );
+}
+
+export function DivergencePage({ data }: { data: Data }) {
+  const { id } = useParams();
+  const d = data.divergences.find((x) => x.id === id);
+  const q = d && data.questions.find((x) => x.id === d.question_id);
+  if (!d || !q) return <p>{messages.divergence.notFound}</p>;
+  const index = (pos: string) => q.positions.findIndex((p) => p.id === pos);
+  const label = (pos: string) => q.positions[index(pos)]?.label ?? pos;
+  return (
+    <section className="space-y-4">
+      <Link to={`/perguntas/${q.id}`} className="underline text-[color:var(--color-accent)]">
+        {messages.divergence.backTo(q.title)}
+      </Link>
+      <h2 className="text-xl font-semibold">
+        {messages.display[d.display]} · {messages.type[d.type]} ·{" "}
+        {messages.years(d.window_start, d.window_end)}
+      </h2>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {d.pair.map((p) => (
+          <article key={p.doc_id} className="rounded border border-[color:var(--color-rule)] p-3 space-y-2">
+            <p className="font-medium">
+              <svg width="14" height="14" aria-hidden="true" className="inline mr-1">
+                <Marker index={index(p.position)} x={7} y={7} />
+              </svg>
+              {label(p.position)}
+            </p>
+            <p className="text-sm text-[color:var(--color-muted)]">
+              {p.date} · <DgsiLink url={p.url}>{p.processo || messages.table.open}</DgsiLink>
+            </p>
+            <blockquote>«{p.quote}»</blockquote>
+          </article>
+        ))}
+      </div>
+      <h3 className="font-semibold">{messages.divergence.how}</h3>
+      <ul className="list-disc pl-5 space-y-2">
+        <li>{messages.divergence.window(d.window_start, d.window_end)}</li>
+        <li>
+          {messages.divergence.support}{" "}
+          {Object.entries(d.support)
+            .map(([pos, n]) => `${label(pos)}: ${n}`)
+            .join("; ")}
+        </li>
+        <li>{messages.divergence.rule[d.type]}</li>
+        {d.judge && (
+          <li>
+            {messages.divergence.judge(messages.divergence.judgeConfidence[d.judge.confidence])}
+            <p className="mt-1 text-sm text-[color:var(--color-muted)]">{messages.divergence.rationale}</p>
+            <p className="text-sm">{d.judge.rationale}</p>
+          </li>
+        )}
+        {d.rule_confidence && (
+          <li>
+            {messages.confidence[d.rule_confidence]}. {messages.divergence.ruleConfidence}
+          </li>
+        )}
+      </ul>
+    </section>
   );
 }
 

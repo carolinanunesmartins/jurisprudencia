@@ -59,5 +59,27 @@ export const messages = {
   type: { split: "divisão", shift: "mudança", resolved: "uniformização" },
   confidence: { alta: "confiança da regra: alta", media: "confiança da regra: média", baixa: "confiança da regra: baixa" },
   noDivergences: "Nenhuma divergência confirmada nesta pergunta.",
+  divergence: {
+    detail: "Ver em detalhe e como foi detetada",
+    notFound: "Divergência não encontrada.",
+    backTo: (title: string) => `← ${title}`,
+    how: "Como foi detetada",
+    window: (a: number, b: number) => `Janela de anos analisada: ${a}–${b}.`,
+    support: "Acórdãos com posição nesta janela:",
+    rule: {
+      split:
+        "Divisão: numa mesma janela de 3 anos há pelo menos 2 acórdãos de cada posição. Mostram-se os dois acórdãos de posições opostas mais próximos no tempo, com citações completas.",
+      shift:
+        "Mudança: a posição dominante numa janela de 3 anos (pelo menos 60 % e 2 acórdãos) passa a ser outra numa janela posterior. Mostram-se o último acórdão da posição antiga e o primeiro da nova.",
+      resolved:
+        "Acórdão de uniformização com posição nesta pergunta, datado dentro ou depois do período da divergência. Não quer dizer que a divergência tenha terminado: ver as datas.",
+    },
+    judge: (confidence: string) =>
+      `Um segundo modelo (o juiz) leu apenas a pergunta, as posições e os dois excertos, sem saber que posição o classificador atribuiu, e concluiu que há oposição real (confiança do juiz: ${confidence}).`,
+    rationale: "Justificação do juiz (texto gerado por um modelo, não verificado):",
+    ruleConfidence:
+      "Confiança da regra: alta quando o juiz confirma e a posição com menos acórdãos tem pelo menos 3; média com pelo menos 2; baixa nos restantes casos.",
+    judgeConfidence: { alta: "alta", media: "média", baixa: "baixa" },
+  },
   splitTag: { dev: "conjunto de afinação", test: "conjunto de teste" },
 } as const;
