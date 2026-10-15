@@ -1,11 +1,14 @@
 {
- "by_source": {},
- "classified": 0,
- "divergences_hidden": 0,
- "divergences_shown": 0,
+ "by_source": {
+  "sumario": 800,
+  "texto": 13
+ },
+ "classified": 813,
+ "divergences_hidden": 20,
+ "divergences_shown": 3,
  "divergences_unjudged": 0,
  "prompt_version": "classify_v1",
- "quotes_rejected": 0,
+ "quotes_rejected": 11,
  "subset_size": 813,
  "taxonomy_version": "v1"
 }

@@ -1,1 +1,113 @@
-[]
+[
+ {
+  "display": "mudanca",
+  "id": "q3-split-2002-2006",
+  "judge": {
+   "confidence": "alta",
+   "legislative_change_possible": false,
+   "rationale": "O excerto A exige incumprimento culposo definitivo para a devolução do sinal em dobro, enquanto o B afirma que a mora basta para os efeitos do art. 442 do CC; são posições incompatíveis sobre a mesma questão. Com apenas cinco meses de intervalo em 2002 e referência ao mesmo regime, não há indício de alteração legislativa.",
+   "real_opposition": true
+  },
+  "pair": [
+   {
+    "date": "2002-05-28",
+    "doc_id": "a1985e04d7045e2180256c3d004e1e6a",
+    "position": "exige_definitivo",
+    "processo": "02A1337",
+    "quote": "Para constituir fundamento de resolução e justificar a devolução do sinal em dobro o incumprimento culposo tem de ser definitivo.",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/a1985e04d7045e2180256c3d004e1e6a?OpenDocument"
+   },
+   {
+    "date": "2002-09-19",
+    "doc_id": "86c74ab6a5b04ab080256c4e00519e71",
+    "position": "basta_mora",
+    "processo": "02B2150",
+    "quote": "A mora basta para se desencadearem os efeitos do art. 442 do CC.",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/86c74ab6a5b04ab080256c4e00519e71?OpenDocument"
+   }
+  ],
+  "question_id": "q3",
+  "rule_confidence": "alta",
+  "support": {
+   "basta_mora": 3,
+   "exige_definitivo": 42
+  },
+  "type": "split",
+  "window_end": 2006,
+  "window_start": 2002
+ },
+ {
+  "display": "mudanca",
+  "id": "q7-shift-2004-2009",
+  "judge": {
+   "confidence": "media",
+   "legislative_change_possible": false,
+   "rationale": "O excerto A afirma que a tradição da coisa transfere a posse ao promitente-comprador, enquanto o excerto B nega-lhe a posse em nome próprio, qualificando-o como mero detentor sem acesso à tutela possessória. Não há indicação de alteração legislativa, mas o excerto A é pouco desenvolvido e não esclarece se a posse é em nome próprio.",
+   "real_opposition": true
+  },
+  "pair": [
+   {
+    "date": "2006-12-05",
+    "doc_id": "40b0065882a837b08025724100596c10",
+    "position": "possuidor",
+    "processo": "06A3914",
+    "quote": "Havendo tradição da coisa - com transferência da posse - não é devida qualquer quantia a titulo de ocupação da fracção.",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/40b0065882a837b08025724100596c10?OpenDocument"
+   },
+   {
+    "date": "2007-09-18",
+    "doc_id": "5afb50ae1c0fde398025736f004eb6ea",
+    "position": "detentor",
+    "processo": "07A2627",
+    "quote": "O promitente comprador de imóvel não pode opor-se à execução instaurada por terceiro contra o promitente vendedor porque não é possuidor em nome próprio. Como é ainda um mero detentor, não lhe assiste o direito de se socorrer dos meios possessórios.",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/5afb50ae1c0fde398025736f004eb6ea?OpenDocument"
+   }
+  ],
+  "question_id": "q7",
+  "rule_confidence": "alta",
+  "support": {
+   "detentor": 12,
+   "possuidor": 10
+  },
+  "type": "shift",
+  "window_end": 2009,
+  "window_start": 2004
+ },
+ {
+  "display": "mudanca",
+  "id": "q9-split-2013-2021",
+  "judge": {
+   "confidence": "media",
+   "legislative_change_possible": false,
+   "rationale": "O excerto A reconhece que o direito de retenção subsiste e confere ao promitente-comprador a faculdade de executar como o credor hipotecário, o que aponta para a sua prevalência. O excerto B afirma que o promitente-comprador não pode opor a sua posição ao titular de hipoteca com registo anterior. As datas são quase coincidentes (março de 2013), pelo que a divergência não se explica por alteração legislativa.",
+   "real_opposition": true
+  },
+  "pair": [
+   {
+    "date": "2013-03-12",
+    "doc_id": "5607b405b6a2a45f80257b320052d7c3",
+    "position": "prevalece",
+    "processo": "1664/05.4TBCVL.C2.S1",
+    "quote": "O direito de retenção não deixa de subsistir, proporcionando, assim, ao promitente-comprador a faculdade de instaurar execução, nos mesmos termos que o pode fazer o credor hipotecário, de acordo com o disposto no art. 759.º, n.º 1, do CC",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/5607b405b6a2a45f80257b320052d7c3?OpenDocument"
+   },
+   {
+    "date": "2013-03-21",
+    "doc_id": "0050f18ed3c119d880257b35003f76c7",
+    "position": "nao_prevalece",
+    "processo": "1223/05.1TBCSC-B.L1.S1",
+    "quote": "Ainda que o promitente comprador se encontre na situação de possuidor, nos termos definidos em I, não pode opor, a sua posição ao titular de hipoteca sobre o imóvel, com registo anterior.",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/0050f18ed3c119d880257b35003f76c7?OpenDocument"
+   }
+  ],
+  "question_id": "q9",
+  "rule_confidence": "alta",
+  "support": {
+   "nao_prevalece": 7,
+   "prevalece": 9
+  },
+  "type": "split",
+  "window_end": 2021,
+  "window_start": 2013
+ }
+]
