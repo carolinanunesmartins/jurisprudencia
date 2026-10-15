@@ -122,12 +122,20 @@ def precision_section(labelled: list[dict[str, str]]) -> list[str]:
             "",
         ]
     else:
+        who = sorted({(r.get("labeller") or "não indicado").strip() for r in labelled})
+        human = not any(w.startswith(("Claude", "GitHub Copilot")) for w in who)
         out += [
-            "Etiquetas de uma pessoa sem formação jurídica (o responsável do projeto), "
-            "a partir dos dois excertos e das ligações ao dgsi.pt; só as divergências "
-            "etiquetadas entram na contagem.",
+            f"Etiquetado por: {'; '.join(who)}. "
+            + (
+                "Sem jurista."
+                if human
+                else "**Não é a verificação humana prevista no SPEC §9.2**: são etiquetas "
+                "de modelos de IA, a partir dos dois excertos, e devem ser lidas como tal."
+            )
+            + " Só as divergências etiquetadas entram na contagem.",
             "",
-            "| Conjunto | correct | incorrect | legislative_change | unclear | Precisão |",
+            "| Conjunto | correct | incorrect | legislative_change | unclear "
+            "| correct / decididas |",
             "|---|---|---|---|---|---|",
         ]
         for name, want in (("mostradas no sítio", "yes"), ("ocultadas pelo juiz", "no")):
@@ -136,11 +144,17 @@ def precision_section(labelled: list[dict[str, str]]) -> list[str]:
                 continue
             c = Counter(r["label"].strip() for r in rs)
             decided = c["correct"] + c["incorrect"] + c["legislative_change"]
+            by = ", ".join(sorted({(r.get("labeller") or "?").split(" (")[0] for r in rs}))
             out.append(
-                f"| {name} ({len(rs)}) | {c['correct']} | {c['incorrect']} | "
+                f"| {name} ({len(rs)}; {by}) | {c['correct']} | {c['incorrect']} | "
                 f"{c['legislative_change']} | {c['unclear']} | "
                 f"{_pct(c['correct'], decided)} |"
             )
+        out += [
+            "",
+            "Nas mostradas, `correct` / decididas é a precisão; nas ocultadas, cada `correct` "
+            "é uma divergência real que o juiz escondeu.",
+        ]
         notes = [
             f"- {r['question']} {r['type']} {r['window']}: {r['notes'].strip()}"
             for r in labelled
@@ -148,7 +162,7 @@ def precision_section(labelled: list[dict[str, str]]) -> list[str]:
         ]
         out += [
             "",
-            "Precisão = correct / (correct + incorrect + legislative_change); `unclear` excluído.",
+            "Decididas = correct + incorrect + legislative_change; `unclear` excluído.",
             *(["", "Notas:", *notes] if notes else []),
             "",
         ]
@@ -327,8 +341,18 @@ def report(db: Path, tax_path: Path, replay: Path) -> tuple[str, dict]:
         with sheet.open(encoding="utf-8-sig", newline="") as f:
             labelled = [r for r in csv.DictReader(f) if (r["label"] or "").strip()]
     out += precision_section(labelled)
-    shown = Counter(r["label"].strip() for r in labelled if r["shown"] == "yes")
-    ev["divergence_labels"] = dict(sorted(shown.items())) or None
+    ev["divergence_labels"] = (
+        {
+            # who labelled the shown ones (what /metodo reports)
+            "labellers": sorted(
+                {(r.get("labeller") or "").strip() for r in labelled if r["shown"] == "yes"} - {""}
+            ),
+            "shown": dict(Counter(r["label"].strip() for r in labelled if r["shown"] == "yes")),
+            "hidden": dict(Counter(r["label"].strip() for r in labelled if r["shown"] == "no")),
+        }
+        if labelled
+        else None
+    )
 
     # 7. survey recovery
     survey = json.loads((EVAL / "survey.json").read_text(encoding="utf-8"))
@@ -374,6 +398,7 @@ SHEET_FIELDS = [
     "quote_b",
     "label",
     "notes",
+    "labeller",
 ]
 
 
@@ -417,6 +442,7 @@ def divergence_sheet(db: Path, path: Path) -> int:
                     processo(b["doc_id"]),
                     b["url"],
                     b["quote"],
+                    "",
                     "",
                     "",
                 ]

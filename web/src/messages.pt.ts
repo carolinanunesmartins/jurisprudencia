@@ -37,8 +37,8 @@ export const messages = {
     system: { model: "modelo", baseline: "base" },
     divergences: (j: number, v1: number, v2: number, t: number) =>
       `Divergências: ${j} detetadas e avaliadas pelo juiz; ${v2} confirmadas e mostradas (${t} em perguntas de teste). Com a primeira regra de escolha dos excertos eram ${v1}.`,
-    labels: (correct: number, total: number) =>
-      `Revisão humana (sem formação jurídica) das divergências mostradas: ${correct} de ${total} consideradas corretas.`,
+    labels: (correct: number, total: number, labellers: string) =>
+      `Revisão das divergências mostradas por modelos de IA (${labellers}), não por uma pessoa: ${correct} de ${total} consideradas corretas.`,
     noLabels: "As divergências mostradas ainda não foram revistas por uma pessoa.",
     aujs: (n: number) => `${n} divergências reconhecidas pelo próprio STJ (acórdãos de uniformização).`,
     cost: (tokens: string, usd: string) =>

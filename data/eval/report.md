@@ -73,7 +73,22 @@ Gate G3 (≥ 1 divergência confirmada numa pergunta de teste): **ficar** no con
 
 ## 6. Precisão das divergências
 
-Pendente: requer etiquetagem humana das divergências (SPEC §9.2). Sem ela, a única verificação das divergências mostradas é o juiz (outro modelo).
+Etiquetado por: Claude Opus 5.5 (não cego: viu os veredictos do juiz); GitHub Copilot. **Não é a verificação humana prevista no SPEC §9.2**: são etiquetas de modelos de IA, a partir dos dois excertos, e devem ser lidas como tal. Só as divergências etiquetadas entram na contagem.
+
+| Conjunto | correct | incorrect | legislative_change | unclear | correct / decididas |
+|---|---|---|---|---|---|
+| mostradas no sítio (4; Claude Opus 5.5) | 2 | 1 | 0 | 1 | 2/3 (67 %) |
+| ocultadas pelo juiz (4; GitHub Copilot) | 1 | 3 | 0 | 0 | 1/4 (25 %) |
+
+Nas mostradas, `correct` / decididas é a precisão; nas ocultadas, cada `correct` é uma divergência real que o juiz escondeu.
+
+Decididas = correct + incorrect + legislative_change; `unclear` excluído.
+
+Notas:
+- q10 shift 2003-2008: «implica convenção contrária» vs «presunção relativa, iuris tantum, ilidível»: respostas opostas sobre a ilidibilidade.
+- q7 shift 2004-2009: O excerto de 2006 refere a transferência da posse de passagem, sem dizer se é posse em nome próprio.
+- q8 split 2014-2024: «depende da sua qualidade de consumidor» vs «não se exige… a qualidade de consumidor».
+- q9 split 2013-2021: Fundamentos diferentes: subsistência do direito de retenção e execução vs oponibilidade da posse à hipoteca anterior.
 
 ## 7. Recuperação do inquérito (5 perguntas-semente)
 

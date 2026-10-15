@@ -101,7 +101,11 @@ export type Evaluation = {
   position: Score[];
   divergences: { judged: number; shown_v1: number; shown_v2: number; shown_v2_test: number };
   aujs: number;
-  divergence_labels: Record<string, number> | null;
+  divergence_labels: {
+    labellers: string[];
+    shown: Record<string, number>;
+    hidden: Record<string, number>;
+  } | null;
   survey: { seed: number; topic: string; question: string | null; result: string }[];
 };
 

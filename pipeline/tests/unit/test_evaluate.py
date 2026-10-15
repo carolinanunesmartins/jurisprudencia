@@ -34,8 +34,9 @@ def test_score_counts_exact_recall_and_precision():
 def test_precision_section_counts_labels_of_shown_divergences():
     from juris.evaluate.__main__ import precision_section
 
-    def row(shown, label, notes=""):
+    def row(shown, label, notes="", labeller="GitHub Copilot"):
         return {
+            "labeller": labeller,
             "question": "q8",
             "type": "split",
             "window": "2014-2024",
@@ -50,5 +51,8 @@ def test_precision_section_counts_labels_of_shown_divergences():
             [row("yes", "correct"), row("yes", "incorrect", "outro tema"), row("yes", "unclear")]
         )
     )
-    assert "| mostradas no sítio (3) | 1 | 1 | 0 | 1 | 1/2 (50 %) |" in text
+    assert "| mostradas no sítio (3; GitHub Copilot) | 1 | 1 | 0 | 1 | 1/2 (50 %) |" in text
     assert "outro tema" in text
+    assert "Não é a verificação humana" in text
+    human = "\n".join(precision_section([row("yes", "correct", labeller="Ana (sem jurista)")]))
+    assert "Não é a verificação humana" not in human

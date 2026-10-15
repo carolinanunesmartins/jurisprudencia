@@ -5,7 +5,20 @@
   "output_tokens": 474755,
   "usd_estimate": 3.98
  },
- "divergence_labels": null,
+ "divergence_labels": {
+  "hidden": {
+   "correct": 1,
+   "incorrect": 3
+  },
+  "labellers": [
+   "Claude Opus 5.5 (não cego: viu os veredictos do juiz)"
+  ],
+  "shown": {
+   "correct": 2,
+   "incorrect": 1,
+   "unclear": 1
+  }
+ },
  "divergences": {
   "judged": 23,
   "shown_v1": 3,

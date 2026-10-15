@@ -136,6 +136,12 @@ class SurveyOut(_Strict):
     result: str
 
 
+class DivergenceLabelsOut(_Strict):
+    labellers: list[str]  # who labelled: a person or a named AI model
+    shown: dict[str, int]  # label counts on divergences the site shows
+    hidden: dict[str, int]  # ... and on divergences the judge hid
+
+
 class EvaluationOut(_Strict):
     """Key numbers of data/eval/report.md for /metodo (written by `make evaluate`)."""
 
@@ -144,5 +150,5 @@ class EvaluationOut(_Strict):
     position: list[ScoreOut]
     divergences: dict[str, int]
     aujs: int
-    divergence_labels: dict[str, int] | None
+    divergence_labels: DivergenceLabelsOut | None
     survey: list[SurveyOut]

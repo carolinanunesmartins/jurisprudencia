@@ -16,6 +16,21 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Divergence labels: wrong rows, then AI labels disclosed
+- Tool / model: Claude Code (Opus 5.5)
+- Task: the agent asked the owner to label "rows 2, 12, 17, 23" (the shown divergences, column `n`); the labels landed on file lines 2, 12, 17, 23, i.e. `n` = 1, 11, 16, 22 (hidden divergences), and were made by GitHub Copilot (entry below). The owner chose to keep AI labels, disclosed. The agent labelled the 4 shown rows from the two quotes (q10 correct, q7 unclear, q8 correct, q9 incorrect: different legal grounds) and added a `labeller` column.
+- What failed or needed correction: the instruction was ambiguous (row number vs `n`); the report and `/metodo` were written for a human labeller and would have misattributed AI labels to a person.
+- How it was fixed: report section 6 names the labeller of each set and states it is not SPEC §9.2's human check; `/metodo` says the shown divergences were reviewed by AI models, not by a person; `evaluation.json` records the shown set's labellers. Result: shown 2 correct, 1 incorrect, 1 unclear (2/3 of decided); hidden 1 of 4 correct (q10 shift 2000–2005: a real divergence the judge hid, per Copilot). The agent's labels are not blind: it had read the judge's verdicts.
+- Human verification (what was checked by a person): none of the divergence labels.
+
+### 2026-10-15 — Label four detected divergences
+- Tool / model: GitHub Copilot.
+- Task: label divergence rows 1, 11, 16 and 22 in `data/eval/divergence_labels.csv` from the quote pair and frozen taxonomy.
+- Prompt / approach (one line): `correct` only for direct opposing answers to the same question; distinguish non-position, different legal points, and legislative change.
+- What failed or needed correction: none.
+- How it was fixed: labels set to `correct` for q10 and `incorrect` for q6, q8 and q9; the q9 pair compares judicial-sale survival with priority over an earlier mortgage.
+- Human verification (what was checked by a person): the owner requested these specific rows and supplied the labelling criteria; this judgement is not legal-expert reviewed.
+
 ### 2026-10-15 — M6: divergence page, /metodo, a11y pass
 - Tool / model: Claude Code (Opus 5.5)
 - Task: `/divergencias/:id` with both quotes side by side and how the divergence was detected; `/metodo` rendered from `evaluation.json`, which `make evaluate` now writes next to `report.md` (schema `EvaluationOut`, validated by `make data-check` when present); favicon (SVG, light/dark aware). A11y measured in the preview with scripted checks at 360 px and in light/dark emulation.
