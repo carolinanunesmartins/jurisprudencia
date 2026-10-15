@@ -16,6 +16,14 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Cost guards for the live run
+- Tool / model: Claude Code (Opus 5.5)
+- Task: on the owner's request, bound the worst-case API cost. Changes: answers capped at 1 200 tokens (was 2 000); an answer cut at the cap (`stop_reason=max_tokens`) is not retried; `make classify` stops at a token budget (default 3 M, about 2x the estimate) and prints progress every 50 judgments; the judge treats a cut answer as invalid instead of crashing.
+- Prompt / approach (one line): the run is resumable, so stopping on budget loses nothing.
+- What failed or needed correction: the first version retried truncated answers, which would pay twice for the same cut-off output.
+- How it was fixed: a separate `Truncated` exception that the retry loop does not catch. Tests use a mock HTTP transport for the truncation case and for budget stop plus resume.
+- Human verification (what was checked by a person): none yet.
+
 ### 2026-10-15 — M4 T4.2 export, data-check and minimal UI
 - Tool / model: Claude Code (Opus 5.5)
 - Task: `juris/export/` (pydantic schemas, deterministic `make export`, `make data-check` added to CI) and the web app routes `/`, `/perguntas`, `/perguntas/:id` (hand-rolled SVG timeline, no d3 dependency; Okabe-Ito colours plus a marker shape per position; divergence cards; judgments table as the chart's data-table alternative).

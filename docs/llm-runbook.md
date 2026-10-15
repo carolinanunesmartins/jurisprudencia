@@ -24,7 +24,13 @@ Agents never run these and never see the key (AGENTS.md rule 6). Everything else
 From the database, measured 2026-10-15: 800 judgments classified from the sumário (average 1 460 characters), 13 from the full text (up to 24 000 characters), plus about 4 100 characters of instructions per call.
 That is about 1.5 M input tokens and at most about 0.5 M output tokens for the full run. With a Haiku-class model this is a few USD, but check the current prices in the console. The judge is at most 40 short calls.
 
-## 4. If something fails
+## 4. Cost guards (built in)
+- Each answer is capped at 1 200 tokens (a typical answer is ~400). An answer cut at the cap is not retried, because it would be cut again; it is counted and retried on the next run.
+- `make classify` stops at a token budget: by default 3 M input+output tokens, about twice the estimate. It prints progress every 50 judgments. Re-run to continue, or change the budget with `make classify ARGS="--budget-tokens 1000000"`.
+- The spend limit on the key is the final backstop.
+
+## 5. If something fails
 - `401`: wrong key. `429`/`529`: rate limit or overload; wait a minute and re-run (the run resumes).
+- "STOPPED: token budget reached": expected if the estimate was low; check the printed tokens, then re-run (or raise `--budget-tokens`).
 - "schema failures" in the summary: the model answered in the wrong shape twice. Those judgments are not stored and are retried on the next run.
 - "quotes rejected": the model quoted text that is not in the sumário. Those answers are stored as not relevant and counted (AGENTS.md rule 4).

@@ -20,6 +20,16 @@ class MissingFixture(LookupError):
     pass
 
 
+class Truncated(RuntimeError):
+    """The answer hit max_tokens. Not retried: the same request would be cut again."""
+
+
+def tokens_used(provider: object) -> int:
+    """Input + output tokens billed so far (0 for providers that do not bill)."""
+    usage: dict[str, int] = getattr(provider, "usage", {})
+    return sum(v for k, v in usage.items() if k.endswith("tokens"))
+
+
 class LlmProvider(Protocol):
     model: str
 
@@ -68,7 +78,7 @@ class AnthropicProvider:
         model: str,
         record: Path | None = None,
         client: httpx.Client | None = None,
-        max_tokens: int = 2000,
+        max_tokens: int = 1200,  # a full 7-question answer is ~1 000 tokens; typical ~400
     ):
         self.model = model
         self.record = record
@@ -95,6 +105,8 @@ class AnthropicProvider:
         for k, v in (data.get("usage") or {}).items():
             if isinstance(v, int):
                 self.usage[k] = self.usage.get(k, 0) + v
+        if data.get("stop_reason") == "max_tokens":
+            raise Truncated(f"answer cut at {self.max_tokens} tokens")
         text = "".join(
             b.get("text", "") for b in data.get("content", []) if b.get("type") == "text"
         )

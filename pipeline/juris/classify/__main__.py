@@ -22,6 +22,12 @@ def main() -> int:
     ap.add_argument("--pilot", type=int, help="stratified random sample of N subset judgments")
     ap.add_argument("--limit", type=int, help="stop after N judgments")
     ap.add_argument(
+        "--budget-tokens",
+        type=int,
+        default=3_000_000,
+        help="stop when input+output tokens reach this (about 2x the full-run estimate)",
+    )
+    ap.add_argument(
         "--not-blind",
         action="store_true",
         help="allow a live run before the 60 labels are filled (breaks the blind evaluation)",
@@ -44,7 +50,9 @@ def main() -> int:
             print("set LLM_API_KEY and CLASSIFY_MODEL (see .env.example)", file=sys.stderr)
             return 2
         provider = AnthropicProvider(key, model, record=a.replay_dir)
-    stats = run(connect(a.db), provider, tax, pilot=a.pilot, limit=a.limit)
+    stats = run(
+        connect(a.db), provider, tax, pilot=a.pilot, limit=a.limit, budget_tokens=a.budget_tokens
+    )
     print(stats.report())
     if isinstance(provider, AnthropicProvider):
         print(f"tokens: {provider.usage}")

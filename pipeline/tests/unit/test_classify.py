@@ -130,3 +130,37 @@ def test_labels_filled_counts_the_blind_sheet(tmp_path):
     path.write_text("n,question,label\n1,q2,basta_mora\n2,q3,\n", encoding="utf-8-sig")
     assert labels_filled(path) == (1, 2)
     assert labels_filled(tmp_path / "none.csv") == (0, 0)
+
+
+def test_truncated_answer_is_not_retried(tmp_path):
+    calls = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(1)
+        body = {
+            "content": [{"type": "text", "text": "{"}],
+            "stop_reason": "max_tokens",
+            "usage": {"input_tokens": 10, "output_tokens": 1200},
+        }
+        return httpx.Response(200, json=body)
+
+    conn = make_db(tmp_path, [("a", SUMARIO, "")])
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    stats = run(conn, AnthropicProvider("k", "m", client=client), TAX)
+    assert (len(calls), stats.truncated, stats.judgments) == (1, 1, 0)
+
+
+def test_run_stops_at_the_token_budget(tmp_path):
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = {
+            "content": [{"type": "text", "text": json.dumps(answer())}],
+            "usage": {"input_tokens": 600, "output_tokens": 400},
+        }
+        return httpx.Response(200, json=body)
+
+    conn = make_db(tmp_path, [(c, SUMARIO, "") for c in "abcde"])
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    stats = run(conn, AnthropicProvider("k", "m", client=client), TAX, budget_tokens=2000)
+    assert stats.judgments == 2 and stats.stopped_by_budget
+    rest = run(conn, AnthropicProvider("k", "m", client=client), TAX)
+    assert rest.judgments == 3  # resumes with the remaining judgments

@@ -18,7 +18,13 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from juris.db.schema import connect
 from juris.llm.prompt import PROMPTS
-from juris.llm.provider import AnthropicProvider, LlmProvider, MissingFixture, ReplayProvider
+from juris.llm.provider import (
+    AnthropicProvider,
+    LlmProvider,
+    MissingFixture,
+    ReplayProvider,
+    Truncated,
+)
 from juris.taxonomy.model import Taxonomy, load_taxonomy
 
 JUDGE = "judge_v1"
@@ -85,10 +91,10 @@ def run(
     ranked.sort(key=lambda r: (r[0], -r[1]), reverse=True)
     stats = {"judged": 0, "not_judged": max(0, len(ranked) - MAX_JUDGED), "invalid": 0}
     for _, div_id, qid, evidence, positions in ranked[:MAX_JUDGED]:
-        raw = provider.generate_json(JUDGE, system, judge_input(tax, qid, evidence["pair"]))
         try:
+            raw = provider.generate_json(JUDGE, system, judge_input(tax, qid, evidence["pair"]))
             verdict = Verdict.model_validate(raw)
-        except ValidationError:
+        except (ValidationError, Truncated, ValueError):
             stats["invalid"] += 1
             continue
         conf = rule_confidence(evidence["support"], positions, verdict.real_opposition)
