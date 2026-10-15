@@ -3,6 +3,10 @@
 All notable changes. Format: Conventional Commits, newest first. Details per step in AI_LOG.md.
 
 ## Unreleased
+- chore: housekeeping; ADRs 0001–0004 (required by SPEC §11, recorded retroactively); README and AI_LOG condensed; `DgsiLink` renders only dgsi.pt links (security hardening)
+- feat(web): minimal reading (emphasis by position colour, badges, details behind a click); brief verifiable in 0–1 clicks; faster load and SEO (M9)
+- feat(web): visual identity "duas vozes", mirrored year chart, self-hosted type (ADR 0008) (M9)
+- fix(web): `/metodo` divergence review uses the report's arithmetic
 - docs: README, NOTA.md and IA.md for submission (M8)
 - feat(web): `/divergencias/:id`, `/metodo` from `evaluation.json`, favicon, a11y pass (M6)
 - feat(evaluate): `make evaluate` report with pre-registered keyword baseline, v1/v2 divergences, survey recovery; divergence labels by AI, disclosed (M7)

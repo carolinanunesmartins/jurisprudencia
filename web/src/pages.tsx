@@ -45,7 +45,12 @@ const H3 = "font-serif text-xl leading-snug";
 const SMALL = "text-sm text-graphite";
 const MEASURE = "max-w-[38rem]";
 
+// same rule as the publish gate (pipeline/juris/export/check.py SOURCE); repeated here so data
+// that skipped the gate (local dev, a hand-edited file) can never become a javascript: link
+const SOURCE = "https://www.dgsi.pt/";
+
 function DgsiLink({ url, children }: { url: string; children: ReactNode }) {
+  if (!url.startsWith(SOURCE)) return <span className="tabular">{children}</span>;
   return (
     <a href={url} rel="noopener noreferrer" target="_blank" className="tabular">
       {children}

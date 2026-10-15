@@ -25,7 +25,7 @@ web-verify:
 	npm --prefix web run test
 	npm --prefix web run build
 
-# --- HUMAN-run only (crawl / live LLM). Not implemented yet: see ROADMAP M1, M2, M4, M5.
+# --- HUMAN-run only: contacts dgsi.pt or the live LLM API (AGENTS.md rules 1 and 6)
 index:
 	uv run python -m juris.crawl.index $(ARGS)
 fetch:
