@@ -1,5 +1,6 @@
+import type { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import type { Data, Divergence, Judgment, Question } from "./data";
+import type { Auj, Data, Divergence, Judgment, Question } from "./data";
 import { messages } from "./messages.pt";
 import { Marker, Timeline } from "./Timeline";
 
@@ -13,6 +14,92 @@ export function Home({ data }: { data: Data }) {
           {messages.nav.questions}
         </Link>
       </p>
+      {data.aujs.length > 0 && (
+        <p>
+          <Link to="/uniformizacoes" className="underline text-[color:var(--color-accent)]">
+            {messages.nav.aujs}
+          </Link>{" "}
+          <span className="text-[color:var(--color-muted)]">
+            {messages.auj.count(data.aujs.length)}
+          </span>
+        </p>
+      )}
+    </section>
+  );
+}
+
+function DgsiLink({ url, children }: { url: string; children: ReactNode }) {
+  return (
+    <a href={url} rel="noopener noreferrer" target="_blank" className="underline">
+      {children}
+    </a>
+  );
+}
+
+export function AujCard({ a }: { a: Auj }) {
+  return (
+    <li className="rounded border border-[color:var(--color-rule)] p-3 space-y-3">
+      <h3 className="font-medium">{messages.auj.title(a.date, a.processo)}</h3>
+      {a.question_quote && (
+        <div>
+          <p className="text-sm text-[color:var(--color-muted)]">{messages.auj.question}</p>
+          <p>«{a.question_quote}»</p>
+        </div>
+      )}
+      <div>
+        <p className="text-sm text-[color:var(--color-muted)]">{messages.auj.conflict}</p>
+        <p>«{a.conflict_quote}»</p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {a.sides.map((s, i) => (
+          <section
+            key={s.auj_quote}
+            aria-label={messages.auj.side(i + 1)}
+            className="border-l-4 border-[color:var(--color-rule)] pl-3 space-y-2"
+          >
+            <p className="text-sm text-[color:var(--color-muted)]">{messages.auj.side(i + 1)}</p>
+            <p>«{s.auj_quote}»</p>
+            {s.judgments.length === 0 ? (
+              <p className="text-sm">{messages.auj.noneNamed}</p>
+            ) : (
+              <>
+                <p className="text-sm text-[color:var(--color-muted)]">{messages.auj.named}</p>
+                <ul className="space-y-2">
+                  {s.judgments.map((j) => (
+                    <li key={j.doc_id}>
+                      <p className="text-sm">
+                        {j.date} · <DgsiLink url={j.url}>{j.processo}</DgsiLink>
+                      </p>
+                      <p>«{j.quote}»</p>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
+        ))}
+      </div>
+      <div className="rounded bg-[color:var(--color-highlight)] p-2">
+        <p className="text-sm font-medium">{messages.auj.ruling}</p>
+        <p>«{a.ruling_quote}»</p>
+      </div>
+      <p className="text-sm">
+        <DgsiLink url={a.url}>{messages.auj.open}</DgsiLink>
+      </p>
+    </li>
+  );
+}
+
+export function AujPage({ data }: { data: Data }) {
+  return (
+    <section className="space-y-3">
+      <h2 className="text-xl font-semibold">{messages.auj.heading}</h2>
+      <p className="text-[color:var(--color-muted)]">{messages.auj.intro}</p>
+      <ul className="space-y-4">
+        {data.aujs.map((a) => (
+          <AujCard key={a.id} a={a} />
+        ))}
+      </ul>
     </section>
   );
 }
@@ -129,6 +216,7 @@ export function QuestionPage({ data }: { data: Data }) {
   if (!q) return <p>{messages.notFound}</p>;
   const rows = data.judgments.filter((j) => j.question_id === q.id);
   const divs = data.divergences.filter((d) => d.question_id === q.id);
+  const aujs = data.aujs.filter((a) => a.related_questions.includes(q.id));
   return (
     <section className="space-y-4">
       <Link to="/perguntas" className="underline text-[color:var(--color-accent)]">
@@ -163,6 +251,16 @@ export function QuestionPage({ data }: { data: Data }) {
                 <DivergenceCard key={d.id} d={d} q={q} />
               ))}
             </ul>
+          )}
+          {aujs.length > 0 && (
+            <>
+              <h3 className="font-semibold">{messages.auj.related}</h3>
+              <ul className="space-y-4">
+                {aujs.map((a) => (
+                  <AujCard key={a.id} a={a} />
+                ))}
+              </ul>
+            </>
           )}
           <h3 className="font-semibold">{messages.tableHeading}</h3>
           <JudgmentTable q={q} rows={rows} />

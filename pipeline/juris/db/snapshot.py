@@ -18,6 +18,8 @@ from pathlib import Path
 
 from juris.db.schema import connect
 from juris.detect.core import uniformizacao_of
+from juris.export.auj import AUJ
+from juris.export.auj import doc_ids as auj_doc_ids
 from juris.llm.prompt import CLASSIFY
 
 SNAPSHOT = Path("data/classifications")
@@ -32,7 +34,12 @@ def _read(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
 
 
-def dump(conn: sqlite3.Connection, out: Path = SNAPSHOT, prompt_version: str = CLASSIFY) -> dict:
+def dump(
+    conn: sqlite3.Connection,
+    out: Path = SNAPSHOT,
+    prompt_version: str = CLASSIFY,
+    auj: Path = AUJ,
+) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     classified = conn.execute(
         "SELECT doc_id, question_id, relevant, position_id, quote, quote_ok, quote_match,"
@@ -56,7 +63,7 @@ def dump(conn: sqlite3.Connection, out: Path = SNAPSHOT, prompt_version: str = C
         }
         for d, q, rel, pos, quote, ok, match, src, model in classified
     ]
-    ids = sorted({r["doc_id"] for r in rows})
+    ids = sorted({r["doc_id"] for r in rows} | auj_doc_ids(auj))
     acordaos = []
     for doc_id in ids:
         a = conn.execute(

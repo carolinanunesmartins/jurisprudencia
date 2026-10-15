@@ -42,6 +42,27 @@ describe("App (unit)", () => {
     expect(container.querySelector("td b")).toBeNull();
   });
 
+  it("lists the STJ's own uniformização cards with both sides, quotes as text", async () => {
+    const { container } = at("/uniformizacoes");
+    expect(await screen.findByRole("heading", { name: messages.auj.heading })).toBeInTheDocument();
+    expect(screen.getByText(/Os acórdãos decidiram em sentido oposto/)).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: messages.auj.side(1) })).toHaveTextContent("1/10");
+    expect(screen.getByRole("region", { name: messages.auj.side(2) })).toHaveTextContent(
+      messages.auj.noneNamed,
+    );
+    expect(screen.getByText(/<i>Só o uso privado<\/i>/)).toBeInTheDocument();
+    expect(container.querySelector("li i")).toBeNull();
+    expect(screen.getByRole("link", { name: messages.auj.open })).toHaveAttribute(
+      "href",
+      "https://www.dgsi.pt/jstj.nsf/x/u?OpenDocument",
+    );
+  });
+
+  it("shows related uniformização cards on the question page", async () => {
+    at("/perguntas/q6");
+    expect(await screen.findByRole("heading", { name: messages.auj.related })).toBeInTheDocument();
+  });
+
   it("says when there is no data yet", async () => {
     at("/perguntas", empty);
     expect(await screen.findByText(messages.noData)).toBeInTheDocument();

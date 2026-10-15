@@ -9,6 +9,8 @@ from juris.export.check import check
 
 pytestmark = pytest.mark.unit
 
+NO_AUJ = Path("no-such-auj.json")  # the real AUJ cards refer to judgments not in test DBs
+
 TAX = Path(__file__).resolve().parents[3] / "data" / "taxonomy.json"
 URL = "https://www.dgsi.pt/jstj.nsf/x/{}?OpenDocument"
 DESC = json.dumps(["CONTRATO-PROMESSA"])
@@ -89,7 +91,7 @@ def make_db(tmp_path):
 def test_export_publishes_grounded_positions_and_confirmed_divergences_only(tmp_path):
     conn = make_db(tmp_path)
     out = tmp_path / "data"
-    meta = export(conn, TAX, out)
+    meta = export(conn, TAX, out, auj=NO_AUJ)
     judgments = json.loads((out / "judgments.json").read_text(encoding="utf-8"))
     assert [j["doc_id"] for j in judgments] == ["a", "b"]
     divs = json.loads((out / "divergences.json").read_text(encoding="utf-8"))
@@ -106,8 +108,8 @@ def test_export_publishes_grounded_positions_and_confirmed_divergences_only(tmp_
 def test_export_is_deterministic_and_valid_when_empty(tmp_path):
     conn = connect(tmp_path / "t.db")
     a, b = tmp_path / "a", tmp_path / "b"
-    export(conn, TAX, a)
-    export(conn, TAX, b)
+    export(conn, TAX, a, auj=NO_AUJ)
+    export(conn, TAX, b, auj=NO_AUJ)
     for name in ("meta.json", "questions.json", "judgments.json", "divergences.json"):
         assert (a / name).read_text(encoding="utf-8") == (b / name).read_text(encoding="utf-8")
     assert check(a) == []
@@ -118,7 +120,7 @@ def test_export_is_deterministic_and_valid_when_empty(tmp_path):
 def test_check_catches_long_quotes_bad_links_and_ungrounded_quotes(tmp_path):
     conn = make_db(tmp_path)
     out = tmp_path / "data"
-    export(conn, TAX, out)
+    export(conn, TAX, out, auj=NO_AUJ)
     path = out / "judgments.json"
     judgments = json.loads(path.read_text(encoding="utf-8"))
     judgments[0]["url"] = "https://example.com/x"

@@ -13,7 +13,8 @@ from pathlib import Path
 from pydantic import TypeAdapter, ValidationError
 
 from juris.classify.grounding import is_grounded
-from juris.export.model import DivergenceOut, JudgmentOut, Meta, QuestionOut
+from juris.export.auj import quotes
+from juris.export.model import AujOut, DivergenceOut, JudgmentOut, Meta, QuestionOut
 
 DATA = Path("web/public/data")
 SOURCE = "https://www.dgsi.pt/"
@@ -37,6 +38,7 @@ def check(data: Path = DATA, db: Path | None = None) -> list[str]:
     questions = load("questions.json", TypeAdapter(list[QuestionOut])) or []
     judgments = load("judgments.json", TypeAdapter(list[JudgmentOut])) or []
     divergences = load("divergences.json", TypeAdapter(list[DivergenceOut])) or []
+    aujs = load("aujs.json", TypeAdapter(list[AujOut])) or []
     if meta is None:
         return errors
     positions = {q.id: {p.id for p in q.positions} for q in questions}
@@ -52,6 +54,15 @@ def check(data: Path = DATA, db: Path | None = None) -> list[str]:
         for p in d.pair:
             if p.doc_id not in docs:
                 errors.append(f"divergence {d.id}: {p.doc_id} not among published judgments")
+    for a in aujs:
+        for q in a.related_questions:
+            if q not in positions:
+                errors.append(f"auj {a.id}: unknown question {q}")
+        links = [a.url] + [j.url for s in a.sides for j in s.judgments]
+        if not all(u.startswith(SOURCE) for u in links):
+            errors.append(f"auj {a.id}: link is not to dgsi.pt")
+        if len(a.sides) < 2:
+            errors.append(f"auj {a.id}: needs two sides")
     if meta.divergences_shown != len(divergences):
         errors.append("meta.divergences_shown does not match divergences.json")
     if db is not None and db.exists():
@@ -63,6 +74,14 @@ def check(data: Path = DATA, db: Path | None = None) -> list[str]:
             text = "" if row is None else (row[0] if j.text_source == "sumario" else row[1])
             if not is_grounded(j.quote, text or ""):
                 errors.append(f"judgment {j.doc_id}/{j.question_id}: quote not grounded")
+        for a in aujs:
+            for doc_id, quote in quotes(a):
+                row = conn.execute(
+                    "SELECT sumario, texto FROM acordao WHERE doc_id = ?", (doc_id,)
+                ).fetchone()
+                text = "" if row is None else "\n".join(t or "" for t in row)
+                if not is_grounded(quote, text):
+                    errors.append(f"auj {a.id}: quote not grounded in {doc_id}: {quote[:40]}")
     return errors
 
 

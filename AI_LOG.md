@@ -16,6 +16,14 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Divergences documented by the STJ (AUJ cards)
+- Tool / model: Claude Code (Opus 5.5)
+- Task: option A chosen by the owner. Read the 3 AUJ texts in the subset (4/2014 of 20-03-2014, 12-02-2019, 27-04-2021) and the sumários of the STJ judgments they name; curated `data/auj/auj.json` with, per AUJ, the passages stating the question, the conflict, each side and the ruling, plus for each side the named judgments with a passage of their own sumário. `juris/export/auj.py` exports `aujs.json` with processo/date/link from the database; data-check verifies links and that every quote is in the stored text; the snapshot keeps the metadata, so a fresh clone reproduces it. UI: `/uniformizacoes` and related cards on q8/q9; strings in `messages.pt.ts`.
+- What failed or needed correction: the first 2019 "conflict" quote described only the appealed judgment's side; replaced by the court's own statement that the opposition was recognised, with the relator's synthesis ("conceção ampla" vs "conceção mais restrita") as the two sides. The 2014 AUJ was a julgamento ampliado on divided case law, not an appeal between two STJ judgments; its second side (hipoteca prevails) is attributed by the AUJ to Relação decisions, so the card says no STJ judgment is cited there instead of inventing one. A `
+` in a generated f-string broke `check.py` again (fixed by Edit).
+- How it was fixed: all 19 quotes grounded (0 errors with the database); 3 unit tests (metadata from DB, ungrounded quote rejected, unknown judgment fails the export); 2 web tests; visual check of `/uniformizacoes` in the preview (only console message: favicon 404). Selection of passages is agent-made: verifiable through the links but not reviewed by a jurist.
+- Human verification (what was checked by a person): none yet.
+
 ### 2026-10-15 — Judge on pair rule v2; "resolved" label made factual
 - Tool / model: Claude Code (Opus 5.5); judge claude-sonnet-5-5 (owner-run, 9 new calls, 14 verdicts reused).
 - Task: v1 showed 3 (q3 dev; q7, q9 test). v2 shows 4 split/shift, all on test questions: q7 shift 2004–2009 and q9 split 2013–2021 (pairs unchanged), q8 split 2014–2024 (new pair, Oct/Nov 2019: "depende da sua qualidade de consumidor" vs "não se exige… a qualidade de consumidor"; judge alta, rule alta) and q10 shift 2003–2008 (new: sinal "implica convenção contrária" vs "presunção relativa, iuris tantum"). q3 dropped: v2 chose two same-day judgments where neither excerpt takes a position (classifier over-assignment). Gate G3 stays decided on v1 (SPEC §6.2); v1 and v2 both reported. The owner fetched the 4 AUJ-cited judgments (3 with text, 1 sumário only).

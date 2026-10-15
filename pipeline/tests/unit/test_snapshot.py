@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 
@@ -10,11 +11,13 @@ from tests.unit.test_export import DESC, TAX, URL, VERDICT, make_db
 
 pytestmark = pytest.mark.unit
 
+NO_AUJ = Path("no-such-auj.json")  # the real AUJ cards refer to judgments not in test DBs
+
 CFG = TAX.parents[1] / "detect.toml"
 
 
 def test_snapshot_has_no_texts_and_withholds_rejected_quotes(tmp_path):
-    dump(make_db(tmp_path), tmp_path / "snap")
+    dump(make_db(tmp_path), tmp_path / "snap", auj=NO_AUJ)
     raw = "".join(p.read_text(encoding="utf-8") for p in (tmp_path / "snap").iterdir())
     assert "SECRET" not in raw and "Texto integral reservado" not in raw
     rows = [
@@ -30,10 +33,10 @@ def test_snapshot_has_no_texts_and_withholds_rejected_quotes(tmp_path):
 
 def test_a_database_rebuilt_from_the_snapshot_exports_the_same_site_data(tmp_path):
     conn = make_db(tmp_path)
-    export(conn, TAX, tmp_path / "orig")
-    dump(conn, tmp_path / "snap")
+    export(conn, TAX, tmp_path / "orig", auj=NO_AUJ)
+    dump(conn, tmp_path / "snap", auj=NO_AUJ)
     load(tmp_path / "fresh.db", tmp_path / "snap")
-    export(connect(tmp_path / "fresh.db"), TAX, tmp_path / "again")
+    export(connect(tmp_path / "fresh.db"), TAX, tmp_path / "again", auj=NO_AUJ)
     for f in (tmp_path / "orig").iterdir():
         assert (tmp_path / "again" / f.name).read_text(encoding="utf-8") == f.read_text(
             encoding="utf-8"

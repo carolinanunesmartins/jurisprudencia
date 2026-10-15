@@ -1,0 +1,124 @@
+[
+ {
+  "conflict_quote": "a essa idêntica facticidade os acórdãos julgaram aplicar-se normas distintas, em clara oposição, entendendo o acórdão recorrido que devem ser aplicadas as normas do CIRE e o acórdão fundamento que deve ser aplicada a norma do Código Civil, donde resultaram decisões díspares",
+  "date": "2021-04-27",
+  "doc_id": "7ed2876480d810af8025872800578d17",
+  "id": "auj-2021-04-27",
+  "processo": "872/10.0TYVNG-B.P1.S1-A",
+  "question_quote": "Saber se a recusa de cumprimento do contrato-promessa por parte do Administrador da insolvência envolve um incumprimento culposo, sendo aplicável o regime do artigo 442, n.º 2, do Código Civil. Ou se a recusa de cumprimento por parte Administrador da insolvência corresponde a uma opção legal e as consequências se extraem exclusivamente das normas do CIRE.",
+  "related_questions": [],
+  "ruling_quote": "Quando o administrador da insolvência do promitente vendedor optar pela recusa do cumprimento de contrato-promessa de compra e venda, o promitente comprador tem direito a ser ressarcido pelo valor correspondente à prestação efetuada, nos termos dos artigos 106.º, n.º 2, 104.º, n.º 5, e 102.º, n.º 3, do Código da Insolvência e da Recuperação de Empresas",
+  "sides": [
+   {
+    "auj_quote": "o acórdão fundamento que deve ser aplicada a norma do Código Civil",
+    "judgments": [
+     {
+      "date": "2014-07-09",
+      "doc_id": "4502260e22dc193a80257d12004f79f7",
+      "processo": "1206/11.2TBLSD-H.P1.S1",
+      "quote": "O promitente-comprador que, beneficiando da tradição do imóvel, viu recusado, pelo administrador da insolvência, o cumprimento do contrato-promessa de compra e venda, nos termos do art.102.º do CIRE, tem um crédito sobre a massa insolvente correspondente ao sinal em dobro, nos termos do art. 442.º, n.º 2, do CC",
+      "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/4502260e22dc193a80257d12004f79f7?OpenDocument"
+     }
+    ]
+   },
+   {
+    "auj_quote": "entendendo o acórdão recorrido que devem ser aplicadas as normas do CIRE",
+    "judgments": [
+     {
+      "date": "2016-06-21",
+      "doc_id": "4610c87689c140b380257fd90054d88c",
+      "processo": "3415/14.3TCLRS-C.L1.S1",
+      "quote": "Neste caso, ao direito de indemnização do promitente-comprador aplica-se o disposto no art. 102.º, n.º 3, por força daquele art. e do art. 104.º, n.º5, todos do CIRE, e não o disposto no art. 442.º do CC.",
+      "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/4610c87689c140b380257fd90054d88c?OpenDocument"
+     },
+     {
+      "date": "2018-09-18",
+      "doc_id": "d7f61bb47e2535ec8025830e003ea10f",
+      "processo": "1210/11.0TYVNG-D.P1.S1",
+      "quote": "O direito do credor promissário deve ser encontrado exclusivamente no CIRE, nos termos das disposições conjugadas dos respetivos arts. 106.º, n.º 2, 104.º, n.º 5 e 102.º, n.º 3, al. c).",
+      "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/d7f61bb47e2535ec8025830e003ea10f?OpenDocument"
+     }
+    ]
+   }
+  ],
+  "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/7ed2876480d810af8025872800578d17?OpenDocument"
+ },
+ {
+  "conflict_quote": "foi reconhecida a existência de oposição de julgados e admitido o recurso extraordinário para uniformização de jurisprudência",
+  "date": "2019-02-12",
+  "doc_id": "02ac4c20018cdd658025844300369080",
+  "id": "auj-2019-02-12",
+  "processo": "2384/08.3TBSTS-D.P1.S1-A",
+  "question_quote": null,
+  "related_questions": [
+   "q8"
+  ],
+  "ruling_quote": "Na graduação de créditos em insolvência, apenas tem a qualidade de consumidor, para os efeitos do disposto no Acórdão n.º 4 de 2014 do Supremo Tribunal de Justiça, o promitente-comprador que destina o imóvel, objeto de traditio, a uso particular, ou seja, não o compra para revenda nem o afeta a uma atividade profissional ou lucrativa.",
+  "sides": [
+   {
+    "auj_quote": "O Acórdão fundamento adota uma conceção mais restrita",
+    "judgments": [
+     {
+      "date": "2017-07-13",
+      "doc_id": "8fa6e1237f88e8398025815c00478474",
+      "processo": "1594/14.9TJVNF.2.G1.S2",
+      "quote": "É consumidor aquele que adquirir bens ou serviços para satisfação de necessidades pessoais e familiares (uso privado) e para outros fins que não se integrem numa actividade económica levada a cabo de forma continuada, regular e estável.",
+      "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/8fa6e1237f88e8398025815c00478474?OpenDocument"
+     },
+     {
+      "date": "2017-02-14",
+      "doc_id": "2a2f302ab62c249d802580c70052993a",
+      "processo": "427/12.5TBFAF-F.G1.S1",
+      "quote": "Não reveste tal conceito aquele que celebra como promitente comprador um contrato promessa de aquisição de loja que destina a nela instalar uma loja comercial que efetivamente instala, constituindo, para o efeito, uma sociedade comercial.",
+      "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/2a2f302ab62c249d802580c70052993a?OpenDocument"
+     }
+    ]
+   },
+   {
+    "auj_quote": "O Acórdão recorrido adota uma conceção ampla de consumidor com o significado comum do termo, como sendo aquele que promete adquirir bens como utilizador final dos mesmos e que utiliza os prédios ou frações para seu uso próprio e não com escopo de revenda.",
+    "judgments": [
+     {
+      "date": "2017-10-03",
+      "doc_id": "d09b09132aff8090802581ae004ee0e2",
+      "processo": "212/11.1T2AVR-B.P1.S1",
+      "quote": "Agem como consumidores, na acepção de utilizadores finais, e não como profissionais do ramo imobiliário, os recorrentes que instalaram nas respectivas fracções que prometeram comprar uma agência de seguros e um salão de cabeleireiro.",
+      "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/d09b09132aff8090802581ae004ee0e2?OpenDocument"
+     }
+    ]
+   }
+  ],
+  "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/02ac4c20018cdd658025844300369080?OpenDocument"
+ },
+ {
+  "conflict_quote": "A Jurisprudência produzida sobre esta matéria mostra-se dividida, mau grado opte, maioritariamente, nestes casos pela concessão do “direito de retenção” e assim pela prevalência do crédito provido com tal direito sobre a hipoteca desde que haja tradição do objeto e ainda que o contrato tenha eficácia meramente obrigacional",
+  "date": "2014-03-20",
+  "doc_id": "d83b7b9c541d3bf280257cd7003f56bc",
+  "id": "auj-2014-03-20",
+  "processo": "92/05.6TYVNG-M.P1.S1",
+  "question_quote": null,
+  "related_questions": [
+   "q8",
+   "q9"
+  ],
+  "ruling_quote": "No âmbito da graduação de créditos em insolvência o consumidor promitente-comprador em contrato, ainda que com eficácia meramente obrigacional com traditio, devidamente sinalizado, que não obteve o cumprimento do negócio por parte do administrador da insolvência, goza do direito de retenção nos termos do estatuído no artigo 755º nº 1 alínea f) do Código Civil",
+  "sides": [
+   {
+    "auj_quote": "inclinando-se alguns para a concessão e consequente prevalência do direito de retenção",
+    "judgments": [
+     {
+      "date": "2011-02-22",
+      "doc_id": "7afa692c41abe5ce80257840005b267f",
+      "processo": "1548/06.9TBEPS-D.G1.S1",
+      "quote": "Os contratos-promessa de compra e venda, quer com eficácia real, quer com eficácia obrigacional, em que tenha havido tradição da coisa, conferem ao promitente-comprador direito de retenção",
+      "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/7afa692c41abe5ce80257840005b267f?OpenDocument"
+     }
+    ]
+   },
+   {
+    "auj_quote": "Em sentido diverso e pela prevalência da hipoteca, não gozando até o promitente-comprador, no caso de incumprimento do contrato promessa, direito de retenção, à luz do novo CIRE",
+    "judgments": []
+   }
+  ],
+  "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/d83b7b9c541d3bf280257cd7003f56bc?OpenDocument"
+ }
+]

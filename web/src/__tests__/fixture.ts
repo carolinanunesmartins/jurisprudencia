@@ -74,6 +74,26 @@ export const fixture: Data = {
       judge: { real_opposition: true, legislative_change_possible: false, rationale: "r", confidence: "media" },
     },
   ],
+  aujs: [
+    {
+      id: "auj-2019",
+      doc_id: "u",
+      processo: "9/19-A",
+      date: "2019-02-12",
+      url: url("u"),
+      related_questions: ["q6"],
+      question_quote: null,
+      conflict_quote: "Os acórdãos decidiram em sentido oposto",
+      sides: [
+        {
+          auj_quote: "interpretação restrita",
+          judgments: [{ doc_id: "a", processo: "1/10", date: "2010-03-01", url: url("a"), quote: "<i>Só o uso privado</i>" }],
+        },
+        { auj_quote: "interpretação ampla", judgments: [] },
+      ],
+      ruling_quote: "Uniformiza-se assim",
+    },
+  ],
 };
 
 export const empty: Data = {
@@ -82,4 +102,5 @@ export const empty: Data = {
   questions: fixture.questions.map((q) => ({ ...q, counts: {}, first_year: null, last_year: null })),
   judgments: [],
   divergences: [],
+  aujs: [],
 };

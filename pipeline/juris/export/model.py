@@ -83,3 +83,31 @@ class DivergenceOut(_Strict):
     support: dict[str, int]
     pair: list[PairItem]
     judge: JudgeOut | None
+
+
+class AujJudgmentOut(_Strict):
+    doc_id: str
+    processo: str
+    date: str
+    url: str
+    quote: str = Quote  # from the judgment's own sumário
+
+
+class AujSideOut(_Strict):
+    auj_quote: str = Quote  # how the AUJ itself describes this side
+    judgments: list[AujJudgmentOut]
+
+
+class AujOut(_Strict):
+    """A divergence documented by the STJ itself: an acórdão de uniformização (SPEC §6.6)."""
+
+    id: str
+    doc_id: str
+    processo: str
+    date: str
+    url: str
+    related_questions: list[str]
+    question_quote: str | None = Field(default=None, max_length=MAX_QUOTE_CHARS)
+    conflict_quote: str = Quote
+    sides: list[AujSideOut]
+    ruling_quote: str = Quote

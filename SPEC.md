@@ -73,6 +73,9 @@ For the ≤ 40 strongest divergences: a larger model receives only the two quote
 ### 6.5 Rule confidence
 `alta` = support ≥ 3 on both sides and judge agrees; `média` = support ≥ 2 and judge agrees; `baixa` = otherwise. Displayed next to every divergence.
 
+### 6.6 Divergences documented by the STJ (acórdãos de uniformização)
+Added 2026-10-15. An AUJ exists only when the STJ recognises that its own judgments decided the same question in opposite ways (art. 688 CPC; or a julgamento ampliado on a divided case law), so it is the one source of divergences that does not depend on our classifier or judge. `data/auj/auj.json` is curated (agent-made, disclosed) for the AUJs in the subset: the passages where the AUJ states the question, the conflict, each side and the ruling, and for each side the STJ judgments the AUJ names, each with a passage of its own sumário. **Every text field is a verbatim quote**; no summary is written by us. `make export` adds processo, date and link from the database (`web/public/data/aujs.json`); `make data-check` checks links and, with the database, that every quote is a substring of the stored text it is attributed to. Shown at `/uniformizacoes` and on the related question pages.
+
 ## 7. LLM access
 - Provider interface `LlmProvider.generate_json(prompt_id, system, input) -> dict` (`juris/llm/provider.py`). First adapter: Anthropic over the existing `httpx` dependency, no SDK (env `LLM_API_KEY`, models from `CLASSIFY_MODEL`, `JUDGE_MODEL`); a live run records each answer as a replay fixture in `data/replay/` (gitignored).
 - `ReplayProvider`: fixtures keyed by sha256 of the canonical request JSON, used in tests and `make classify-replay`.

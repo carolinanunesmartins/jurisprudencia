@@ -16,6 +16,7 @@ from juris.db.subset import subset_ids
 from juris.detect.__main__ import DEV
 from juris.detect.core import uniformizacao_of
 from juris.detect.judge import Verdict, display
+from juris.export.auj import AUJ, export_aujs
 from juris.export.model import (
     DivergenceOut,
     JudgeOut,
@@ -120,7 +121,7 @@ def _divergences(
     return shown, counts
 
 
-def export(conn: sqlite3.Connection, tax_path: Path, out: Path = OUT) -> Meta:
+def export(conn: sqlite3.Connection, tax_path: Path, out: Path = OUT, auj: Path = AUJ) -> Meta:
     tax = load_taxonomy(tax_path)
     approved = [q.id for q in tax.questions if q.status == "approved"]
     judgments = _judgments(conn, approved)
@@ -174,6 +175,7 @@ def export(conn: sqlite3.Connection, tax_path: Path, out: Path = OUT) -> Meta:
         "questions.json": [q.model_dump() for q in questions],
         "judgments.json": [j.model_dump() for j in judgments],
         "divergences.json": [d.model_dump() for d in divergences],
+        "aujs.json": [a.model_dump() for a in export_aujs(conn, auj)],
     }
     for name, data in files.items():
         text = json.dumps(data, ensure_ascii=False, indent=1, sort_keys=True) + "\n"

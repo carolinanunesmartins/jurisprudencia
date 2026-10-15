@@ -66,11 +66,30 @@ export type Divergence = {
   } | null;
 };
 
+// A divergence documented by the STJ itself (acórdão de uniformização); every text is a quote.
+export type AujJudgment = { doc_id: string; processo: string; date: string; url: string; quote: string };
+
+export type AujSide = { auj_quote: string; judgments: AujJudgment[] };
+
+export type Auj = {
+  id: string;
+  doc_id: string;
+  processo: string;
+  date: string;
+  url: string;
+  related_questions: string[];
+  question_quote: string | null;
+  conflict_quote: string;
+  sides: AujSide[];
+  ruling_quote: string;
+};
+
 export type Data = {
   meta: Meta;
   questions: Question[];
   judgments: Judgment[];
   divergences: Divergence[];
+  aujs: Auj[];
 };
 
 async function getJson<T>(name: string): Promise<T> {
@@ -81,11 +100,12 @@ async function getJson<T>(name: string): Promise<T> {
 }
 
 export async function loadData(): Promise<Data> {
-  const [meta, questions, judgments, divergences] = await Promise.all([
+  const [meta, questions, judgments, divergences, aujs] = await Promise.all([
     getJson<Meta>("meta.json"),
     getJson<Question[]>("questions.json"),
     getJson<Judgment[]>("judgments.json"),
     getJson<Divergence[]>("divergences.json"),
+    getJson<Auj[]>("aujs.json"),
   ]);
-  return { meta, questions, judgments, divergences };
+  return { meta, questions, judgments, divergences, aujs };
 }

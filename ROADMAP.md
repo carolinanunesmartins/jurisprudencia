@@ -56,7 +56,8 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 - Day-5 checkpoint: decide cuts (judge pass, `resolved`, filters) from actual progress, not at the end.
 - Accept: `divergence` table populated; every divergence has two grounded quotes and links; `make data-check` green on a fresh clone (schema, quote ≤ 400, links, fixture grounding; real-text grounding result recorded in the classify run log).
 
-## M6 — Full UI (5 h) · todo · days 6–8 · deps: M5
+## M6 — Full UI (5 h) · doing · days 6–8 · deps: M5
+- *2026-10-15: `/uniformizacoes` with the STJ's own uniformização cards (SPEC §6.6; 3 AUJs, every text a verified quote), also shown on related question pages; the "resolved" label reworded to a fact.*
 - T6.1 `/`, `/perguntas`, `/perguntas/:id` (timeline, data-table alternative, filters).
 - T6.2 `/divergencias/:id` side-by-side, "como foi detetado", confidence.
 - T6.3 `/metodo` (filled from `data/eval/report.md` later), disclaimer, a11y pass (keyboard, focus, contrast, 360 px).
