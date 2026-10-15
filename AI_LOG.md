@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Judge on pair rule v2; "resolved" label made factual
+- Tool / model: Claude Code (Opus 5.5); judge claude-sonnet-5-5 (owner-run, 9 new calls, 14 verdicts reused).
+- Task: v1 showed 3 (q3 dev; q7, q9 test). v2 shows 4 split/shift, all on test questions: q7 shift 2004–2009 and q9 split 2013–2021 (pairs unchanged), q8 split 2014–2024 (new pair, Oct/Nov 2019: "depende da sua qualidade de consumidor" vs "não se exige… a qualidade de consumidor"; judge alta, rule alta) and q10 shift 2003–2008 (new: sinal "implica convenção contrária" vs "presunção relativa, iuris tantum"). q3 dropped: v2 chose two same-day judgments where neither excerpt takes a position (classifier over-assignment). Gate G3 stays decided on v1 (SPEC §6.2); v1 and v2 both reported. The owner fetched the 4 AUJ-cited judgments (3 with text, 1 sumário only).
+- What failed or needed correction: the UI called a `resolved` divergence "Uniformizada", but SPEC §6.2 only defines it as an AUJ in or after the period. For q8 the AUJ is 4/2014 while the shown contradiction is from 2019, so "uniformizada" would be false.
+- How it was fixed: label changed to "Acórdão de uniformização no período" (a fact, dates shown). Export + data-check 0 errors; snapshot re-dumped (now with `quote_match`).
+- Human verification (what was checked by a person): owner ran fetch and judge.
+
 ### 2026-10-15 — Why divergences are hidden; AUJ evidence; pair rule v2 (pre-registered)
 - Tool / model: Claude Code (Opus 5.5)
 - Task: on the owner's question, read all 20 hidden verdicts: 18 have an excerpt that takes no position (or is about another legal ground), 2 have both excerpts agreeing; 3 cite a truncated excerpt. Root causes: the classifier positions judgments that only touch the question (8 of 28 on the labels) and v1 picks the pair by date adjacency. Searched the full STJ index for uniformização descriptors: contrato-promessa is among the substantive themes with most activity; 3 real AUJs are in the 813 with text (4/2014, 2019, 2021), and their texts name the conflicting judgments and both camps. The owner chose: AUJ-anchored divergences first (option A), then a pre-registered pair rule (option B).

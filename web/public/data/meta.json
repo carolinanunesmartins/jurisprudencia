@@ -4,8 +4,8 @@
   "texto": 13
  },
  "classified": 813,
- "divergences_hidden": 20,
- "divergences_shown": 3,
+ "divergences_hidden": 19,
+ "divergences_shown": 5,
  "divergences_unjudged": 0,
  "prompt_version": "classify_v1",
  "quotes_rejected": 11,

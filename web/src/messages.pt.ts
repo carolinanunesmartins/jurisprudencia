@@ -38,7 +38,8 @@ export const messages = {
   display: {
     mudanca: "Mudança de entendimento",
     possivel_alteracao_legislativa: "Possível efeito de alteração legislativa",
-    uniformizada: "Uniformizada",
+    // a fact, not a claim that the divergence ended (SPEC §6.2: an AUJ in or after the period)
+    uniformizada: "Acórdão de uniformização no período",
   },
   type: { split: "divisão", shift: "mudança", resolved: "uniformização" },
   confidence: { alta: "confiança da regra: alta", media: "confiança da regra: média", baixa: "confiança da regra: baixa" },

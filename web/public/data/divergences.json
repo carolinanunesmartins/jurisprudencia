@@ -1,40 +1,40 @@
 [
  {
   "display": "mudanca",
-  "id": "q3-split-2002-2006",
+  "id": "q10-shift-2003-2008",
   "judge": {
-   "confidence": "alta",
+   "confidence": "media",
    "legislative_change_possible": false,
-   "rationale": "O excerto A exige incumprimento culposo definitivo para a devolução do sinal em dobro, enquanto o B afirma que a mora basta para os efeitos do art. 442 do CC; são posições incompatíveis sobre a mesma questão. Com apenas cinco meses de intervalo em 2002 e referência ao mesmo regime, não há indício de alteração legislativa.",
+   "rationale": "O excerto A entende que a existência de sinal implica convenção contrária à execução específica (art. 830.º n.º 2), sem admitir prova em contrário. O excerto B considera a presunção relativa (iuris tantum) e ilidível, o que é incompatível com a leitura de A sobre a mesma questão. Não há indício de alteração legislativa entre 2004 e 2006 que explique a diferença.",
    "real_opposition": true
   },
   "pair": [
    {
-    "date": "2002-05-28",
-    "doc_id": "a1985e04d7045e2180256c3d004e1e6a",
-    "position": "exige_definitivo",
-    "processo": "02A1337",
-    "quote": "Para constituir fundamento de resolução e justificar a devolução do sinal em dobro o incumprimento culposo tem de ser definitivo.",
-    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/a1985e04d7045e2180256c3d004e1e6a?OpenDocument"
+    "date": "2004-05-06",
+    "doc_id": "034a5d07b64f988980256ea9004ce9c1",
+    "position": "afastada",
+    "processo": "03B4295",
+    "quote": "A existência de sinal implica, face ao disposto no artº 830º, n° 2, do C. Civil, convenção contrária à admissibilidade da execução específica.",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/034a5d07b64f988980256ea9004ce9c1?OpenDocument"
    },
    {
-    "date": "2002-09-19",
-    "doc_id": "86c74ab6a5b04ab080256c4e00519e71",
-    "position": "basta_mora",
-    "processo": "02B2150",
-    "quote": "A mora basta para se desencadearem os efeitos do art. 442 do CC.",
-    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/86c74ab6a5b04ab080256c4e00519e71?OpenDocument"
+    "date": "2006-01-26",
+    "doc_id": "80660fe95fe3a23a8025711700356e43",
+    "position": "admissivel",
+    "processo": "05B3996",
+    "quote": "A presunção de que a existência de sinal importa ou significa convenção contrária à execução específica estabelecida no nº2º do art.830º C.Civ. é uma presunção relativa, iuris tantum, ilidível por prova do contrário",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/80660fe95fe3a23a8025711700356e43?OpenDocument"
    }
   ],
-  "question_id": "q3",
+  "question_id": "q10",
   "rule_confidence": "alta",
   "support": {
-   "basta_mora": 3,
-   "exige_definitivo": 42
+   "admissivel": 3,
+   "afastada": 5
   },
-  "type": "split",
-  "window_end": 2006,
-  "window_start": 2002
+  "type": "shift",
+  "window_end": 2008,
+  "window_start": 2003
  },
  {
   "display": "mudanca",
@@ -72,6 +72,67 @@
   "type": "shift",
   "window_end": 2009,
   "window_start": 2004
+ },
+ {
+  "display": "mudanca",
+  "id": "q8-split-2014-2024",
+  "judge": {
+   "confidence": "alta",
+   "legislative_change_possible": false,
+   "rationale": "O excerto A condiciona o direito de retenção do promitente-comprador à sua qualidade de consumidor, enquanto o excerto B afirma expressamente que essa qualidade não é exigida; são posições incompatíveis sobre a mesma questão. As datas (outubro e novembro de 2019) são muito próximas, pelo que é improvável que haja alteração legislativa entre elas.",
+   "real_opposition": true
+  },
+  "pair": [
+   {
+    "date": "2019-10-29",
+    "doc_id": "d58fe4e59bd33821802584a30033ebc5",
+    "position": "exige_consumidor",
+    "processo": "3975/16.4T8VIS-A.C1.S1",
+    "quote": "o reconhecimento do direito de retenção ao promitente-comprador depende da sua qualidade de consumidor ao intervir nos negócios que firmou com a sociedade declarada insolvente.",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/d58fe4e59bd33821802584a30033ebc5?OpenDocument"
+   },
+   {
+    "date": "2019-11-10",
+    "doc_id": "b36e6bd7d3a1980a802584cd00384e93",
+    "position": "nao_exige",
+    "processo": "503/16.5T8STB.E1.S1.S1",
+    "quote": "Para o reconhecimento dodireito de retenção, nesses termos, não se exige que o beneficiário tenha a qualidade de consumidor.",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/b36e6bd7d3a1980a802584cd00384e93?OpenDocument"
+   }
+  ],
+  "question_id": "q8",
+  "rule_confidence": "alta",
+  "support": {
+   "exige_consumidor": 19,
+   "nao_exige": 13
+  },
+  "type": "split",
+  "window_end": 2024,
+  "window_start": 2014
+ },
+ {
+  "display": "uniformizada",
+  "id": "q8-resolved-2014-2014",
+  "judge": null,
+  "pair": [
+   {
+    "date": "2014-03-20",
+    "doc_id": "d83b7b9c541d3bf280257cd7003f56bc",
+    "position": "exige_consumidor",
+    "processo": "92/05.6TYVNG-M.P1.S1",
+    "quote": "o consumidor promitente-comprador em contrato, ainda que com eficácia meramente obrigacional com traditio, devidamente sinalizado, que não obteve o cumprimento do negócio por parte do administrador da insolvência, goza do direito de retenção",
+    "url": "https://www.dgsi.pt/jstj.nsf/954f0ce6ad9dd8b980256b5f003fa814/d83b7b9c541d3bf280257cd7003f56bc?OpenDocument"
+   }
+  ],
+  "question_id": "q8",
+  "rule_confidence": null,
+  "support": {
+   "exige_consumidor": 19,
+   "nao_exige": 13
+  },
+  "type": "resolved",
+  "window_end": 2014,
+  "window_start": 2014
  },
  {
   "display": "mudanca",
