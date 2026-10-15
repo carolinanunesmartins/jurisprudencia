@@ -17,7 +17,17 @@ describe("App (unit)", () => {
   it("renders the title and the summary", async () => {
     at("/");
     expect(screen.getByRole("heading", { name: messages.appTitle })).toBeInTheDocument();
-    expect(await screen.findByText(messages.summary(813, 2))).toBeInTheDocument();
+    expect(await screen.findByText(messages.home.lead(813))).toBeInTheDocument();
+  });
+
+  it("opens with the strongest confirmed divergence as two facing quotes", async () => {
+    at("/");
+    expect(await screen.findByText(messages.home.heroCaption)).toBeInTheDocument();
+    expect(screen.getAllByRole("article")).toHaveLength(2);
+    expect(screen.getByRole("link", { name: messages.home.openHero })).toHaveAttribute(
+      "href",
+      "/divergencias/q6-split-2009-2012",
+    );
   });
 
   it("lists the questions with counts", async () => {
@@ -28,8 +38,9 @@ describe("App (unit)", () => {
 
   it("shows the timeline, the divergence and the judgments of a question", async () => {
     at("/perguntas/q6");
-    expect(await screen.findByRole("img", { name: /Linha do tempo/ })).toBeInTheDocument();
-    expect(screen.getByText(/Mudança de entendimento/)).toBeInTheDocument();
+    expect(await screen.findByRole("img", { name: messages.timelineLabel("Prazo do contrato prometido") })).toBeInTheDocument();
+    // a split is headed as a split, not as a change over time
+    expect(screen.getByRole("heading", { name: messages.kind.split })).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "1/10" })[0]).toHaveAttribute(
       "href",
       "https://www.dgsi.pt/jstj.nsf/x/a?OpenDocument",

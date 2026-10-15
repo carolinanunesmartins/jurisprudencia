@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Site revamp: identity "duas vozes"
+- Tool / model: Claude Code (Opus 5.5) with the skills frontend-design, emil-design-eng, ui-ux-pro-max (its search script is not installed, so only its checklists were used) and humanizer (for the pt-PT copy).
+- Task: owner asked for a more minimal, stylish site with an identity. Plan reviewed against the brief before coding. Identity: colour means a position and nothing else (teal and ochre; everything else is ink on cool paper); the question chart redrawn as a mirrored year histogram (one position above the axis, the other below), repeated as a mini strip in the question list; the home page opens with the strongest confirmed divergence as two facing quotes, chosen from the data by judge and rule confidence; quotes set in Literata, interface in Hanken Grotesk, self-hosted (ADR 0008). The judgments table is collapsed by default; divergence headings say what kind they are; light and dark themes from one token set. Copy rewritten in plain pt-PT (no dashes in sentences, no "·" strings, no arrows).
+- What failed or needed correction: base `a` styles outside a cascade layer beat Tailwind 4's utilities (the wordmark kept its underline), moved into `@layer base`; a `#conteudo` skip link would have changed the HashRouter route, so it moves focus instead; dates came out as 29/10/2019, now built from month names; the mini strips were flattened by one busy year (square-root scale); the old label called every confirmed divergence "Mudança de entendimento", including splits; nav links were 42 px tall (now 44+).
+- How it was fixed: checked in the dev server at 1280 px and 360 px, light and dark: no horizontal overflow on the 6 routes, lowest text contrast 5.3:1 (light) and 7.9:1 (dark), no heading skips, all links named. 21 web tests (one new: the home hero), typecheck, lint, build.
+- Human verification (what was checked by a person): pending (the owner reviews on the local dev server before pushing).
+
 ### 2026-10-15 — Live check after #22; /metodo arithmetic fixed
 - Tool / model: Claude Code (Opus 5.5)
 - Task: check the deployed site after the M6–M8 merge: 6 data files equal `main`, new bundle live, `/divergencias/...` and `/metodo` render, no overflow at 360 px, disclaimer present.
