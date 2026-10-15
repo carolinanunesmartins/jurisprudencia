@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Evaluation report (M7 T7.2) and divergence sheet (T7.1)
+- Tool / model: Claude Code (Opus 5.5)
+- Task: SPEC §9.4's baseline was only loosely defined, so it was operationalised (label-pool relevance + cue phrases from the frozen position definitions, negated cues ignored, both/none → nao_decide) and committed (`7ed0291`) before being run. `juris/evaluate` writes `data/eval/report.md` (pt-PT, for `/metodo`) from committed data plus the local database (baseline texts) and `data/replay/` (re-derives pair rule v1 from recorded verdicts, no API calls). Run-log numbers the database does not hold are in `data/eval/runs.json`; the survey-recovery table is curated in `data/eval/survey.json`. The label pools moved from `tools/labelsheet.py` to `juris/evaluate/pools.py` (shared, unchanged).
+- What failed or needed correction: the survey notes first stated a made-up rejection reason for seed 4 and missed that seed 5's own question (q5) was rejected; both corrected to the reasons recorded in `taxonomy.json`. Numbers were first printed in English format.
+- How it was fixed: results — test questions: model 33/42 exact vs baseline 24/42; labelled positions recovered 20/21 vs 4/21; model positions agreeing with the label 20/28 (the over-assignment). Dev: 13/16 vs 7/16. v1 re-derived: 3 shown (q3, q7, q9), equal to the live v1 run; v2: 4 (q7, q8, q9, q10). Survey: seed 5 recovered (q10 shift 2003–2008 around the survey's 06B3805), seeds 2 and 3 partial, seeds 1 and 4 not evaluable. Cost ≈ 4 USD at assumed list prices (to confirm in the console); judge tokens and minutes per stage were not recorded.
+- Human verification (what was checked by a person): none yet; divergence labelling is a HUMAN task.
+
 ### 2026-10-15 — Merge conflicts and the first deploy with data (M4 done)
 - Tool / model: Claude Code (Opus 5.5)
 - Task: resolve the PR conflicts, then verify the deployed site. `main` (#20) was the squash of branch commit 5d33321 (identical tree), so all 14 conflicts resolved to the branch version; the merged tree was checked equal to the branch and the tests re-run. After the owner merged (#21) and the deploy ran: compared the 5 live data files with the committed ones (equal once CRLF/LF is ignored) and checked `/`, `/perguntas/q8`, `/uniformizacoes` in a browser via scripted DOM reads.

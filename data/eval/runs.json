@@ -1,0 +1,15 @@
+{
+ "_source": "printed by the owner's live runs on 2026-10-15 (make classify / make judge), pasted into the session",
+ "classify_model": "claude-haiku-4-5-20251001",
+ "judge_model": "claude-sonnet-5-5",
+ "classify": [
+  {"run": "pilot", "judgments": 100, "input_tokens": 183645, "output_tokens": 57790},
+  {"run": "full", "judgments": 713, "input_tokens": 1423398, "output_tokens": 416965}
+ ],
+ "judge": [
+  {"run": "pair rule v1", "calls": 23},
+  {"run": "pair rule v2", "calls": 9, "reused": 14}
+ ],
+ "price_usd_per_mtok_assumed": {"classify_in": 1.0, "classify_out": 5.0},
+ "minutes_per_stage": null
+}
