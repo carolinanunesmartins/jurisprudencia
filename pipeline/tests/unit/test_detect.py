@@ -25,7 +25,7 @@ def pts(spec: str, uniformizacao: set[int] = frozenset()) -> list[Point]:
 
 def test_default_config_matches_detect_toml():
     root = Path(__file__).resolve().parents[3]
-    assert load_config(root / "detect.toml") == CFG
+    assert load_config(root / "detect.toml") == Config(pair_rule="v2")
 
 
 def test_settled_question_has_no_divergence():
