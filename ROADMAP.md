@@ -38,12 +38,12 @@ Done 2026-10-15: all 813 subset judgments fetched; 800 with a sumário, 749 with
 - T3.2 Discovery pass on 150 sampled judgments (HUMAN-run, needs key) → ≤ 3 proposed questions. *Done 2026-10-15: G2 passes on the SPEC rule (about 5 two-sided questions, thin support); owner approved 7 questions. Kit 2026-10-14: `python pipeline/tools/discovery.py pack|check`, 3 packs of 50 in `data/discovery/`; owner pastes each into an LLM chat and saves `answer_<k>.json`.*
 - HUMAN (≈45 min): approve/edit/reject questions and positions. Gate G2 (SPEC §2).
 - T3.3 Freeze taxonomy + prompt version (tag it). Generate the blind label sheet for the 60-judgment position-accuracy sample now (moved from M7: it does not depend on model output). *Done 2026-10-15: taxonomy `v1` + prompt `classify_v1`, git tag `taxonomy-v1`. Sheet: `python pipeline/tools/labelsheet.py make` → `data/labelling/sheet.md` (local) and `data/eval/labels.csv` (committed, labels empty); `labelsheet.py validate` checks the filled labels. Allocation and dev/test split (dev = q2, q3) written into SPEC §9 before any model output; model input = sumário (ADR 0007).*
-- HUMAN (≈2 h, days 4–5): fill the 60 labels. Record the labeller's legal background in the report; single annotator is a stated limitation; allow an `unclear` label.
+- HUMAN (≈2 h, days 4–5): fill the 60 labels, run `labelsheet.py validate`, commit. M3 stays `doing` until that commit; no live classify run before it. Record the labeller's legal background in the report; single annotator is a stated limitation; allow an `unclear` label.
 - Accept: `taxonomy.json` with 5–8 approved questions, each with ≥ 2 positions and definitions; taxonomy/prompt frozen before labelling.
 
-## M4 — Vertical slice online ★ (3 h) · todo · day 4 · deps: M3
+## M4 — Vertical slice online ★ (3 h) · todo · day 4 · deps: M3 (code may start once T3.3 is done; the live run waits for the labels)
 - T4.1 Classification module + `ReplayProvider` + schema + grounding check (tests with fixtures).
-- HUMAN: run classification on the 100-judgment pilot; measure tokens/cost; set the API spend limit.
+- HUMAN: run classification on the 100-judgment pilot; measure tokens/cost; set the API spend limit. **Only after the commit with the 60 filled labels (`data/eval/labels.csv`) exists**: that commit, dated before any classification output, is the evidence that the labels are blind.
 - T4.2 Export `web/public/data/*.json` for the pilot; minimal UI: `/perguntas` and one question timeline; deploy.
 - Accept: a public URL showing real pilot data with quotes and links. If this fails, cut scope now (see Cuts).
 

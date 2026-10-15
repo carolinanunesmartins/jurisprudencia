@@ -61,6 +61,13 @@ def test_validate_flags_labels_outside_the_question(tmp_path, capsys):
     assert rc == 1 and "3 labels filled, 1 invalid" in capsys.readouterr().out
 
 
+def test_validate_rejects_a_semicolon_csv(tmp_path, capsys):
+    path = tmp_path / "labels.csv"
+    path.write_text(";".join(labelsheet.FIELDS) + "\n1;d;p;2000;u;q3;basta_mora;\n", "utf-8-sig")
+    rc = labelsheet.validate(Path(__file__).resolve().parents[3] / "data" / "taxonomy.json", path)
+    assert rc == 1 and "text editor" in capsys.readouterr().out
+
+
 def test_classify_prompt_lists_only_approved_questions():
     text = classify_prompt(TAX)
     assert "**q3**" in text and "**q10**" in text

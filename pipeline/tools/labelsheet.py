@@ -107,7 +107,9 @@ def make(db: Path, tax_path: Path) -> int:
         "Para cada linha, lê o sumário e escreve em `data/eval/labels.csv`, coluna `label`, "
         "o id da posição, `nao_decide` ou `unclear`. Usa só o sumário; o link serve para casos "
         "duvidosos. Não consultes resultados do modelo. Escreve a tua formação jurídica numa "
-        "linha em `data/eval/labeller.md`.",
+        "linha em `data/eval/labeller.md`. Edita o CSV num editor de texto (não no Excel, que "
+        "troca as vírgulas por ponto e vírgula) e confirma com "
+        "`python pipeline/tools/labelsheet.py validate`.",
     ]
     current = None
     for n, (qid, (_, processo, url, data_iso, sumario)) in enumerate(picked, 1):
@@ -134,8 +136,12 @@ def validate(tax_path: Path, labels: Path = LABELS) -> int:
         for q in load_taxonomy(tax_path).questions
     }
     errors = filled = 0
-    with labels.open(encoding="utf-8", newline="") as f:
-        for row in csv.DictReader(f):
+    with labels.open(encoding="utf-8-sig", newline="") as f:  # tolerate a BOM
+        reader = csv.DictReader(f)
+        if reader.fieldnames != FIELDS:
+            print(f"{labels}: header is not {','.join(FIELDS)}; edit it in a text editor")
+            return 1
+        for row in reader:
             label = row["label"].strip()
             if not label:
                 continue
