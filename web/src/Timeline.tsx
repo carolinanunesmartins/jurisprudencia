@@ -1,8 +1,8 @@
 import type { Divergence, Judgment, Position } from "./data";
 import { messages } from "./messages.pt";
 
-const FIRST = 2000;
-const LAST = 2025;
+export const FIRST = 2000;
+export const LAST = 2025;
 const YEARS = LAST - FIRST + 1;
 const W = 720;
 const PAD = 8;
@@ -49,61 +49,65 @@ export function Timeline({ title, positions, judgments, divergences }: Props) {
   const rows = Math.max(1, ...cols.map((c) => Math.ceil(c.js.length / PER_ROW)));
   const half = rows * STEP + 10;
   const axis = half;
-  const height = 2 * half + 22;
-  const ticks = [2000, 2005, 2010, 2015, 2020, 2025];
+  const height = 2 * half + 4;
   return (
-    <svg
-      viewBox={`0 0 ${W} ${height}`}
-      role="img"
-      aria-label={messages.timelineLabel(title)}
-      className="block w-full h-auto"
-    >
-      {divergences
-        .filter((d) => d.type !== "resolved")
-        .map((d) => (
-          <rect
-            key={d.id}
-            x={xOfYear(d.window_start) - COL / 2}
-            y={2}
-            width={(d.window_end - d.window_start + 1) * COL}
-            height={2 * half - 4}
-            fill="var(--surface)"
-            rx={3}
-          />
+    <div>
+      <svg viewBox={`0 0 ${W} ${height}`} role="img" aria-label={messages.timelineLabel(title)} className="block w-full h-auto">
+        {divergences
+          .filter((d) => d.type !== "resolved")
+          .map((d) => (
+            // a dashed outline as well as the fill: the fill alone is too faint to see on paper
+            <rect
+              key={d.id}
+              x={xOfYear(d.window_start) - COL / 2}
+              y={2}
+              width={(d.window_end - d.window_start + 1) * COL}
+              height={2 * half - 4}
+              fill="var(--surface)"
+              stroke="var(--graphite)"
+              strokeWidth={1}
+              strokeDasharray="3 3"
+              rx={3}
+            />
+          ))}
+        <line x1={PAD} x2={W - PAD} y1={axis} y2={axis} stroke="var(--ink)" strokeWidth={1} />
+        {cols.map(({ lane, year, js }) => {
+          const side = sideOf(lane);
+          return js.map((j, n) => {
+            const cx = xOfYear(year) + ((n % PER_ROW) - 1) * STEP;
+            const cy = axis + side * (8 + Math.floor(n / PER_ROW) * STEP);
+            return (
+              <g key={`${j.doc_id}-${j.question_id}`}>
+                <title>{`${j.processo}, ${j.date}`}</title>
+                <circle cx={cx} cy={cy} r={R} fill={posColor(lane)} />
+                {j.uniformizacao && (
+                  <circle cx={cx} cy={cy} r={R + 3} fill="none" stroke="var(--ink)" strokeWidth={1.25} />
+                )}
+              </g>
+            );
+          });
+        })}
+        {TICKS.map((t) => (
+          <line key={t} x1={xOfYear(t)} x2={xOfYear(t)} y1={axis - 3} y2={axis + 3} stroke="var(--ink)" />
         ))}
-      <line x1={PAD} x2={W - PAD} y1={axis} y2={axis} stroke="var(--ink)" strokeWidth={1} />
-      {cols.map(({ lane, year, js }) => {
-        const side = sideOf(lane);
-        return js.map((j, n) => {
-          const cx = xOfYear(year) + ((n % PER_ROW) - 1) * STEP;
-          const cy = axis + side * (8 + Math.floor(n / PER_ROW) * STEP);
-          return (
-            <g key={`${j.doc_id}-${j.question_id}`}>
-              <title>{`${j.processo}, ${j.date}`}</title>
-              <circle cx={cx} cy={cy} r={R} fill={posColor(lane)} />
-              {j.uniformizacao && (
-                <circle cx={cx} cy={cy} r={R + 3} fill="none" stroke="var(--ink)" strokeWidth={1.25} />
-              )}
-            </g>
-          );
-        });
-      })}
-      {ticks.map((t) => (
-        <g key={t}>
-          <line x1={xOfYear(t)} x2={xOfYear(t)} y1={axis - 3} y2={axis + 3} stroke="var(--ink)" />
-          <text
-            x={xOfYear(t)}
-            y={height - 4}
-            fontSize={11}
-            textAnchor="middle"
-            fill="var(--graphite)"
-            className="tabular"
-          >
-            {t}
-          </text>
-        </g>
+      </svg>
+      <YearAxis />
+    </div>
+  );
+}
+
+const TICKS = [2000, 2005, 2010, 2015, 2020, 2025];
+
+/** Year labels in HTML, not in the SVG: they keep their size when the chart shrinks on a phone. */
+function YearAxis() {
+  return (
+    <div aria-hidden="true" className="relative h-5 mt-1 text-xs text-graphite tabular">
+      {TICKS.map((t) => (
+        <span key={t} className="absolute -translate-x-1/2" style={{ left: `${(xOfYear(t) / W) * 100}%` }}>
+          {t}
+        </span>
       ))}
-    </svg>
+    </div>
   );
 }
 

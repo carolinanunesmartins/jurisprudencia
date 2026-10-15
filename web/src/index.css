@@ -12,14 +12,22 @@
   --ink: #18212b;
   --graphite: #56606b; /* secondary text: 5.9:1 on paper */
   --rule: #d9dddc;
-  /* positions: teal and ochre read apart for common colour-vision deficiencies; each lane also
-     has its own marker shape, so colour is never the only cue */
+  /* positions: teal and ochre read apart for common colour-vision deficiencies; in the chart each
+     position also has its own side of the axis and every label names it, so colour is never the
+     only cue */
   --pos-0: #0e6e77;
   --pos-1: #94570f;
   --pos-2: #5b4b8a;
   --pos-3: #8a3b55;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   color-scheme: light;
+}
+
+/* soft tints of the position colours, for highlighter marks and bars; derived, so they follow
+   the dark theme without their own values */
+:root {
+  --pos-0-soft: color-mix(in srgb, var(--pos-0) 24%, transparent);
+  --pos-1-soft: color-mix(in srgb, var(--pos-1) 24%, transparent);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -101,6 +109,29 @@
     outline: 2px solid var(--ink);
     outline-offset: 3px;
     border-radius: 2px;
+  }
+
+  /* a highlighter stroke under a phrase, in a position's colour */
+  .hl-0,
+  .hl-1 {
+    padding: 0 0.08em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  .hl-0 {
+    background: linear-gradient(transparent 58%, var(--pos-0-soft) 58%);
+  }
+  .hl-1 {
+    background: linear-gradient(transparent 58%, var(--pos-1-soft) 58%);
+  }
+
+  /* <details> disclosure: one look everywhere, the marker turns when open */
+  details > summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
   }
 
   ::selection {
