@@ -103,7 +103,11 @@ export const fixture: Data = {
     ],
     divergences: { judged: 5, shown_v1: 1, shown_v2: 2, shown_v2_test: 2 },
     aujs: 1,
-    divergence_labels: null,
+    divergence_labels: {
+      labellers: ["Modelo X"],
+      shown: { correct: 2, incorrect: 1, unclear: 1 },
+      hidden: {},
+    },
     survey: [{ seed: 5, topic: "Sinal e execução específica", question: "q10", result: "sim" }],
   },
 };

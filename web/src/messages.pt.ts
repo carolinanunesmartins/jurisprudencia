@@ -37,8 +37,10 @@ export const messages = {
     system: { model: "modelo", baseline: "base" },
     divergences: (j: number, v1: number, v2: number, t: number) =>
       `Divergências: ${j} detetadas e avaliadas pelo juiz; ${v2} confirmadas e mostradas (${t} em perguntas de teste). Com a primeira regra de escolha dos excertos eram ${v1}.`,
-    labels: (correct: number, total: number, labellers: string) =>
-      `Revisão das divergências mostradas por modelos de IA (${labellers}), não por uma pessoa: ${correct} de ${total} consideradas corretas.`,
+    // same arithmetic as report §6: `unclear` is left out of the denominator
+    labels: (correct: number, decided: number, unclear: number, labellers: string) =>
+      `Revisão das divergências mostradas por modelos de IA, não por uma pessoa — ${labellers}: ${correct} de ${decided} consideradas corretas` +
+      (unclear ? `; ${unclear} sem conclusão.` : "."),
     noLabels: "As divergências mostradas ainda não foram revistas por uma pessoa.",
     aujs: (n: number) => `${n} divergências reconhecidas pelo próprio STJ (acórdãos de uniformização).`,
     cost: (tokens: string, usd: string) =>

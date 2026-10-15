@@ -93,7 +93,8 @@ describe("App (unit)", () => {
     expect(await screen.findByRole("heading", { name: messages.method_page.heading })).toBeInTheDocument();
     expect(screen.getByText(messages.method_page.grounding(10, 9, 1))).toBeInTheDocument();
     expect(screen.getByText("3/4 (75 %)")).toBeInTheDocument();
-    expect(screen.getByText(messages.method_page.noLabels)).toBeInTheDocument();
+    // regression: /metodo said '2 de 4' while the report said 2/3 (unclear is not decided)
+    expect(screen.getByText(messages.method_page.labels(2, 3, 1, "Modelo X"))).toBeInTheDocument();
     expect(screen.getByRole("link", { name: messages.method_page.report })).toHaveAttribute(
       "href",
       messages.method_page.reportUrl,

@@ -133,7 +133,9 @@ export function MethodPage({ data }: { data: Data }) {
   const m = messages.method_page;
   const ev = data.evaluation;
   const labels = ev?.divergence_labels;
-  const labelled = labels ? Object.values(labels.shown).reduce((a, b) => a + b, 0) : 0;
+  const shown = labels?.shown ?? {};
+  const decided = (shown.correct ?? 0) + (shown.incorrect ?? 0) + (shown.legislative_change ?? 0);
+  const labelled = decided + (shown.unclear ?? 0);
   return (
     <section className="space-y-4">
       <h2 className="text-xl font-semibold">{m.heading}</h2>
@@ -160,7 +162,7 @@ export function MethodPage({ data }: { data: Data }) {
             </li>
             <li>
               {labels && labelled > 0
-                ? m.labels(labels.shown.correct ?? 0, labelled, labels.labellers.join("; "))
+                ? m.labels(shown.correct ?? 0, decided, shown.unclear ?? 0, labels.labellers.join("; "))
                 : m.noLabels}
             </li>
             <li>{m.aujs(ev.aujs)}</li>

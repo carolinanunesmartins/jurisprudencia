@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Live check after #22; /metodo arithmetic fixed
+- Tool / model: Claude Code (Opus 5.5)
+- Task: check the deployed site after the M6–M8 merge: 6 data files equal `main`, new bundle live, `/divergencias/...` and `/metodo` render, no overflow at 360 px, disclaimer present.
+- What failed or needed correction: `/metodo` said "2 de 4 consideradas corretas" while the report says 2/3: the page counted `unclear` in the denominator. The favicon returned 404 although it is in the build: a 404 cached by the CDN from a request made before the deploy finished (`X-Cache: HIT`). The labeller text produced nested brackets.
+- How it was fixed: the page uses the report's arithmetic (correct / decided, unclear stated separately), with a regression test; wording uses a dash. Favicon: no code change, re-checked after the cache expired.
+- Human verification (what was checked by a person): the owner merged #22 and confirmed the deploy.
+
 ### 2026-10-15 — M8 docs: README, NOTA.md, IA.md
 - Tool / model: Claude Code (Opus 5.5)
 - Task: rewrite the stale README (it still said M0 and that fetch/classify were not implemented) with the live URL, what the site shows, a quickstart without crawl or API key, reproduction from `data/classifications/` and the full HUMAN pipeline; NOTA.md (one page: subset and criterion, grouping, detection, results, limitations); IA.md summarised from all AI_LOG entries; CHANGELOG by milestone.
