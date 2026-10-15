@@ -149,7 +149,10 @@ def main() -> int:
         if not key or not model:
             print("set LLM_API_KEY and JUDGE_MODEL (see .env.example)", file=sys.stderr)
             return 2
-        provider = CachedProvider(replay, AnthropicProvider(key, model, record=a.replay_dir))
+        live = AnthropicProvider(
+            key, model, record=a.replay_dir, workspace_id=os.environ.get("LLM_WORKSPACE_ID")
+        )
+        provider = CachedProvider(replay, live)
     system = (PROMPTS / f"{JUDGE}.md").read_text(encoding="utf-8")
     conn = connect(a.db)
     try:

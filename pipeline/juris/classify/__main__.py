@@ -49,7 +49,9 @@ def main() -> int:
         if not key or not model:
             print("set LLM_API_KEY and CLASSIFY_MODEL (see .env.example)", file=sys.stderr)
             return 2
-        provider = AnthropicProvider(key, model, record=a.replay_dir)
+        provider = AnthropicProvider(
+            key, model, record=a.replay_dir, workspace_id=os.environ.get("LLM_WORKSPACE_ID")
+        )
     try:
         stats = run(
             connect(a.db),

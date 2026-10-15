@@ -96,6 +96,7 @@ class AnthropicProvider:
         record: Path | None = None,
         client: httpx.Client | None = None,
         max_tokens: int = 1200,  # a full 7-question answer is ~1 000 tokens; typical ~400
+        workspace_id: str | None = None,  # needed only for keys not scoped to a workspace
     ):
         self.model = model
         self.record = record
@@ -107,6 +108,8 @@ class AnthropicProvider:
             "anthropic-version": ANTHROPIC_VERSION,
             "content-type": "application/json",
         }
+        if workspace_id:
+            self._headers["anthropic-workspace-id"] = workspace_id
 
     def generate_json(self, prompt_id: str, system: str, input: str) -> dict[str, Any]:
         body = {

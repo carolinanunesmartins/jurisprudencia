@@ -175,3 +175,18 @@ def test_api_error_shows_the_api_message_not_only_the_status():
     with pytest.raises(ApiError, match="400: invalid_request_error: bad model") as e:
         p.generate_json(CLASSIFY, "s", "i")
     assert e.value.status == 400
+
+
+def test_workspace_header_is_sent_only_when_set():
+    seen = []
+
+    def handler(request):
+        seen.append(request.headers.get("anthropic-workspace-id"))
+        return httpx.Response(200, json={"content": [{"type": "text", "text": "{}"}]})
+
+    for ws in ("wrkspc_1", None):
+        client = httpx.Client(transport=httpx.MockTransport(handler))
+        AnthropicProvider("k", "m", client=client, workspace_id=ws).generate_json(
+            CLASSIFY, "s", "i"
+        )
+    assert seen == ["wrkspc_1", None]

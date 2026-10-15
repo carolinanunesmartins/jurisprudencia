@@ -11,6 +11,10 @@ Agents never run these and never see the key (AGENTS.md rule 6). Everything else
    $env:CLASSIFY_MODEL = "claude-haiku-4-5-20251001"   # small model (SPEC §12)
    $env:JUDGE_MODEL = "claude-sonnet-5-5"              # larger model for the judge
    ```
+   If the run says "This API key is not scoped to a workspace", either create the key inside a workspace (Settings → Workspaces → the workspace → API keys), or set that workspace's ID (Settings → Workspaces, starts with `wrkspc_`):
+   ```powershell
+   $env:LLM_WORKSPACE_ID = "wrkspc_..."
+   ```
 
 ## 2. Order (blindness and gates)
 1. Fill the 60 labels in `data/eval/labels.csv`, run `uv run python pipeline/tools/labelsheet.py validate`, then **commit**. `make classify` refuses to start before this.

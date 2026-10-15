@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Optional workspace header for keys not scoped to a workspace
+- Tool / model: Claude Code (Opus 5.5)
+- Task: the pilot re-run now showed the cause: "This API key is not scoped to a workspace, so this request must include the anthropic-workspace-id header". Added an optional `LLM_WORKSPACE_ID` env var; when set, `make classify` and `make judge` send it as `anthropic-workspace-id`. Documented in `.env.example` and runbook §1.
+- What failed or needed correction: the provider assumed a workspace-scoped key.
+- How it was fixed: as above; a unit test checks the header is sent only when set.
+- Human verification (what was checked by a person): pending; the owner re-runs the pilot.
+
 ### 2026-10-15 — Show the API's error message on a failed live call
 - Tool / model: Claude Code (Opus 5.5)
 - Task: the owner's first `make classify ARGS="--pilot 100"` failed with a bare `400 Bad Request` traceback, which does not say why. `AnthropicProvider` now raises `ApiError` carrying the API's own error type and message (the response body never contains the key); `make classify` and `make judge` print it and exit without a traceback. Runbook §5 lists the usual 400 causes (no credit, wrong model name).
