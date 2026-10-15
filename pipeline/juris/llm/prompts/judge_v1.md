@@ -2,7 +2,7 @@
 
 ## Tarefa
 
-Recebes uma pergunta jurídica, duas posições possíveis e dois excertos de acórdãos do STJ, cada um com a data e a posição que lhe foi atribuída automaticamente. Diz se os dois excertos mostram **entendimentos realmente opostos** sobre a pergunta.
+Recebes uma pergunta jurídica, as posições possíveis e dois excertos de acórdãos do STJ, cada um com a data. Diz se os dois excertos mostram **entendimentos realmente opostos** sobre a pergunta.
 
 ## Regras
 

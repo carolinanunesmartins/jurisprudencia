@@ -22,6 +22,7 @@ Living record of how AI tools were used in this project. It is the source for `I
 - Prompt / approach (one line): verdicts are cached as replay fixtures (replay first, live on a miss), so rerunning detect and the judge does not pay twice.
 - What failed or needed correction: a `
 ` inside an f-string became a literal line break when generated through a script (syntax error). On an empty database the gate printed "PIVOT", which is misleading before any classification exists.
+- Review fix (same day, before any judge run): the first version showed the judge each excerpt's assigned position. SPEC §6.4 gives the judge only the quotes, the dates and the question, and the labels would prime it toward confirming, which biases Gate G3. Removed from the input and the prompt.
 - How it was fixed: rewritten; the gate now says it is not decidable while nothing is classified. 8 new unit tests (rule confidence, ranking, display, gate counting test questions only, cache).
 - Human verification (what was checked by a person): none yet.
 

@@ -2,7 +2,7 @@
 
 `make judge` (HUMAN-run, needs LLM_API_KEY and JUDGE_MODEL) or `make judge-replay` (offline).
 
-The judge sees only the question, the two quotes, their dates and assigned positions. Verdicts
+The judge sees only the question (with its positions), the two quotes and their dates. Verdicts
 are cached as replay fixtures, so re-running `make detect` and the judge costs nothing twice.
 """
 
@@ -66,11 +66,8 @@ def judge_input(tax: Taxonomy, qid: str, pair: list[dict]) -> str:
     lines = [f"Pergunta: {q.title_pt}. {q.description_pt}", "", "Posições:"]
     lines += [f"- {p.id}: {p.definition_pt}" for p in q.positions]
     for label, p in zip(("A", "B"), pair, strict=True):
-        lines += [
-            "",
-            f"Excerto {label} ({p['date']}, posição atribuída: {p['position']}):",
-            p["quote"],
-        ]
+        # no assigned position: the judge must not be primed by the classifier (SPEC §6.4)
+        lines += ["", f"Excerto {label} ({p['date']}):", p["quote"]]
     return "\n".join(lines)
 
 
