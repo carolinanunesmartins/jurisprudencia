@@ -16,6 +16,13 @@ Living record of how AI tools were used in this project. It is the source for `I
 
 ---
 
+### 2026-10-15 — Deploy gated by data-check
+- Tool / model: Claude Code (Opus 5.5)
+- Task: the owner asked for the deploy job. One already existed (`deploy.yml`, M0: build on push to `main`, upload, deploy to Pages); Pages is enabled and serves the old `main`. Added a `data-check` job that the build needs, so data failing `make data-check` is never published.
+- What failed or needed correction: the agent had told the owner there was no deploy job, after grepping `ci.yml` only; corrected in ROADMAP and in the reply.
+- How it was fixed: workflow parsed with a YAML parser (jobs data-check → build → deploy); `make data-check` passes locally. Not run on GitHub yet: it runs on the merge to `main`.
+- Human verification (what was checked by a person): pending (owner merges, then checks the URL).
+
 ### 2026-10-15 — Divergences documented by the STJ (AUJ cards)
 - Tool / model: Claude Code (Opus 5.5)
 - Task: option A chosen by the owner. Read the 3 AUJ texts in the subset (4/2014 of 20-03-2014, 12-02-2019, 27-04-2021) and the sumários of the STJ judgments they name; curated `data/auj/auj.json` with, per AUJ, the passages stating the question, the conflict, each side and the ruling, plus for each side the named judgments with a passage of their own sumário. `juris/export/auj.py` exports `aujs.json` with processo/date/link from the database; data-check verifies links and that every quote is in the stored text; the snapshot keeps the metadata, so a fresh clone reproduces it. UI: `/uniformizacoes` and related cards on q8/q9; strings in `messages.pt.ts`.
