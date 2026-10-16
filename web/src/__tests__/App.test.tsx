@@ -62,6 +62,23 @@ describe("App (unit)", () => {
     expect(screen.getAllByText(whole("Relativo e Absoluto nos mesmos anos")).length).toBeGreaterThan(0);
   });
 
+  // regression: a first-time reader could not tell a question from a divergence
+  it("explains the four terms on the home page, in the order they nest", async () => {
+    at("/");
+    const guide = await screen.findByRole("region", { name: messages.home.guide.label });
+    const g = messages.home.guide;
+    const terms = [...guide.querySelectorAll("li > div > p:first-child > strong")].map((el) => el.textContent);
+    expect(terms).toEqual([g.question.term, g.positions.term, g.divergence.term, g.auj.term]);
+    // the examples come from the example question shown below
+    expect(guide).toHaveTextContent(fixture.questions[0]!.description);
+  });
+
+  it("says when a question has no confirmed divergence", async () => {
+    at("/perguntas/q6", { ...fixture, divergences: [] });
+    expect(await screen.findByText(messages.eyebrow.question)).toBeInTheDocument();
+    expect(screen.getByText(messages.noDivergenceShort)).toBeInTheDocument();
+  });
+
   it("shows position names in bold, in their colour", async () => {
     at("/");
     const [name] = await screen.findAllByText("Relativo", { selector: "strong" });

@@ -295,6 +295,7 @@ function QuestionList({ data }: { data: Data }) {
               <Link to={`/perguntas/${q.id}`} className="font-serif text-lg leading-snug">
                 {q.title}
               </Link>
+              {divs.length === 0 && <p className={`${SMALL} mt-1.5`}>{messages.noDivergenceShort}</p>}
               {divs.length > 0 && (
                 <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5">
                   {divs.map((d) => (
@@ -344,6 +345,7 @@ function DivergenceIndex({ data }: { data: Data }) {
         {messages.home.divergencesHeading}
         <Count n={list.length} />
       </h2>
+      <p className={`${SMALL} -mt-2 mb-4`}>{messages.home.divergencesIntro}</p>
       <ul className="border-t border-rule">
         {list.map((d) => {
           const q = data.questions.find((x) => x.id === d.question_id);
@@ -365,6 +367,77 @@ function DivergenceIndex({ data }: { data: Data }) {
           );
         })}
       </ul>
+    </section>
+  );
+}
+
+/**
+ * The four terms in the order they nest, for a reader who has never seen the site: a question has
+ * positions; a divergence is both positions given in some years; a uniformização settles one.
+ * Examples come from the home page's own example question, so the words point at what is below.
+ */
+function Guide({ q }: { q?: Question }) {
+  const g = messages.home.guide;
+  const steps: { term: string; def: string; example?: ReactNode }[] = [
+    { ...g.question, example: q && <em>{q.description}</em> },
+    {
+      ...g.positions,
+      example: q && (
+        <>
+          <Pos q={q} id={q.positions[0]?.id ?? ""} />
+          {messages.direction.both}
+          <Pos q={q} id={q.positions[1]?.id ?? ""} />
+        </>
+      ),
+    },
+    {
+      ...g.divergence,
+      example: (
+        <span className="grid gap-1.5">
+          {(["split", "shift"] as const).map((k) => (
+            <span key={k} className="flex items-baseline gap-2">
+              <KindBadge type={k} />
+              <span>{messages.home.kindDef[k]}</span>
+            </span>
+          ))}
+        </span>
+      ),
+    },
+    g.auj,
+  ];
+  return (
+    <section className="mt-10 max-w-[44rem]" aria-labelledby="guide">
+      <h3 id="guide" className="text-xs font-semibold uppercase tracking-[0.08em] text-graphite">
+        {g.label}
+      </h3>
+      <ol className="mt-3 grid gap-x-8 gap-y-5 sm:grid-cols-2 border-t border-rule pt-4">
+        {steps.map((s, i) => (
+          <li key={s.term} className="flex gap-3">
+            <span aria-hidden="true" className="font-serif text-xl leading-none text-graphite tabular">
+              {i + 1}
+            </span>
+            <div className="text-sm">
+              <p>
+                <strong className="font-semibold text-base">{s.term}</strong>: {s.def}
+              </p>
+              {s.example && (
+                <p className="mt-1.5 text-graphite">
+                  {i < 2 && `${g.example} `}
+                  {s.example}
+                </p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+      <More label={g.more} className="mt-4">
+        {g.moreText.map(([term, rest]) => (
+          <p key={term} className={`text-sm ${MEASURE}`}>
+            <strong className="font-semibold">{term}</strong>
+            {rest}
+          </p>
+        ))}
+      </More>
     </section>
   );
 }
@@ -393,16 +466,7 @@ export function Home({ data }: { data: Data }) {
         <div className="mt-8">
           <SearchBox size="large" />
         </div>
-        <dl aria-label={messages.home.kindsLabel} className="mt-10 grid gap-2 sm:grid-cols-2 sm:gap-8 max-w-[44rem]">
-          {(["shift", "split"] as const).map((k) => (
-            <div key={k} className="flex items-baseline gap-3">
-              <dt>
-                <KindBadge type={k} />
-              </dt>
-              <dd className="text-sm">{messages.home.kindDef[k]}</dd>
-            </div>
-          ))}
-        </dl>
+        <Guide q={q || undefined} />
       </section>
 
       {d && q && (
@@ -431,6 +495,7 @@ export function Home({ data }: { data: Data }) {
           {messages.questionsHeading}
           <Count n={data.questions.length} />
         </h2>
+        <p className={`${SMALL} -mt-2 mb-4`}>{messages.home.questionsIntro}</p>
         {data.meta.classified === 0 && <p className="mb-3">{messages.noData}</p>}
         <QuestionList data={data} />
       </section>
@@ -592,8 +657,21 @@ export function QuestionPage({ data }: { data: Data }) {
         <Link to="/perguntas" className="text-sm">
           {messages.back}
         </Link>
-        <h2 className={`${H2} mt-6 ${MEASURE}`}>{q.title}</h2>
+        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.08em] text-graphite">{messages.eyebrow.question}</p>
+        <h2 className={`${H2} mt-1 ${MEASURE}`}>{q.title}</h2>
         <p className={`mt-3 text-lg text-graphite ${MEASURE}`}>{q.description}</p>
+        {/* the answer to "did the Supremo disagree here?" before the details */}
+        <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          {divs.length === 0 ? (
+            <span className={SMALL}>{messages.noDivergenceShort}</span>
+          ) : (
+            divs.map((d) => (
+              <Link key={d.id} to={divergenceUrl(d)} className="no-underline hover:underline">
+                <KindYears d={d} />
+              </Link>
+            ))
+          )}
+        </p>
       </section>
 
       <section className="mt-8">
@@ -692,9 +770,10 @@ export function DivergencePage({ data }: { data: Data }) {
     <>
       <PageTitle title={`${messages.kind[d.type]} ${messages.years(d.window_start, d.window_end)}: ${q.title}`} />
       <section>
-        <Link to={`/perguntas/${q.id}`} className="text-sm">
-          {q.title}
-        </Link>
+        <p className="text-sm">
+          <span className="text-graphite">{messages.eyebrow.divergence} </span>
+          <Link to={`/perguntas/${q.id}`}>{q.title}</Link>
+        </p>
         <p className="mt-6">
           <KindYears d={d} />
         </p>

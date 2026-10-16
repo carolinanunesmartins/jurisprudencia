@@ -15,6 +15,20 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-16 — Guidance for first-time readers: what a question, a position, a divergence are
+- Tool: Claude Code (Opus 5.5); advisor review before editing; Chrome DevTools MCP.
+- Task: the owner found the site not intuitive for a newcomer and could not tell the questions from the divergences or how they relate. Home: a "Como ler" strip with the four terms in the order they nest (Pergunta, Posições, Divergência with the Divisão/Mudança badges, Uniformização), one line each, examples from the home page's own example question, fuller definitions behind "Mais sobre estes termos". One-line intros under "Divergências confirmadas" and "Perguntas". Question list and question page say "Sem divergência confirmada" (3 of 7 questions have none, which was invisible) or show the divergence badges at the top; question and divergence pages are labelled as such.
+- Failed: first test selector picked up a position name inside an example; the first draft of the "Posição" definition claimed judgments that only touch a question are excluded, which the Method page's own limitations contradict.
+- Fix: tighter selector; definition rewritten to what the pipeline guarantees (a verbatim quote). 2 new tests (terms in order with the example question; no-divergence marker); 91 web tests. Visible words on home 327 -> 437 (details closed). Browser check at 1280 px dark and 360 px light, no horizontal scroll. Video script scene 1 updated.
+- Human check: pending.
+
+### 2026-10-16 — Demo video script
+- Tool: Claude Code (Opus 5.5); Chrome DevTools MCP to read the live pages.
+- Task: owner asked for a short demo-video script with correct legal terms and a step-by-step that makes sense. `docs/guiao-video.md` (pt-PT): setup, a glossary (acórdão, sumário, processo, uniformização, posição, Divisão/Mudança), 9 scenes of about 3 min (screen, action, narration) and a 60 s cut. Every label, number and date was taken from the running site, not from memory.
+- Failed: the first draft said the 2007–2008 "Mero detentor" dots on q7 sit below the axis; they are above (first position).
+- Fix: checked against `judgments.json` and corrected; the uniformização rings on q8 (2014, 2019) and the 12 days between the two 2019 quotes were checked the same way.
+- Human check: pending (a dry run of the script against the site).
+
 ### 2026-10-16 — Timeline dots open the judgment (tooltip with the dgsi.pt link)
 - Tool: Claude Code (Opus 5.5).
 - Task: owner asked for a tooltip on the timeline dots that reaches the dgsi.pt link. Hover shows date, position (in its colour), uniformização and "Abrir no dgsi.pt" with the processo; moving onto the tooltip keeps it open (250 ms grace) so the link can be clicked; a click or tap pins it until Escape, the close button or a click outside. `DgsiLink`/`fmtDate` moved to `links.tsx` so the chart can use them without a circular import (the dgsi.pt-only guard comes along). Keyboard and screen-reader users keep the "Todos os acórdãos" table as the chart's alternative, rather than 150 tab stops.

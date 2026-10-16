@@ -22,11 +22,29 @@ export const messages = {
     leadCount: (n: number) => `${n} acórdãos do Supremo`,
     leadMiddle: " sobre contrato-promessa, de 2000 a 2025, agrupados em ",
     leadQuestions: (n: number) => `${n} perguntas`,
-    kindsLabel: "Dois tipos de divergência",
     kindDef: {
       shift: "uma posição substitui a outra",
       split: "as duas posições nos mesmos anos",
     },
+    // the four terms in the order they nest: a question has positions; a divergence is the two
+    // positions given in some years; a uniformização is the Supremo itself settling one
+    guide: {
+      label: "Como ler",
+      question: { term: "Pergunta", def: "uma questão de direito que o Supremo decidiu muitas vezes." },
+      positions: { term: "Posições", def: "as duas respostas possíveis, cada uma com a sua cor." },
+      divergence: { term: "Divergência", def: "anos em que o Supremo deu as duas respostas à mesma pergunta." },
+      auj: { term: "Uniformização", def: "o próprio Supremo fixou a resposta." },
+      example: "Ex.:",
+      more: "Mais sobre estes termos",
+      moreText: [
+        ["Pergunta.", " Cada acórdão é ligado às perguntas que decide. As perguntas foram fixadas antes de classificar os acórdãos: umas vêm de um levantamento anterior da jurisprudência, outras foram propostas por um modelo numa amostra e aprovadas por uma pessoa."],
+        ["Posição.", " Um modelo lê o sumário e atribui ao acórdão a posição que toma, com a citação que o mostra. Só conta se a citação existir palavra a palavra no acórdão."],
+        ["Divergência.", " Nem todas as perguntas têm uma. Procuram-se anos com as duas posições (divisão) ou com uma posição que deixa de dominar (mudança), e um segundo modelo confirma se a oposição é real. Só se mostram as confirmadas."],
+        ["Uniformização.", " Um acórdão de uniformização de jurisprudência: o Supremo reconhece que decidiu a mesma questão em sentidos opostos e fixa a resposta. No gráfico, é um ponto com anel."],
+      ],
+    },
+    divergencesIntro: "Perguntas em que o Supremo deu as duas respostas.",
+    questionsIntro: "Todas as perguntas, com ou sem divergência. A barra mostra os acórdãos de cada posição, ano a ano.",
     heroCaption: "Exemplo",
     divergencesHeading: "Divergências confirmadas",
     aujs: (n: number) => `${n} vezes o próprio Supremo reconheceu e resolveu uma divergência`,
@@ -160,6 +178,9 @@ export const messages = {
   shiftScope: "Descreve só estes anos. O gráfico mostra o que veio depois.",
   legislative: "O juiz admite que a diferença venha de uma alteração legislativa.",
   noDivergences: "Nenhuma divergência confirmada nesta pergunta.",
+  // small labels that name what a page or a list item is
+  eyebrow: { question: "Pergunta", divergence: "Divergência na pergunta" },
+  noDivergenceShort: "Sem divergência confirmada",
   divergence: {
     detail: "Ver detalhes",
     notFound: "Esta divergência não existe.",
