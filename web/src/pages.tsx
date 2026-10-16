@@ -2,6 +2,7 @@ import { type ReactNode, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import type { Auj, Data, Divergence, Judgment, Question, Score } from "./data";
 import { messages } from "./messages.pt";
+import { SearchBox } from "./SearchBox";
 import { FIRST, LAST, MiniStrip, posColor, Timeline } from "./Timeline";
 
 // ---------------------------------------------------------------------------------------------
@@ -405,7 +406,11 @@ export function Home({ data }: { data: Data }) {
           {messages.home.leadMiddle}
           <strong className="font-semibold text-ink">{messages.home.leadQuestions(data.questions.length)}</strong>.
         </p>
-        <dl aria-label={messages.home.kindsLabel} className="mt-6 grid gap-2 sm:grid-cols-2 sm:gap-8 max-w-[44rem]">
+        {/* search is a main way in: large, right under the claim, before anything else */}
+        <div className="mt-8">
+          <SearchBox size="large" />
+        </div>
+        <dl aria-label={messages.home.kindsLabel} className="mt-10 grid gap-2 sm:grid-cols-2 sm:gap-8 max-w-[44rem]">
           {(["shift", "split"] as const).map((k) => (
             <div key={k} className="flex items-baseline gap-3">
               <dt>

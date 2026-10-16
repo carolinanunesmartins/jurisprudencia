@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, NavLink, Route, Routes, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import { type Data, loadData, loadSearch, type SearchFile } from "./data";
 import { messages } from "./messages.pt";
 import { createIndex, type SearchIndex, validSearchFile } from "./search";
+import { SearchBox } from "./SearchBox";
 import { SearchPage } from "./SearchPage";
 import { AujPage, DivergencePage, Home, MethodPage, QuestionPage, Questions } from "./pages";
 
@@ -43,43 +44,6 @@ function useScrollReset() {
   }, [pathname]);
 }
 
-/** The header's search box, on every page; the query lives in the URL (/pesquisa?q=) so it can be shared. */
-function SearchBox() {
-  const navigate = useNavigate();
-  const [params] = useSearchParams();
-  const fromUrl = params.get("q") ?? "";
-  const [value, setValue] = useState(fromUrl);
-  useEffect(() => setValue(fromUrl), [fromUrl]);
-  return (
-    <form
-      role="search"
-      aria-label={messages.search.region}
-      className="flex items-center gap-2"
-      onSubmit={(e) => {
-        e.preventDefault();
-        navigate(`/pesquisa?q=${encodeURIComponent(value.trim())}`);
-      }}
-    >
-      <label htmlFor="pesquisa-q" className="sr-only">
-        {messages.search.formLabel}
-      </label>
-      <input
-        id="pesquisa-q"
-        type="search"
-        name="q"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder={messages.search.placeholder}
-        autoComplete="off"
-        className="w-full min-w-0 sm:w-64 border border-rule bg-paper px-3 py-1.5 text-[0.95rem] rounded-[3px]"
-      />
-      <button type="submit" className="border border-ink rounded-[3px] px-3 py-1.5 text-sm font-semibold">
-        {messages.search.submit}
-      </button>
-    </form>
-  );
-}
-
 export function App({
   load = loadData,
   search = loadSearch,
@@ -88,6 +52,8 @@ export function App({
   search?: () => Promise<SearchFile>;
 }) {
   const [state, setState] = useState<State>({ status: "loading" });
+  // the home page has its own large search box, so the header one is not repeated there
+  const { pathname } = useLocation();
   // built once, on the first search; a failed search.json only means no sumário words
   const indexRef = useRef<Promise<SearchIndex> | null>(null);
   const dataRef = useRef<Data | null>(null);
@@ -164,7 +130,7 @@ export function App({
               ))}
             </ul>
           </nav>
-          <SearchBox />
+          {pathname !== "/" && <SearchBox />}
         </div>
         <p role="note" className="mt-3 text-sm text-graphite">
           {messages.disclaimer}

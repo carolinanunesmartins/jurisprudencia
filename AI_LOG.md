@@ -15,6 +15,13 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-16 — Search as a main way in: large box on the home page
+- Tool: Claude Code (Opus 5.5).
+- Task: owner asked for more focus on search and chose "prominent on the home page". The search form became one component (`SearchBox`, compact or large); the home page opens with a large box under the headline plus three example queries as chips; the header box is hidden on the home page so there is only one.
+- Failed: at 360 px the long placeholder was cut ("Pesquisar pergu").
+- Fix: shorter placeholder ("Pesquisar acórdãos"), tighter padding and 16 px text on phones (no iOS zoom on focus). 2 new tests (one search form on the home page that submits to `/pesquisa`; each example links to its results); 81 web tests; checked at 1280 px light and 360 px dark.
+- Human check: pending.
+
 ### 2026-10-16 — Deep search with relevance (team of agents)
 - Tool: Claude Code (Opus 5.5) as team lead with OMC `/team`: worker-1 (executor, pipeline), worker-2 (designer, web), then a verifier and a code reviewer in separate lanes.
 - Task: search on the site with relevance over questions, quotes and sumários. Sumários are never published (rule 3), so the owner chose a word index: export writes `search.json` (normalised single words → judgments, with counts); the snapshot stores per-judgment word counts, not text, so a fresh clone reproduces it byte for byte; data-check rejects any term outside `[a-z0-9]{1,30}`. BM25 per field in the browser (question > quote > sumário), prefix on the last word, exact processo first; lazy-loaded; `/pesquisa?q=` and a header box. Policy change recorded in ADR 0009, AGENTS rule 3 and SPEC §10/§12. Shared golden normaliser cases are read by both pytest and vitest.

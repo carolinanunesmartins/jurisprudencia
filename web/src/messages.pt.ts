@@ -186,6 +186,8 @@ export const messages = {
   search: {
     formLabel: "Pesquisar nas perguntas e nos acórdãos",
     placeholder: "Pesquisar: «execução específica»",
+    placeholderLarge: "Pesquisar acórdãos",
+    tryLabel: "Experimente:",
     submit: "Pesquisar",
     region: "Pesquisa",
     heading: "Pesquisa",

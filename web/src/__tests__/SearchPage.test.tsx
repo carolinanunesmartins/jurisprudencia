@@ -33,6 +33,27 @@ describe("search page", () => {
     await screen.findByText(messages.search.noResults("execução específica"));
   });
 
+  // search is a main way in: one large box on the home page, not a second small one in the header
+  it("opens the home page with one large search box and example queries", async () => {
+    at("/");
+    const forms = await screen.findAllByRole("search");
+    expect(forms).toHaveLength(1);
+    const box = within(forms[0]!).getByLabelText(messages.search.formLabel);
+    expect(box).toHaveAttribute("placeholder", messages.search.placeholderLarge);
+    fireEvent.change(box, { target: { value: "possuidor" } });
+    fireEvent.submit(forms[0]!);
+    expect(screen.getByTestId("where")).toHaveTextContent("/pesquisa?q=possuidor");
+    await screen.findByRole("status");
+  });
+
+  it("links each home-page example straight to its results", async () => {
+    at("/");
+    await screen.findAllByRole("search");
+    for (const e of messages.search.examples) {
+      expect(screen.getByRole("link", { name: e })).toHaveAttribute("href", `/pesquisa?q=${encodeURIComponent(e)}`);
+    }
+  });
+
   it("fills the box from the URL, so a shared link shows its query", async () => {
     at("/pesquisa?q=prazo");
     expect(await screen.findByLabelText(messages.search.formLabel)).toHaveValue("prazo");
