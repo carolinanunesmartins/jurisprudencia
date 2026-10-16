@@ -181,16 +181,19 @@ function voices(d: Divergence, q: Question): VoiceItem[] {
 }
 
 /** Uniformizações dated inside a split's years: without a word, the split looks like it ignores them. */
-function aujDatesIn(d: Divergence, aujs: Auj[]): string[] {
+function aujsIn(d: Divergence, aujs: Auj[]): Auj[] {
   if (d.type !== "split") return [];
   return aujs
     .filter((a) => {
       const y = Number(a.date.slice(0, 4));
       return y >= d.window_start && y <= d.window_end;
     })
-    .map((a) => a.date)
-    .sort()
-    .map(fmtDate);
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/** The position a uniformização takes on a question, as classified like any other judgment. */
+function aujPosition(a: Auj, q: Question, judgments: Judgment[]): string | undefined {
+  return judgments.find((j) => j.doc_id === a.doc_id && j.question_id === q.id)?.position;
 }
 
 type Period = { when?: string; a: number; b: number; counts: [string, number][] };
@@ -222,7 +225,10 @@ function periods(d: Divergence, q: Question, judgments: Judgment[]): Period[] {
   }
   const before = { when: messages.before, a: d.window_start, b: d.window_start + WINDOW - 1 };
   const after = { when: messages.after, a: d.window_end - WINDOW + 1, b: d.window_end };
-  return [before, after].map((p) => ({ ...p, counts: inPairOrder(d, countsIn(q, judgments, p.a, p.b)) }));
+  // what came next, so the reader sees whether the change held or was reversed
+  const later = { when: messages.divergence.later, a: d.window_end + 1, b: LAST };
+  const spans = d.window_end < LAST ? [before, after, later] : [before, after];
+  return spans.map((p) => ({ ...p, counts: inPairOrder(d, countsIn(q, judgments, p.a, p.b)) }));
 }
 
 /** Counts as bars: who dominated, readable at a glance. */
@@ -295,6 +301,7 @@ function QuestionList({ data }: { data: Data }) {
               <Link to={`/perguntas/${q.id}`} className="font-serif text-lg leading-snug">
                 {q.title}
               </Link>
+              {divs.length === 0 && <p className={`${SMALL} mt-1.5`}>{messages.noDivergenceShort}</p>}
               {divs.length > 0 && (
                 <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5">
                   {divs.map((d) => (
@@ -344,6 +351,7 @@ function DivergenceIndex({ data }: { data: Data }) {
         {messages.home.divergencesHeading}
         <Count n={list.length} />
       </h2>
+      <p className={`${SMALL} -mt-2 mb-4`}>{messages.home.divergencesIntro}</p>
       <ul className="border-t border-rule">
         {list.map((d) => {
           const q = data.questions.find((x) => x.id === d.question_id);
@@ -365,6 +373,77 @@ function DivergenceIndex({ data }: { data: Data }) {
           );
         })}
       </ul>
+    </section>
+  );
+}
+
+/**
+ * The four terms in the order they nest, for a reader who has never seen the site: a question has
+ * positions; a divergence is both positions given in some years; a uniformização settles one.
+ * Examples come from the home page's own example question, so the words point at what is below.
+ */
+function Guide({ q }: { q?: Question }) {
+  const g = messages.home.guide;
+  const steps: { term: string; def: string; example?: ReactNode }[] = [
+    { ...g.question, example: q && <em>{q.description}</em> },
+    {
+      ...g.positions,
+      example: q && (
+        <>
+          <Pos q={q} id={q.positions[0]?.id ?? ""} />
+          {messages.direction.both}
+          <Pos q={q} id={q.positions[1]?.id ?? ""} />
+        </>
+      ),
+    },
+    {
+      ...g.divergence,
+      example: (
+        <span className="grid gap-1.5">
+          {(["split", "shift"] as const).map((k) => (
+            <span key={k} className="flex items-baseline gap-2">
+              <KindBadge type={k} />
+              <span>{messages.home.kindDef[k]}</span>
+            </span>
+          ))}
+        </span>
+      ),
+    },
+    g.auj,
+  ];
+  return (
+    <section className="mt-10 max-w-[44rem]" aria-labelledby="guide">
+      <h3 id="guide" className="text-xs font-semibold uppercase tracking-[0.08em] text-graphite">
+        {g.label}
+      </h3>
+      <ol className="mt-3 grid gap-x-8 gap-y-5 sm:grid-cols-2 border-t border-rule pt-4">
+        {steps.map((s, i) => (
+          <li key={s.term} className="flex gap-3">
+            <span aria-hidden="true" className="font-serif text-xl leading-none text-graphite tabular">
+              {i + 1}
+            </span>
+            <div className="text-sm">
+              <p>
+                <strong className="font-semibold text-base">{s.term}</strong>: {s.def}
+              </p>
+              {s.example && (
+                <p className="mt-1.5 text-graphite">
+                  {i < 2 && `${g.example} `}
+                  {s.example}
+                </p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+      <More label={g.more} className="mt-4">
+        {g.moreText.map(([term, rest]) => (
+          <p key={term} className={`text-sm ${MEASURE}`}>
+            <strong className="font-semibold">{term}</strong>
+            {rest}
+          </p>
+        ))}
+      </More>
     </section>
   );
 }
@@ -393,16 +472,7 @@ export function Home({ data }: { data: Data }) {
         <div className="mt-8">
           <SearchBox size="large" />
         </div>
-        <dl aria-label={messages.home.kindsLabel} className="mt-10 grid gap-2 sm:grid-cols-2 sm:gap-8 max-w-[44rem]">
-          {(["shift", "split"] as const).map((k) => (
-            <div key={k} className="flex items-baseline gap-3">
-              <dt>
-                <KindBadge type={k} />
-              </dt>
-              <dd className="text-sm">{messages.home.kindDef[k]}</dd>
-            </div>
-          ))}
-        </dl>
+        <Guide q={q || undefined} />
       </section>
 
       {d && q && (
@@ -431,6 +501,7 @@ export function Home({ data }: { data: Data }) {
           {messages.questionsHeading}
           <Count n={data.questions.length} />
         </h2>
+        <p className={`${SMALL} -mt-2 mb-4`}>{messages.home.questionsIntro}</p>
         {data.meta.classified === 0 && <p className="mb-3">{messages.noData}</p>}
         <QuestionList data={data} />
       </section>
@@ -470,18 +541,32 @@ export function Questions({ data }: { data: Data }) {
 }
 
 /** Small notes under a divergence: what the reader would otherwise misread. */
-function Notes({ d, aujs }: { d: Divergence; aujs: Auj[] }) {
-  const dates = aujDatesIn(d, aujs);
-  if (d.type !== "shift" && dates.length === 0) return null;
+function Notes({ d, q, aujs, judgments }: { d: Divergence; q: Question; aujs: Auj[]; judgments: Judgment[] }) {
+  const inside = aujsIn(d, aujs);
+  if (d.type !== "shift" && inside.length === 0) return null;
+  // the sense is named only when every uniformização in the window takes the same position
+  const senses = new Set(inside.map((a) => aujPosition(a, q, judgments)));
+  const [sense] = senses;
   return (
     <p className={`${SMALL} mt-1 ${MEASURE}`}>
       {d.type === "shift" && messages.shiftScope}
-      {dates.length > 0 && `${messages.aujShort(dates)} ${messages.aujWhy}`}
+      {inside.length > 0 && (
+        <>
+          {messages.aujShort(inside.map((a) => fmtDate(a.date)))}
+          {senses.size === 1 && sense && (
+            <>
+              {messages.inSense}
+              <Pos q={q} id={sense} />
+            </>
+          )}
+          {`. ${messages.aujWhy}`}
+        </>
+      )}
     </p>
   );
 }
 
-function DivergenceCard({ d, q, aujs }: { d: Divergence; q: Question; aujs: Auj[] }) {
+function DivergenceCard({ d, q, aujs, judgments }: { d: Divergence; q: Question; aujs: Auj[]; judgments: Judgment[] }) {
   return (
     <li className="py-8 border-b border-rule">
       <h4>
@@ -490,7 +575,7 @@ function DivergenceCard({ d, q, aujs }: { d: Divergence; q: Question; aujs: Auj[
       <p className="mt-2 text-lg">
         <Gist d={d} q={q} />
       </p>
-      <Notes d={d} aujs={aujs} />
+      <Notes d={d} q={q} aujs={aujs} judgments={judgments} />
       <div className="mt-5">
         <VoicePair items={voices(d, q)} />
       </div>
@@ -592,8 +677,24 @@ export function QuestionPage({ data }: { data: Data }) {
         <Link to="/perguntas" className="text-sm">
           {messages.back}
         </Link>
-        <h2 className={`${H2} mt-6 ${MEASURE}`}>{q.title}</h2>
+        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.08em] text-graphite">{messages.eyebrow.question}</p>
+        <h2 className={`${H2} mt-1 ${MEASURE}`}>{q.title}</h2>
         <p className={`mt-3 text-lg text-graphite ${MEASURE}`}>{q.description}</p>
+        {/* the answer to "did the Supremo disagree here?" before the details */}
+        <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          {divs.length === 0 ? (
+            <span className={`${SMALL} ${MEASURE}`}>
+              <strong className="font-semibold text-ink">{messages.noDivergenceShort}.</strong> {messages.noDivergenceWhy}{" "}
+              <Link to="/metodo">{messages.howLink}</Link>
+            </span>
+          ) : (
+            divs.map((d) => (
+              <Link key={d.id} to={divergenceUrl(d)} className="no-underline hover:underline">
+                <KindYears d={d} />
+              </Link>
+            ))
+          )}
+        </p>
       </section>
 
       <section className="mt-8">
@@ -645,7 +746,7 @@ export function QuestionPage({ data }: { data: Data }) {
             ) : (
               <ul className="border-t border-rule mt-4">
                 {divs.map((d) => (
-                  <DivergenceCard key={d.id} d={d} q={q} aujs={aujs} />
+                  <DivergenceCard key={d.id} d={d} q={q} aujs={aujs} judgments={data.judgments} />
                 ))}
               </ul>
             )}
@@ -656,7 +757,7 @@ export function QuestionPage({ data }: { data: Data }) {
               <h3 className={H3}>{messages.auj.related}</h3>
               <ul className="mt-4 space-y-8">
                 {aujs.map((a) => (
-                  <AujCard key={a.id} a={a} compact />
+                  <AujCard key={a.id} a={a} questions={[q]} judgments={data.judgments} compact />
                 ))}
               </ul>
             </section>
@@ -692,16 +793,17 @@ export function DivergencePage({ data }: { data: Data }) {
     <>
       <PageTitle title={`${messages.kind[d.type]} ${messages.years(d.window_start, d.window_end)}: ${q.title}`} />
       <section>
-        <Link to={`/perguntas/${q.id}`} className="text-sm">
-          {q.title}
-        </Link>
+        <p className="text-sm">
+          <span className="text-graphite">{messages.eyebrow.divergence} </span>
+          <Link to={`/perguntas/${q.id}`}>{q.title}</Link>
+        </p>
         <p className="mt-6">
           <KindYears d={d} />
         </p>
         <h2 className={`${H2} mt-2 ${MEASURE}`}>
           <Gist d={d} q={q} />
         </h2>
-        <Notes d={d} aujs={aujs} />
+        <Notes d={d} q={q} aujs={aujs} judgments={data.judgments} />
         {d.type === "shift" && (
           <p className="text-sm mt-1">
             <Link to={`/perguntas/${q.id}`}>{t.toChart}</Link>
@@ -751,8 +853,30 @@ export function DivergencePage({ data }: { data: Data }) {
  * One uniformização. On its own page it opens with what it is about and the ruling; on a question
  * page (`compact`) the question is already known, so the ruling waits behind a click too.
  */
-export function AujCard({ a, questions = [], compact = false }: { a: Auj; questions?: Question[]; compact?: boolean }) {
+export function AujCard({
+  a,
+  questions = [],
+  judgments = [],
+  compact = false,
+}: {
+  a: Auj;
+  questions?: Question[];
+  judgments?: Judgment[];
+  compact?: boolean;
+}) {
   const about = questions.filter((q) => a.related_questions.includes(q.id));
+  /** "…, no sentido de X" after a title, or "No sentido de X" on its own line */
+  const sense = (q: Question, lead: string = messages.inSense) => {
+    const pos = aujPosition(a, q, judgments);
+    return (
+      pos && (
+        <>
+          {lead}
+          <Pos q={q} id={pos} />
+        </>
+      )
+    );
+  };
   const ruling = (
     <div className={`bg-surface border-l-2 border-ink px-5 py-4 ${MEASURE}`}>
       <p className="text-xs font-semibold uppercase tracking-[0.08em] text-graphite">{messages.auj.ruling}</p>
@@ -765,17 +889,27 @@ export function AujCard({ a, questions = [], compact = false }: { a: Auj; questi
         <strong className="font-semibold tabular">{fmtDate(a.date)}</strong>{" "}
         <span className={`${SMALL} tabular`}>{messages.auj.processo(a.processo)}</span>
       </h3>
-      {about.length > 0 && (
-        <p className="mt-2 font-serif text-lg leading-snug">
-          <span className={`${SMALL} font-sans mr-2`}>{messages.auj.about}</span>
-          {about.map((q, i) => (
-            <span key={q.id}>
-              {i > 0 && "; "}
-              <Link to={`/perguntas/${q.id}`}>{q.title}</Link>
-            </span>
-          ))}
-        </p>
-      )}
+      {/* on a question's page the question is known: only the sense is said */}
+      {compact
+        ? about.map((q) => (
+            <p key={q.id} className="mt-1 text-sm">
+              {sense(q, messages.auj.senseLead)}
+            </p>
+          ))
+        : about.length > 0 && (
+            <ul className="mt-2 space-y-1">
+              {about.map((q) => (
+                <li key={q.id} className="leading-snug">
+                  <span className={`${SMALL} mr-2`}>{messages.auj.about}</span>
+                  <Link to={`/perguntas/${q.id}`} className="font-serif text-lg">
+                    {q.title}
+                  </Link>
+                  <span className="text-sm">{sense(q)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+      {!compact && about.length === 0 && <p className={`${SMALL} mt-2`}>{messages.auj.noQuestion}</p>}
       {compact ? (
         <More label={messages.auj.showRuling} className="mt-3">
           {ruling}
@@ -794,7 +928,8 @@ export function AujCard({ a, questions = [], compact = false }: { a: Auj; questi
           <p className={SMALL}>{messages.auj.conflict}</p>
           <p className="voice mt-1">«{a.conflict_quote}»</p>
         </div>
-        <div className="pt-3 grid gap-8 sm:grid-cols-2 sm:gap-10">
+        <p className={`${SMALL} ${MEASURE}`}>{messages.auj.sidesNote}</p>
+        <div className="grid gap-8 sm:grid-cols-2 sm:gap-10">
           {a.sides.map((s, i) => (
             <section
               key={s.auj_quote}
@@ -842,7 +977,7 @@ export function AujPage({ data }: { data: Data }) {
       <p className={`mt-3 text-lg text-graphite ${MEASURE}`}>{messages.auj.intro}</p>
       <ul className="mt-10 space-y-14">
         {data.aujs.map((a) => (
-          <AujCard key={a.id} a={a} questions={data.questions} />
+          <AujCard key={a.id} a={a} questions={data.questions} judgments={data.judgments} />
         ))}
       </ul>
     </section>
