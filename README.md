@@ -15,6 +15,7 @@ Agrupa acórdãos do Supremo Tribunal de Justiça (STJ), publicados no [dgsi.pt]
 - **813 acórdãos** do STJ sobre contrato-promessa (2000–2025), em **7 perguntas**, com as posições ano a ano.
 - **Divergências confirmadas**: *divisões* (as duas posições nos mesmos anos) e *mudanças* (uma posição substitui a outra), com os dois excertos lado a lado.
 - **Uniformizações**: divergências reconhecidas pelo próprio STJ, só com citações.
+- **Pesquisa** por relevância nas perguntas, nas citações e nas palavras dos sumários (os sumários não são publicados, só um índice de palavras: [ADR 0009](docs/adr/0009-search-word-index.md)).
 - **Método e números medidos**, com as limitações.
 
 Nenhuma citação inventada é publicada: cada excerto é texto do próprio acórdão, verificado palavra a palavra.

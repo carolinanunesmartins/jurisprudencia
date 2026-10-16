@@ -15,6 +15,13 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-16 — Deep search with relevance (team of agents)
+- Tool: Claude Code (Opus 5.5) as team lead with OMC `/team`: worker-1 (executor, pipeline), worker-2 (designer, web), then a verifier and a code reviewer in separate lanes.
+- Task: search on the site with relevance over questions, quotes and sumários. Sumários are never published (rule 3), so the owner chose a word index: export writes `search.json` (normalised single words → judgments, with counts); the snapshot stores per-judgment word counts, not text, so a fresh clone reproduces it byte for byte; data-check rejects any term outside `[a-z0-9]{1,30}`. BM25 per field in the browser (question > quote > sumário), prefix on the last word, exact processo first; lazy-loaded; `/pesquisa?q=` and a header box. Policy change recorded in ADR 0009, AGENTS rule 3 and SPEC §10/§12. Shared golden normaliser cases are read by both pytest and vitest.
+- Failed: the code review found 3 medium and 7 low issues: a processo with a repeated token never matched (query tokens were de-duplicated); "442º" and "442.º" became different words; results were not announced to screen readers; the count over-counted judgments under two questions; a failed or malformed index left the page loading forever; NFD accents fell outside `<mark>`; Python and TS stripped slightly different marks. The lead's browser check found the "where it matched" note too wordy and no nav link.
+- Fix: one fix round: normaliser v2 (º/ª as separators, marks by Unicode category, both sides; `version` 2; golden file 14 cases incl. NFD), processo lookup on the full token sequence, a live status line, distinct-judgment count, index validation and recovery, mark over trailing combining marks, one-line "Encontrado em", "Pesquisa" in the nav. Verified: Python/TS tokens identical on 200 real quotes; highlights rebuild all 664 quotes exactly; snapshot → export byte-identical; 201 pytest, 79 web tests, data-check 0 errors; checked in the browser at 1280 px and 360 px, light and dark.
+- Human check: pending (owner tries the search).
+
 ### 2026-10-16 — Reader-facing documents in pt-PT
 - Tool: Claude Code (Opus 5.5).
 - Task: owner asked that every document a reader sees be in Portuguese, internal ones in any language. Scanned every tracked `.md`: the 8 ADRs and their index, `docs/llm-runbook.md` and `CHANGELOG.md` were in English. Translated to pt-PT, file names kept so links and code references still work; the rule written into AGENTS.md (which files are pt-PT, which stay English).

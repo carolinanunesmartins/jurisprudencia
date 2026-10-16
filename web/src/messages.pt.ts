@@ -13,6 +13,7 @@ export const messages = {
     questions: "Perguntas",
     aujs: "Uniformizações",
     method: "Método",
+    search: "Pesquisa",
   },
   home: {
     // "A mesma questão, decidida [num sentido] e [no sentido oposto]."
@@ -180,5 +181,35 @@ export const messages = {
     questions: "Perguntas",
     aujs: "Uniformizações",
     method: "Método e avaliação",
+    search: "Pesquisa",
+  },
+  search: {
+    formLabel: "Pesquisar nas perguntas e nos acórdãos",
+    placeholder: "Pesquisar: «execução específica»",
+    submit: "Pesquisar",
+    region: "Pesquisa",
+    heading: "Pesquisa",
+    loading: "A carregar o índice de pesquisa…",
+    noSummaryIndex:
+      "O índice dos sumários não está disponível: a pesquisa cobre só as perguntas e as citações.",
+    helpIntro: "Escreva palavras ou um número de processo. Pesquisa-se nas perguntas, nas citações verificadas e nas palavras dos sumários.",
+    examplesLabel: "Exemplos",
+    examples: ["execução específica", "possuidor", "art. 442"],
+    noResults: (q: string) => `Nenhum resultado para «${q}». Experimente outras palavras ou menos palavras.`,
+    count: (n: number) => (n === 1 ? "1 acórdão" : `${n} acórdãos`),
+    questionsHeading: "Perguntas",
+    judgmentsHeading: "Acórdãos",
+    showMore: "Mostrar mais",
+    shownOf: (shown: number, total: number) => `A mostrar ${shown} de ${total} resultados`,
+    where: {
+      label: "Encontrado em:",
+      quote: "citação",
+      question: "pergunta",
+      processo: "processo",
+      summary: "sumário",
+      // the only place the word is: the quote shown does not contain it
+      summaryOnly: "sumário (não publicado)",
+      summaryHint: "O sumário não é publicado: mostra-se a citação verificada.",
+    },
   },
 } as const;

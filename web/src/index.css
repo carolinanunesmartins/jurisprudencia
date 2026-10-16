@@ -28,6 +28,8 @@
 :root {
   --pos-0-soft: color-mix(in srgb, var(--pos-0) 24%, transparent);
   --pos-1-soft: color-mix(in srgb, var(--pos-1) 24%, transparent);
+  /* search hits: neutral (colour is reserved for positions), a tint of the ink so it flips in dark */
+  --mark: color-mix(in srgb, var(--ink) 16%, transparent);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -123,6 +125,16 @@
   }
   .hl-1 {
     background: linear-gradient(transparent 58%, var(--pos-1-soft) 58%);
+  }
+
+  /* the words a search found, inside a quote */
+  mark {
+    background: var(--mark);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 0.1em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
 
   /* <details> disclosure: one look everywhere, the marker turns when open */

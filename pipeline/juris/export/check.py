@@ -6,6 +6,7 @@ from (CI has no database and checks grounding on fixtures in the unit tests).
 """
 
 import argparse
+import re
 import sqlite3
 import sys
 from pathlib import Path
@@ -21,10 +22,12 @@ from juris.export.model import (
     JudgmentOut,
     Meta,
     QuestionOut,
+    SearchIndexOut,
 )
 
 DATA = Path("web/public/data")
 SOURCE = "https://www.dgsi.pt/"
+TERM = re.compile(r"[a-z0-9]{1,30}")  # one word: a term with a space would be text leaking
 
 
 def check(data: Path = DATA, db: Path | None = None) -> list[str]:
@@ -72,6 +75,10 @@ def check(data: Path = DATA, db: Path | None = None) -> list[str]:
             errors.append(f"auj {a.id}: link is not to dgsi.pt")
         if len(a.sides) < 2:
             errors.append(f"auj {a.id}: needs two sides")
+    if (data / "search.json").exists():
+        index = load("search.json", TypeAdapter(SearchIndexOut))
+        if index is not None:
+            errors += _check_search(index, docs)
     if meta.divergences_shown != len(divergences):
         errors.append("meta.divergences_shown does not match divergences.json")
     if db is not None and db.exists():
@@ -91,6 +98,29 @@ def check(data: Path = DATA, db: Path | None = None) -> list[str]:
                 text = "" if row is None else "\n".join(t or "" for t in row)
                 if not is_grounded(quote, text):
                     errors.append(f"auj {a.id}: quote not grounded in {doc_id}: {quote[:40]}")
+    return errors
+
+
+def _check_search(index: SearchIndexOut, published: set[str]) -> list[str]:
+    errors = []
+    if len(index.lengths) != len(index.docs):
+        errors.append("search.json: lengths and docs differ in size")
+    if index.docs != sorted(set(index.docs)):
+        errors.append("search.json: docs are not sorted and distinct")
+    for d in index.docs:
+        if d not in published:
+            errors.append(f"search.json: {d} not among published judgments")
+    totals = [0] * len(index.docs)
+    for term, postings in index.terms.items():
+        if not TERM.fullmatch(term):
+            errors.append(f"search.json: bad term {term[:40]!r}")
+        for i, tf in postings:
+            if not 0 <= i < len(index.docs) or tf < 1:
+                errors.append(f"search.json: bad posting for {term!r}: {(i, tf)}")
+            else:
+                totals[i] += tf
+    if len(totals) == len(index.lengths) and totals != index.lengths:
+        errors.append("search.json: lengths do not match the postings")
     return errors
 
 

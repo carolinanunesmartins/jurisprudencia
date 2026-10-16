@@ -18,7 +18,7 @@ export function fmtDate(iso: string): string {
 }
 
 /** Each route names itself in the tab and in search results (HashRouter shares one HTML page). */
-function useTitle(page?: string) {
+export function useTitle(page?: string) {
   useEffect(() => {
     document.title = page ? messages.pageTitle(page) : messages.homeTitle;
   }, [page]);
@@ -39,17 +39,17 @@ const divergenceUrl = (d: Divergence) => `/divergencias/${encodeURIComponent(d.i
 
 const WINDOW = 3; // detection windows are 3 years (SPEC §6)
 
-const SECTION = "mt-16 first:mt-0";
-const H2 = "font-serif text-[1.75rem] leading-tight tracking-[-0.01em]";
-const H3 = "font-serif text-xl leading-snug";
-const SMALL = "text-sm text-graphite";
+export const SECTION = "mt-16 first:mt-0";
+export const H2 = "font-serif text-[1.75rem] leading-tight tracking-[-0.01em]";
+export const H3 = "font-serif text-xl leading-snug";
+export const SMALL = "text-sm text-graphite";
 const MEASURE = "max-w-[38rem]";
 
 // same rule as the publish gate (pipeline/juris/export/check.py SOURCE); repeated here so data
 // that skipped the gate (local dev, a hand-edited file) can never become a javascript: link
 const SOURCE = "https://www.dgsi.pt/";
 
-function DgsiLink({ url, children }: { url: string; children: ReactNode }) {
+export function DgsiLink({ url, children }: { url: string; children: ReactNode }) {
   if (!url.startsWith(SOURCE)) return <span className="tabular">{children}</span>;
   return (
     <a href={url} rel="noopener noreferrer" target="_blank" className="tabular">
@@ -69,7 +69,7 @@ function Dot({ index }: { index: number }) {
 }
 
 /** A position's name: bold and in its colour (weight is the non-colour cue, SPEC §8). */
-function Pos({ q, id }: { q: Question; id: string }) {
+export function Pos({ q, id }: { q: Question; id: string }) {
   const i = indexOf(q, id);
   return (
     <strong className="font-semibold" style={{ color: i >= 0 ? posColor(i) : undefined }}>

@@ -1,7 +1,8 @@
 """Committed snapshot of the classification results (ROADMAP T5.3, SPEC §11).
 
 `dump` writes `data/classifications/*.jsonl` from the local database: judgment metadata (no
-sumário, no text; `texto_sha256` identifies the text), the classifier's answers with grounded
+sumário, no text; `texto_sha256` identifies the text; `sumario_terms` counts the sumário's words),
+the classifier's answers with grounded
 quotes only (≤ 400 characters, the text's own words), and the divergences with the judge's
 verdicts. `load` rebuilds a database from it, so `make detect`, `make export` and
 `make data-check` run from a fresh clone without crawling or calling the LLM.
@@ -21,6 +22,7 @@ from juris.detect.core import uniformizacao_of
 from juris.export.auj import AUJ
 from juris.export.auj import doc_ids as auj_doc_ids
 from juris.llm.prompt import CLASSIFY
+from juris.search.normalise import term_counts
 
 SNAPSHOT = Path("data/classifications")
 
@@ -68,10 +70,13 @@ def dump(
     for doc_id in ids:
         a = conn.execute(
             "SELECT processo, url, secao, relator, data_iso, descritores_json, meio_processual,"
-            " texto_sha256, uniformizacao, texto FROM acordao WHERE doc_id = ?",
+            " texto_sha256, uniformizacao, texto, sumario, sumario_terms"
+            " FROM acordao WHERE doc_id = ?",
             (doc_id,),
         ).fetchone()
-        proc, url, secao, relator, date, desc, meio, sha, flag, texto = a
+        proc, url, secao, relator, date, desc, meio, sha, flag, texto, sumario, terms = a
+        if sumario:
+            terms = json.dumps(term_counts(sumario), sort_keys=True)
         acordaos.append(
             {
                 "doc_id": doc_id,
@@ -84,6 +89,7 @@ def dump(
                 "meio_processual": meio,
                 "texto_sha256": sha,
                 "uniformizacao": uniformizacao_of(flag, meio, texto),
+                "sumario_terms": json.loads(terms) if terms else None,
             }
         )
     divergences = [
@@ -114,7 +120,8 @@ def load(db: Path, src: Path = SNAPSHOT) -> dict:
     acordaos = _read(src / "acordao.jsonl")
     conn.executemany(
         "INSERT INTO acordao(doc_id, processo, url, secao, relator, data_iso, descritores_json,"
-        " meio_processual, texto_sha256, uniformizacao) VALUES (?,?,?,?,?,?,?,?,?,?)",
+        " meio_processual, texto_sha256, uniformizacao, sumario_terms)"
+        " VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         [
             (
                 a["doc_id"],
@@ -127,6 +134,7 @@ def load(db: Path, src: Path = SNAPSHOT) -> dict:
                 a["meio_processual"],
                 a["texto_sha256"],
                 int(a["uniformizacao"]),
+                json.dumps(a["sumario_terms"], sort_keys=True) if a.get("sumario_terms") else None,
             )
             for a in acordaos
         ],

@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
-import { type Data, loadData } from "./data";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, NavLink, Route, Routes, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { type Data, loadData, loadSearch, type SearchFile } from "./data";
 import { messages } from "./messages.pt";
+import { createIndex, type SearchIndex, validSearchFile } from "./search";
+import { SearchPage } from "./SearchPage";
 import { AujPage, DivergencePage, Home, MethodPage, QuestionPage, Questions } from "./pages";
 
 type State = { status: "loading" } | { status: "error" } | { status: "ready"; data: Data };
@@ -26,6 +28,7 @@ function Mark() {
 
 const NAV = [
   { to: "/perguntas", label: messages.nav.questions },
+  { to: "/pesquisa", label: messages.nav.search },
   { to: "/uniformizacoes", label: messages.nav.aujs },
   { to: "/metodo", label: messages.nav.method },
 ];
@@ -40,8 +43,76 @@ function useScrollReset() {
   }, [pathname]);
 }
 
-export function App({ load = loadData }: { load?: () => Promise<Data> }) {
+/** The header's search box, on every page; the query lives in the URL (/pesquisa?q=) so it can be shared. */
+function SearchBox() {
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const fromUrl = params.get("q") ?? "";
+  const [value, setValue] = useState(fromUrl);
+  useEffect(() => setValue(fromUrl), [fromUrl]);
+  return (
+    <form
+      role="search"
+      aria-label={messages.search.region}
+      className="flex items-center gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        navigate(`/pesquisa?q=${encodeURIComponent(value.trim())}`);
+      }}
+    >
+      <label htmlFor="pesquisa-q" className="sr-only">
+        {messages.search.formLabel}
+      </label>
+      <input
+        id="pesquisa-q"
+        type="search"
+        name="q"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={messages.search.placeholder}
+        autoComplete="off"
+        className="w-full min-w-0 sm:w-64 border border-rule bg-paper px-3 py-1.5 text-[0.95rem] rounded-[3px]"
+      />
+      <button type="submit" className="border border-ink rounded-[3px] px-3 py-1.5 text-sm font-semibold">
+        {messages.search.submit}
+      </button>
+    </form>
+  );
+}
+
+export function App({
+  load = loadData,
+  search = loadSearch,
+}: {
+  load?: () => Promise<Data>;
+  search?: () => Promise<SearchFile>;
+}) {
   const [state, setState] = useState<State>({ status: "loading" });
+  // built once, on the first search; a failed search.json only means no sumário words
+  const indexRef = useRef<Promise<SearchIndex> | null>(null);
+  const dataRef = useRef<Data | null>(null);
+  dataRef.current = state.status === "ready" ? state.data : null;
+  const getIndex = useCallback(() => {
+    if (!indexRef.current) {
+      const empty = { questions: [], judgments: [] };
+      // an unreadable search.json (failed fetch, wrong version, bad shape) means no sumário words, nothing worse
+      const built = search()
+        .then(validSearchFile, () => null)
+        .then((file) => {
+          const data = dataRef.current ?? empty;
+          try {
+            return createIndex(data, file);
+          } catch {
+            return createIndex(data, null);
+          }
+        });
+      indexRef.current = built;
+      built.catch(() => {
+        indexRef.current = null; // do not cache a failure: the next search tries again
+      });
+    }
+    return indexRef.current;
+  }, [search]);
   useEffect(() => {
     let alive = true;
     load().then(
@@ -93,6 +164,7 @@ export function App({ load = loadData }: { load?: () => Promise<Data> }) {
               ))}
             </ul>
           </nav>
+          <SearchBox />
         </div>
         <p role="note" className="mt-3 text-sm text-graphite">
           {messages.disclaimer}
@@ -108,6 +180,7 @@ export function App({ load = loadData }: { load?: () => Promise<Data> }) {
             <Route path="/perguntas/:id" element={<QuestionPage data={state.data} />} />
             <Route path="/uniformizacoes" element={<AujPage data={state.data} />} />
             <Route path="/divergencias/:id" element={<DivergencePage data={state.data} />} />
+            <Route path="/pesquisa" element={<SearchPage getIndex={getIndex} />} />
             <Route path="/metodo" element={<MethodPage data={state.data} />} />
             <Route path="*" element={<Home data={state.data} />} />
           </Routes>

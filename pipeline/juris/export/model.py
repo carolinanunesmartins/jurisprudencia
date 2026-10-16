@@ -152,3 +152,13 @@ class EvaluationOut(_Strict):
     aujs: int
     divergence_labels: DivergenceLabelsOut | None
     survey: list[SurveyOut]
+
+
+class SearchIndexOut(_Strict):
+    """Word index over the sumários for /pesquisa (ADR 0009): counts only, no text."""
+
+    version: Literal[2]
+    stopwords: list[str]
+    docs: list[str]  # doc_id of every published judgment, sorted
+    lengths: list[int]  # tokens per doc, same order
+    terms: dict[str, list[tuple[int, int]]]  # term -> [(doc index, tf)]

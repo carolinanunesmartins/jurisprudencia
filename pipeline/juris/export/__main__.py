@@ -25,8 +25,10 @@ from juris.export.model import (
     PairItem,
     PositionOut,
     QuestionOut,
+    SearchIndexOut,
 )
 from juris.llm.prompt import CLASSIFY
+from juris.search.normalise import STOPWORDS, term_counts
 from juris.taxonomy.model import load_taxonomy
 
 OUT = Path("web/public/data")
@@ -121,6 +123,27 @@ def _divergences(
     return shown, counts
 
 
+def _search_index(conn: sqlite3.Connection, judgments: list[JudgmentOut]) -> SearchIndexOut:
+    docs = sorted({j.doc_id for j in judgments})
+    terms: dict[str, list[tuple[int, int]]] = {}
+    lengths = []
+    for i, doc_id in enumerate(docs):
+        sumario, stored = conn.execute(
+            "SELECT sumario, sumario_terms FROM acordao WHERE doc_id = ?", (doc_id,)
+        ).fetchone()
+        counts = term_counts(sumario) if sumario else json.loads(stored or "{}")
+        lengths.append(sum(counts.values()))
+        for term, tf in counts.items():
+            terms.setdefault(term, []).append((i, tf))
+    return SearchIndexOut(
+        version=2,
+        stopwords=sorted(STOPWORDS),
+        docs=docs,
+        lengths=lengths,
+        terms=dict(sorted(terms.items())),
+    )
+
+
 def export(conn: sqlite3.Connection, tax_path: Path, out: Path = OUT, auj: Path = AUJ) -> Meta:
     tax = load_taxonomy(tax_path)
     approved = [q.id for q in tax.questions if q.status == "approved"]
@@ -180,6 +203,14 @@ def export(conn: sqlite3.Connection, tax_path: Path, out: Path = OUT, auj: Path 
     for name, data in files.items():
         text = json.dumps(data, ensure_ascii=False, indent=1, sort_keys=True) + "\n"
         (out / name).write_text(text, encoding="utf-8")
+    # compact: ~1 MB indented would be several; the index is read by the site, not by people
+    search = json.dumps(
+        _search_index(conn, judgments).model_dump(),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    (out / "search.json").write_text(search + "\n", encoding="utf-8")
     return meta
 
 

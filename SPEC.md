@@ -104,7 +104,7 @@ No target numbers are invented in advance; report what is measured.
 
 ## 10. Security and privacy
 - Judgments are published by the State and partly anonymised; the pipeline must not attempt re-identification and must not add personal data.
-- Committed artefacts: metadata, labels, quotes ≤ 400 characters, links. Full texts and the HTML cache stay local.
+- Committed artefacts: metadata, labels, quotes ≤ 400 characters, links, and per-judgment sumário word counts for search (normalised single words, `[a-z0-9]{1,30}`, checked by `make data-check`; ADR 0009). Full texts, sumários and the HTML cache stay local.
 - Secrets only via environment variables; `.env` is gitignored; secret scanning enabled on the repo.
 - Static site, no cookies, no analytics.
 
@@ -119,7 +119,7 @@ No target numbers are invented in advance; report what is measured.
 |---|---|
 | Repo | `carolinanunesmartins/jurisprudencia` (exists; 1 commit, README only) |
 | Licence | MIT for code; derived data CC BY 4.0 with link to source; judgments remain from dgsi.pt |
-| Published excerpts | quotes ≤ 400 chars + links; no full texts, no full summaries |
+| Published excerpts | quotes ≤ 400 chars + links; no full texts, no full summaries; search uses a sumário word index only (ADR 0009) |
 | LLM | Anthropic; small model for classification, larger model for taxonomy discovery and the judge |
 | Grouping method | supervised taxonomy (curated by descriptor + approved questions), with LLM-assisted discovery on a sample; embeddings/clustering is a stretch goal and not required |
 | Hosting | GitHub Pages (decided 2026-10-12) |
