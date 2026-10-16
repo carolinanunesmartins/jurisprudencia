@@ -15,6 +15,20 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-17 — README: the chosen subset
+- Tool: Claude Code (Opus 5.5).
+- Task: the owner asked for the subset choice in the README, as an important point. New section "O subconjunto escolhido": what (813 STJ judgments on contrato-promessa, 2000–2025, from 71 760), why (practitioner survey of known divergences, uniformização activity, size within the SPEC target, gates G2/G3 with a fallback), how it is selected (whole-descriptor patterns, `subset.py`), and what is left out (pre-2000, judgments without the descriptor, SINAL/EXECUÇÃO ESPECÍFICA alone, other courts). Every fact taken from ADR 0005, NOTA, ROADMAP and ADRs 0006/0007.
+- Failed: the first draft described gate G3 as a pilot check before classifying everything; ROADMAP says the early spike failed, G2 passed at discovery, and G3 was the post-detection stay-or-pivot (arrendamento urbano) decision. Two ADR links had wrong file names.
+- Fix: rewrote the gate line from ROADMAP; corrected the links (checked against `docs/adr/`).
+- Human check: pending.
+
+### 2026-10-16 — Videos served by the site
+- Tool: Claude Code (Opus 5.5).
+- Task: owner asked for the videos to be easy to open from the README. GitHub cannot play a repo video inline in a README, and its file view is not a reliable player, so the videos moved from `docs/video/` to `web/public/video/`: the Pages deploy serves them at `.../jurisprudencia/video/*.mp4`, which any browser plays directly. The README shows the three posters side by side, each linking to its video.
+- Failed: none.
+- Fix: checked that the build copies the files to `web/dist/video/`; 93 web tests pass. Not checked before merge: that Pages serves them as `video/mp4` (the local preview server did not start in this session). The live links work only after this PR is merged and deployed.
+- Human check: pending.
+
 ### 2026-10-16 — Deliverables check; docs aligned
 - Tool: Claude Code (Opus 5.5) as team lead; two verifier agents (one checked the live site and the public repo over HTTP, one read README, NOTA and IA against the brief).
 - Task: owner asked whether the five deliverables are in place (live app, repo with run instructions, decisions note, AI-usage note, narrated demo video). Findings: repo, README and NOTA complete; live site up but built from main at M11 (m12-m16 not merged, so none of the newer UI is live and main has no videos); IA.md missing the 2026-10-16 work; the videos' voice is synthetic while the brief asks for the candidate's own narration, and the README did not say so; docs said "juiz" while the UI says "verificador". The owner decided not to record their own voice.

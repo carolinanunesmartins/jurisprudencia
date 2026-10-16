@@ -9,15 +9,17 @@ Agrupa acórdãos do Supremo Tribunal de Justiça (STJ), publicados no [dgsi.pt]
 
 ## Vídeos
 
-[![Anúncio do Jurisprudência: o Supremo decidiu num sentido e no sentido oposto](docs/video/anuncio.jpg)](docs/video/anuncio.mp4)
+Clique numa imagem para ver o vídeo no browser (também no telemóvel).
 
-| Vídeo | Duração | O que mostra |
-|---|---|---|
-| [Anúncio](docs/video/anuncio.mp4) | 45 s | A ideia em cinco frases |
-| [Demonstração curta](docs/video/demo-60s.mp4) | 41 s | Um exemplo, o gráfico e o método |
-| [Demonstração completa](docs/video/demo-3min.mp4) | 3 min 33 s | Todas as páginas, passo a passo ([guião](docs/guiao-video.md)) |
+<table>
+  <tr>
+    <td align="center"><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/anuncio.mp4"><img src="web/public/video/anuncio.jpg" width="260" alt="Anúncio"></a><br><b><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/anuncio.mp4">Anúncio</a></b><br>45 s · a ideia em cinco frases</td>
+    <td align="center"><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/demo-60s.mp4"><img src="web/public/video/demo-60s.jpg" width="260" alt="Demonstração curta"></a><br><b><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/demo-60s.mp4">Demonstração curta</a></b><br>41 s · um exemplo, o gráfico e o método</td>
+    <td align="center"><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/demo-3min.mp4"><img src="web/public/video/demo-3min.jpg" width="260" alt="Demonstração completa"></a><br><b><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/demo-3min.mp4">Demonstração completa</a></b><br>3 min 33 s · todas as páginas, passo a passo</td>
+  </tr>
+</table>
 
-Cada ligação abre o vídeo no leitor do GitHub. A narração é uma voz sintetizada em português de Portugal (edge-tts, voz "Raquel"), não a voz do autor; têm legendas na imagem, e as legendas também estão em `.srt` ao lado de cada vídeo. Foram gravados no sítio local, sem abrir o dgsi.pt.
+Os vídeos são servidos pelo próprio sítio (GitHub Pages); os ficheiros estão em [`web/public/video/`](web/public/video/), com as legendas em `.srt`. O guião está em [`docs/guiao-video.md`](docs/guiao-video.md). A narração é uma voz sintetizada em português de Portugal (edge-tts, voz "Raquel"), não a voz do autor; as legendas estão na imagem. Foram gravados no sítio local, sem abrir o dgsi.pt.
 
 > [!TIP]
 > **Arquitetura em duas imagens:** [como o MVP foi construído e como deve continuar](docs/arquitetura.md). Recolha, classificação com a citação como prova, deteção, publicação; e a seguir: vários tribunais, texto integral, atualização automática e um produto para advogados.
@@ -31,6 +33,28 @@ Cada ligação abre o vídeo no leitor do GitHub. A narração é uma voz sintet
 - **Método e números medidos**, com as limitações.
 
 Nenhuma citação inventada é publicada: cada excerto é texto do próprio acórdão, verificado palavra a palavra.
+
+## O subconjunto escolhido
+
+**Acórdãos do STJ sobre contrato-promessa, de 2000 a 2025: 813 acórdãos**, de um índice de 71 760 acórdãos do STJ no dgsi.pt ([ADR 0005](docs/adr/0005-subset.md)).
+
+**Porquê contrato-promessa**
+- **Há divergências conhecidas para confirmar:** existe um levantamento prévio de divergências neste tema, junto de profissionais. Dele saíram as perguntas-semente, o que permite ver se o sistema encontra o que os juristas já conhecem.
+- **O próprio STJ uniformizou aqui:** a pesquisa no índice confirmou que é dos temas substantivos com mais acórdãos de uniformização de jurisprudência. É, portanto, um tema onde o Supremo reconheceu que decidia de formas diferentes.
+- **O tamanho cabe num protótipo:** o objetivo era 600 a 1 500 acórdãos. 813 chega para ver tendências por ano (cerca de 25 a 30 acórdãos por ano) e custa pouco: cerca de 45 minutos de recolha e cerca de 4 USD de classificação.
+- **Ficou sujeito a pontos de decisão, com alternativa:** uma prova inicial com as três perguntas-semente não encontrou posições opostas suficientes, mas a passagem de descoberta encontrou cerca de 5 perguntas com dois lados (*gate* G2). Depois da deteção, a regra era: pelo menos uma divergência confirmada numa pergunta de teste, ou mudar para arrendamento urbano. Houve confirmações, e o tema ficou (*gate* G3, 2026-10-15).
+
+**Como se seleciona**
+- **A regra:** um acórdão entra se tiver data entre 2000 e 2025 e pelo menos um **descritor** do dgsi.pt que nomeie um contrato-promessa (`CONTRATO-PROMESSA` e as suas grafias, ou um descritor que comece por `PROMESSA DE COMPRA`, `PROMESSA DE VENDA`, `PROMESSA UNILATERAL` ou `PROMESSA BILATERAL`).
+- **Compara-se o descritor inteiro, não pedaços de palavra.** Procurar `PROMESSA` ou `TRADIÇÃO` dentro do texto apanharia `PROMESSA DE CASAMENTO` ou `EXTRADIÇÃO` (267 casos). As duas listas estão fixadas em testes.
+- **Onde está:** `pipeline/juris/db/subset.py`. A recolha (`make fetch`) só descarrega estes acórdãos.
+- **O que se lê de cada acórdão:** o sumário, ou o texto integral quando não há sumário ([ADR 0007](docs/adr/0007-classify-from-sumario.md)). 736 dos 813 têm os dois; os restantes têm só um deles ([ADR 0006](docs/adr/0006-summary-only-judgments.md)).
+
+**O que fica de fora, e porquê**
+- **2000 é uma escolha de âmbito, não dos dados.** Fica de fora o acórdão uniformizador de 1998 sobre a primeira pergunta-semente, e com ele o "antes" dessa mudança. Alargar a 1995–2025 daria 1 144 acórdãos; o responsável rejeitou-o (2026-10-14).
+- **Ficam de fora os acórdãos sobre uma promessa que não têm esse descritor**, ou que não têm descritores.
+- **Ficam de fora os descritores `SINAL`, `EXECUÇÃO ESPECÍFICA`, `TRADIÇÃO DA COISA` e `CLÁUSULA PENAL` sozinhos,** porque também aparecem fora da promessa. Juntar `SINAL` e `EXECUÇÃO ESPECÍFICA` só acrescentaria 34 acórdãos.
+- **Só o STJ**, sem as Relações nem outros tribunais.
 
 ## Como funciona
 
