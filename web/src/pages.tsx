@@ -1,22 +1,18 @@
 import { type ReactNode, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import type { Auj, Data, Divergence, Judgment, Question, Score } from "./data";
+import { DgsiLink, fmtDate } from "./links";
 import { messages } from "./messages.pt";
 import { SearchBox } from "./SearchBox";
 import { FIRST, LAST, MiniStrip, posColor, Timeline } from "./Timeline";
 
 // ---------------------------------------------------------------------------------------------
 // shared pieces
+
+export { DgsiLink, fmtDate };
 //
 // Reading order on every page: what it is (bold, coloured by position), the two quotes, then
 // everything that explains it behind a <More> click. Quotes are never styled inside.
-
-/** "2019-10-29" -> "29 out. 2019" (browsers format pt-PT short dates as 29/10/2019). */
-export function fmtDate(iso: string): string {
-  const [y, m, d] = iso.split("-").map(Number);
-  const month = m ? messages.months[m - 1] : undefined;
-  return y && month && d ? `${d} ${month} ${y}` : iso;
-}
 
 /** Each route names itself in the tab and in search results (HashRouter shares one HTML page). */
 export function useTitle(page?: string) {
@@ -45,19 +41,6 @@ export const H2 = "font-serif text-[1.75rem] leading-tight tracking-[-0.01em]";
 export const H3 = "font-serif text-xl leading-snug";
 export const SMALL = "text-sm text-graphite";
 const MEASURE = "max-w-[38rem]";
-
-// same rule as the publish gate (pipeline/juris/export/check.py SOURCE); repeated here so data
-// that skipped the gate (local dev, a hand-edited file) can never become a javascript: link
-const SOURCE = "https://www.dgsi.pt/";
-
-export function DgsiLink({ url, children }: { url: string; children: ReactNode }) {
-  if (!url.startsWith(SOURCE)) return <span className="tabular">{children}</span>;
-  return (
-    <a href={url} rel="noopener noreferrer" target="_blank" className="tabular">
-      {children}
-    </a>
-  );
-}
 
 function Dot({ index }: { index: number }) {
   return (

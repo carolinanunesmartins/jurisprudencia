@@ -121,8 +121,14 @@ export const messages = {
   timelineHeading: "Ano a ano",
   timelineLabel: (title: string) => `Acórdãos por ano e por posição: ${title}`,
   // the chart's symbol key
-  legend: { dot: "um acórdão", ring: "uniformização", band: "anos de uma divergência" },
+  legend: { dot: "um acórdão (passe o rato ou toque para abrir)", ring: "uniformização", band: "anos de uma divergência" },
   timelineKey: "Legenda do gráfico",
+  // the chart's dots: hover or tap opens the judgment's date, position and link
+  timelineTip: {
+    label: (date: string) => `Acórdão de ${date}`,
+    open: "Abrir no dgsi.pt",
+    close: "Fechar",
+  },
   tableHeading: "Todos os acórdãos",
   table: {
     date: "Data",

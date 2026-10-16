@@ -15,6 +15,13 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-16 — Timeline dots open the judgment (tooltip with the dgsi.pt link)
+- Tool: Claude Code (Opus 5.5).
+- Task: owner asked for a tooltip on the timeline dots that reaches the dgsi.pt link. Hover shows date, position (in its colour), uniformização and "Abrir no dgsi.pt" with the processo; moving onto the tooltip keeps it open (250 ms grace) so the link can be clicked; a click or tap pins it until Escape, the close button or a click outside. `DgsiLink`/`fmtDate` moved to `links.tsx` so the chart can use them without a circular import (the dgsi.pt-only guard comes along). Keyboard and screen-reader users keep the "Todos os acórdãos" table as the chart's alternative, rather than 150 tab stops.
+- Failed: on a 360 px phone the dots are ~3 px apart, too small to tap; the processo wrapped awkwardly beside the link.
+- Fix: a tap anywhere on the chart opens the nearest dot within 24 px (a touch target); processo on its own line. 4 new tests (hover tooltip with dgsi.pt link in a new tab, grace period onto the tooltip, pin and close, no link for a non-dgsi.pt URL); 89 web tests. Browser check at 1280 px and 360 px.
+- Human check: pending.
+
 ### 2026-10-16 — Light mode contrast check
 - Tool: Claude Code (Opus 5.5); Lighthouse via Chrome DevTools MCP.
 - Task: check light-mode contrast and colours. WCAG ratios for every token pair: all text passes (ink 15:1, graphite 5.9:1, position colours 5.0–6.9:1 on paper and surface, ink on search and headline marks ≥ 10.6:1). A script measured all 1 518 visible text nodes on 7 routes (details open) against their composited background: 0 failures. Lighthouse accessibility 100 on home and search.
