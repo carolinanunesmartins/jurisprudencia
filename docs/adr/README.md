@@ -1,14 +1,14 @@
-# Architecture decision records
+# Registos de decisões de arquitetura (ADR)
 
-One short file per decision: `NNNN-title.md` (context, decision, consequences). A new runtime dependency needs one (AGENTS.md rule 9).
+Um ficheiro curto por decisão: `NNNN-titulo.md` (contexto, decisão, consequências). Cada nova dependência de execução precisa de um (AGENTS.md, regra 9).
 
-| ADR | Decision |
+| ADR | Decisão |
 |---|---|
-| [0001](0001-static-site-github-pages.md) | Static site on GitHub Pages |
-| [0002](0002-supervised-taxonomy.md) | Supervised taxonomy instead of unsupervised clustering |
-| [0003](0003-quote-grounding.md) | Quote grounding as a hard gate |
-| [0004](0004-polite-crawl.md) | Polite-crawl policy |
-| [0005](0005-subset.md) | Subset: STJ, contrato-promessa, 2000–2025 (813 judgments) |
-| [0006](0006-summary-only-judgments.md) | Judgments without full text: classified from the sumário, flagged |
-| [0007](0007-classify-from-sumario.md) | Classify from the sumário first; the full text is the fallback |
-| [0008](0008-self-hosted-fonts.md) | Self-hosted typefaces |
+| [0001](0001-static-site-github-pages.md) | Sítio estático no GitHub Pages |
+| [0002](0002-supervised-taxonomy.md) | Taxonomia supervisionada em vez de *clustering* |
+| [0003](0003-quote-grounding.md) | Verificação das citações como condição obrigatória |
+| [0004](0004-polite-crawl.md) | Política de crawl educado |
+| [0005](0005-subset.md) | Subconjunto: STJ, contrato-promessa, 2000–2025 (813 acórdãos) |
+| [0006](0006-summary-only-judgments.md) | Acórdãos sem texto integral: classificados pelo sumário e assinalados |
+| [0007](0007-classify-from-sumario.md) | Classificar primeiro pelo sumário; o texto integral é o recurso |
+| [0008](0008-self-hosted-fonts.md) | Tipos de letra alojados no próprio sítio |

@@ -1,21 +1,22 @@
-# Changelog
+# Histórico de alterações
 
-All notable changes. Format: Conventional Commits, newest first. Details per step in AI_LOG.md.
+Alterações relevantes, das mais recentes para as mais antigas. As mensagens de commit seguem o formato Conventional Commits; o pormenor de cada passo está no [AI_LOG.md](AI_LOG.md) (em inglês) e o resumo em [IA.md](IA.md).
 
-## Unreleased
-- docs: `docs/arquitetura.md`, architecture of the MVP and of its continuation (Mermaid diagrams, four phases), highlighted in the README
-- chore: housekeeping; ADRs 0001–0004 (required by SPEC §11, recorded retroactively); README and AI_LOG condensed; `DgsiLink` renders only dgsi.pt links (security hardening)
-- feat(web): minimal reading (emphasis by position colour, badges, details behind a click); brief verifiable in 0–1 clicks; faster load and SEO (M9)
-- feat(web): visual identity "duas vozes", mirrored year chart, self-hosted type (ADR 0008) (M9)
-- fix(web): `/metodo` divergence review uses the report's arithmetic
-- docs: README, NOTA.md and IA.md for submission (M8)
-- feat(web): `/divergencias/:id`, `/metodo` from `evaluation.json`, favicon, a11y pass (M6)
-- feat(evaluate): `make evaluate` report with pre-registered keyword baseline, v1/v2 divergences, survey recovery; divergence labels by AI, disclosed (M7)
-- feat(auj): divergences documented by the STJ itself (`/uniformizacoes`), every text a verified quote
-- feat(detect): pair rule v2 (pre-registered); uniformização marker survives the dgsi.pt typo; verdicts kept across re-detection
-- feat(data): committed snapshot `data/classifications/`, fresh clone reproduces the site data (T5.3)
-- feat(classify): grounding locates quotes with named repairs and stores the text's own span; `--reground`; cost guards
-- feat: classification of 813 judgments, detection, judge, Gate G3 = stay on contrato-promessa (M4, M5)
-- feat: taxonomy v1 (7 questions), blind label sheet, discovery and spike kits (M1.5, M3)
-- feat(crawl): polite index and document crawler, parsers, subset of 813 (M1, M2)
-- chore: initial scaffold (pipeline, web, tests, CI, Pages deploy) (M0)
+## Por publicar
+- docs: documentos para leitura em português (ADRs, guia dos passos com o modelo, este histórico)
+- docs: `docs/arquitetura.md`, a arquitetura do MVP e da sua continuação (diagramas Mermaid, quatro fases), em destaque no README
+- chore: arrumação do repositório; ADRs 0001–0004 (exigidos pelo SPEC §11, registados retroativamente); README e AI_LOG mais curtos; `DgsiLink` só cria ligações para o dgsi.pt (reforço de segurança)
+- feat(web): leitura mínima (destaque pela cor de cada posição, etiquetas, pormenores a um clique); objetivo verificável em 0–1 cliques; carregamento mais rápido e SEO (M9)
+- feat(web): identidade visual "duas vozes", gráfico anual espelhado, tipos de letra próprios (ADR 0008) (M9)
+- fix(web): `/metodo` usa a aritmética do relatório na revisão das divergências
+- docs: README, NOTA.md e IA.md para a entrega (M8)
+- feat(web): `/divergencias/:id`, `/metodo` a partir de `evaluation.json`, favicon, revisão de acessibilidade (M6)
+- feat(evaluate): relatório `make evaluate` com base de palavras-chave pré-registada, divergências v1/v2 e comparação com o levantamento; etiquetas das divergências feitas por IA, divulgado (M7)
+- feat(auj): divergências reconhecidas pelo próprio STJ (`/uniformizacoes`), todos os textos citações verificadas
+- feat(detect): regra de escolha dos excertos v2 (pré-registada); a marca de uniformização resiste à gralha do dgsi.pt; os veredictos mantêm-se ao repetir a deteção
+- feat(data): instantâneo comitado em `data/classifications/`; um clone novo reproduz os dados do sítio (T5.3)
+- feat(classify): a verificação localiza as citações com reparações nomeadas e guarda o excerto do próprio texto; `--reground`; proteções de custo
+- feat: classificação dos 813 acórdãos, deteção, juiz, Gate G3 = manter o contrato-promessa (M4, M5)
+- feat: taxonomia v1 (7 perguntas), folha de etiquetas às cegas, kits de descoberta e de *spike* (M1.5, M3)
+- feat(crawl): crawler educado do índice e dos documentos, leitores HTML, subconjunto de 813 (M1, M2)
+- chore: estrutura inicial (pipeline, sítio, testes, CI, publicação no Pages) (M0)

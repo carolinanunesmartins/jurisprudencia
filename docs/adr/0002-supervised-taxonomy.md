@@ -1,16 +1,16 @@
-# ADR 0002 — Supervised taxonomy instead of unsupervised clustering
+# ADR 0002 — Taxonomia supervisionada em vez de *clustering*
 
-Status: accepted (2026-10-12). Recorded retroactively on 2026-10-15; the decision is in SPEC §5 and §12.
+Estado: aceite (2026-10-12). Registado retroativamente em 2026-10-15; a decisão está no SPEC §5 e §12.
 
-## Context
-A divergence only means something when two judgments answer the same legal question in opposite ways. Clusters of similar text group topics, not answers, and their labels are not stable enough to show to a reader.
+## Contexto
+Uma divergência só tem sentido quando dois acórdãos respondem à mesma questão jurídica de formas opostas. Agrupar por semelhança de texto junta temas, não respostas, e os rótulos que daí saem não são estáveis o suficiente para mostrar a quem lê.
 
-## Decision
-- Questions are curated: 5 seed questions from a practitioner survey (SPEC §5.2), plus up to 3 proposed by one LLM discovery pass over a 150-judgment sample (SPEC §5.3).
-- The owner approves, edits or rejects each one. Each approved question has 2–4 positions with definitions written before any judgment is classified.
-- The taxonomy is frozen as `v1` (`data/taxonomy.json`, git tag `taxonomy-v1`) together with the prompt `classify_v1`.
-- Embeddings and clustering stay a stretch goal and are not required.
+## Decisão
+- As perguntas são curadas: 5 perguntas-semente de um levantamento prático (SPEC §5.2), mais até 3 propostas por uma passagem de descoberta com um modelo sobre uma amostra de 150 acórdãos (SPEC §5.3).
+- O responsável aprova, edita ou rejeita cada uma. Cada pergunta aprovada tem 2 a 4 posições, com definições escritas antes de classificar qualquer acórdão.
+- A taxonomia fica congelada como `v1` (`data/taxonomy.json`, etiqueta git `taxonomy-v1`), junto com o prompt `classify_v1`.
+- *Embeddings* e *clustering* ficam como objetivo opcional, não obrigatório.
 
-## Consequences
-- Coverage is limited to the approved questions (7 in `v1`). Anything else in the judgments is not seen.
-- Each classification is a position on a defined question, so positions can be compared across years and checked against labels.
+## Consequências
+- A cobertura limita-se às perguntas aprovadas (7 na `v1`); o resto do que os acórdãos discutem não é visto.
+- Cada classificação é uma posição numa pergunta definida, por isso as posições comparam-se entre anos e podem ser verificadas contra etiquetas.

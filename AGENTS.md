@@ -1,7 +1,7 @@
 # AGENTS.md — jurisprudencia
 
 Read order for any agent: this file → `SPEC.md` → `ROADMAP.md` (take the first milestone with status `todo` whose dependencies are `done`).
-Language: code, docs for agents and commit messages in English. User-facing text (UI, README, NOTA.md, IA.md) in pt-PT.
+Language: everything a reader of the deliverable sees is in pt-PT: the UI, README, NOTA.md, IA.md, CHANGELOG.md, `docs/` (architecture, ADRs, runbook) and `data/eval/` reports. Internal files stay in English: code and comments, commit messages, AGENTS.md, SPEC.md, ROADMAP.md, AI_LOG.md (IA.md is its pt-PT summary), the PR template and test READMEs.
 
 ## 1. What this is
 A prototype that aggregates Portuguese Supreme Court (STJ) judgments by legal question and shows **where and when the case law diverged or changed**. Data source: dgsi.pt. Output: a static web app plus a reproducible Python pipeline. It is a hiring-test submission: speed to a working, verifiable result matters more than breadth. Every claim shown to a user must carry a verbatim quote and a link to the original judgment.

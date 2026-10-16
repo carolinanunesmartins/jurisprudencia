@@ -15,6 +15,13 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-16 — Reader-facing documents in pt-PT
+- Tool: Claude Code (Opus 5.5).
+- Task: owner asked that every document a reader sees be in Portuguese, internal ones in any language. Scanned every tracked `.md`: the 8 ADRs and their index, `docs/llm-runbook.md` and `CHANGELOG.md` were in English. Translated to pt-PT, file names kept so links and code references still work; the rule written into AGENTS.md (which files are pt-PT, which stay English).
+- Failed: nothing.
+- Fix: n/a. Facts and numbers unchanged; the runbook's section numbers kept (code points to §1 and §5).
+- Human check: pending (owner reads the translations).
+
 ### 2026-10-15 — Architecture deliverable: how the MVP was built and how it continues
 - Tool: Claude Code (Opus 5.5).
 - Task: new deliverable `docs/arquitetura.md` (pt-PT) with Mermaid diagrams that GitHub renders: (1) the MVP in four stages (recolher, classificar, detetar, publicar); (2) the continuation, decided with the owner in two rounds of questions: for lawyers; more STJ themes, other courts, full text; scheduled incremental runs; AI-only review, disclosed; fully automatic, versioned questions; backend API + database + accounts; search by norm, ready citation, follow a question. Then a four-phase view with "ready when" criteria. README highlights it.

@@ -1,32 +1,32 @@
-# ADR 0005 — Thesis subset: contrato-promessa, STJ, 2000–2025
+# ADR 0005 — Subconjunto: contrato-promessa, STJ, 2000–2025
 
-Status: accepted (2026-10-13). Numbers come from the full index crawl (`make index`, 723 requests) and `pipeline/tools/subset_counts.py`.
+Estado: aceite (2026-10-13). Os números vêm do crawl do índice completo (`make index`, 723 pedidos) e de `pipeline/tools/subset_counts.py`.
 
-## Context
-SPEC §2 fixes the rule: theme *contrato-promessa* selected by DGSI descriptors, years 2000–2025, target 600–1 500 judgments; if more, restrict to 2005–2025; if fewer than 400, widen with "Sinal" and "Execução específica".
+## Contexto
+O SPEC §2 fixa a regra: tema *contrato-promessa*, escolhido pelos descritores do DGSI, anos 2000–2025, alvo de 600 a 1 500 acórdãos; se houver mais, restringir a 2005–2025; se houver menos de 400, alargar com "Sinal" e "Execução específica".
 
-Index facts (2026-10-13): 71 760 judgments indexed (SPEC §2 quoted 73 682 from the site's own count; 1 922 fewer were listed, not investigated, and the listing is the real universe for this project). 1932–2026, with a thin archive before 1967. Descriptor strings are free text with many spelling variants (`CONTRATO-PROMESSA`, `CONTRATO PROMESSA`, `CONTRATO - PROMESSA DE COMPRA E VENDA`, …).
+Factos do índice (2026-10-13): 71 760 acórdãos indexados (o SPEC §2 citava 73 682, a contagem do próprio sítio; a listagem tem menos 1 922, não investigado, e é ela o universo real deste projeto). De 1932 a 2026, com um arquivo escasso antes de 1967. Os descritores são texto livre com muitas grafias (`CONTRATO-PROMESSA`, `CONTRATO PROMESSA`, `CONTRATO - PROMESSA DE COMPRA E VENDA`, …).
 
-## Decision
-A judgment is in the subset when its date is in 2000–2025 and at least one of its descriptors names a *contrato-promessa* (regex in `pipeline/juris/db/subset.py`, matched on whole descriptors after accent folding):
-- contains `CONTRATO-PROMESSA` (also with a space, or ` - `), or
-- starts with `PROMESSA DE COMPRA`, `PROMESSA DE VENDA`, `PROMESSA UNILATERAL` or `PROMESSA BILATERAL`.
+## Decisão
+Um acórdão entra no subconjunto quando a data está entre 2000 e 2025 e pelo menos um dos seus descritores nomeia um *contrato-promessa* (expressão regular em `pipeline/juris/db/subset.py`, aplicada ao descritor inteiro, sem acentos):
+- contém `CONTRATO-PROMESSA` (também com espaço, ou ` - `), ou
+- começa por `PROMESSA DE COMPRA`, `PROMESSA DE VENDA`, `PROMESSA UNILATERAL` ou `PROMESSA BILATERAL`.
 
-Result: **813 judgments** (649 if limited to 2005–2025). This is inside the 600–1 500 target, so neither the year restriction nor the widening in SPEC §2 applies. All 2000–2025 years are kept.
+Resultado: **813 acórdãos** (649 se fosse 2005–2025). Está dentro do alvo de 600 a 1 500, por isso não se aplica nem a restrição de anos nem o alargamento do SPEC §2. Mantêm-se todos os anos de 2000 a 2025.
 
-Per year: 2000:22, 2001:26, 2002:23, 2003:37, 2004:56, 2005:37, 2006:51, 2007:41, 2008:38, 2009:47, 2010:57, 2011:36, 2012:34, 2013:25, 2014:20, 2015:26, 2016:21, 2017:21, 2018:21, 2019:32, 2020:16, 2021:29, 2022:25, 2023:24, 2024:25, 2025:23.
+Por ano: 2000:22, 2001:26, 2002:23, 2003:37, 2004:56, 2005:37, 2006:51, 2007:41, 2008:38, 2009:47, 2010:57, 2011:36, 2012:34, 2013:25, 2014:20, 2015:26, 2016:21, 2017:21, 2018:21, 2019:32, 2020:16, 2021:29, 2022:25, 2023:24, 2024:25, 2025:23.
 
-`make fetch` only downloads this subset (the pilot is drawn from it, stratified by year). `--all-index` exists for exploration and is not used by the pipeline.
+`make fetch` só descarrega este subconjunto (o piloto é tirado dele, estratificado por ano). `--all-index` existe para exploração e não é usado pelo pipeline.
 
-## Why not substring matching
-A naive match on `SINAL`/`TRADIÇÃO`/`PROMESSA` catches `EXTRADIÇÃO` (267 hits), `CONTRADIÇÃO …`, `CARÁCTER SINALAGMÁTICO`, `PROMESSA DE CASAMENTO`, road-sign descriptors and similar. Whole-descriptor patterns avoid these; `test_subset.py` pins both lists.
+## Porque não procurar por pedaços de palavra
+Procurar `SINAL`/`TRADIÇÃO`/`PROMESSA` dentro do descritor apanha `EXTRADIÇÃO` (267 casos), `CONTRADIÇÃO …`, `CARÁCTER SINALAGMÁTICO`, `PROMESSA DE CASAMENTO`, descritores de sinais de trânsito e semelhantes. Os padrões sobre o descritor inteiro evitam-nos; `test_subset.py` fixa as duas listas.
 
-## Why 2000–2025, and a known limitation
-The start year is a scope choice carried over from SPEC §2, not derived from the data (the index has more judgments per year before 2000, not fewer). Seed question 1 names the uniformizing judgment of 05/11/1998 as a reference point, which lies **outside** the window, so the "before" side of that shift is not in the data. Considered and rejected by the owner (2026-10-14): 1995–2025 would give 1 144 judgments (813 + 331) and include 1998. The limitation is stated in the report; question 1 is judged only on what falls inside 2000–2025.
+## Porquê 2000–2025, e uma limitação conhecida
+O ano de início é uma escolha de âmbito herdada do SPEC §2, não vem dos dados (o índice tem mais acórdãos por ano antes de 2000, não menos). A pergunta-semente 1 cita como referência o acórdão uniformizador de 05/11/1998, que fica **fora** da janela, por isso o "antes" dessa mudança não está nos dados. Considerado e rejeitado pelo responsável (2026-10-14): 1995–2025 daria 1 144 acórdãos (813 + 331) e incluiria 1998. A limitação está no relatório; a pergunta 1 é julgada só pelo que cai em 2000–2025.
 
-## Consequences
-- **Roughly 25–30 judgments per year**, and a dip to 16 in 2020. Time-window detection (M5) has small counts per window; thresholds in SPEC §6 must be applied as written, and per-window counts are shown in the UI.
-- **Cost:** 813 fetches ≈ 40–45 minutes of polite crawling, far under the old 1–2 hour estimate.
-- **Recall limits:** judgments that discuss a promessa but carry no such descriptor (or none at all) are missed. This is a stated limitation of the method, not tuned afterwards.
-- **Not included:** descriptors `SINAL`, `EXECUÇÃO ESPECÍFICA`, `TRADIÇÃO DA COISA`, `CLÁUSULA PENAL` on their own (they also occur outside promessa). The SPEC §2 widening (exact `SINAL` family and `EXECUÇÃO ESPECÍFICA`) would add only 34 judgments in 2000–2025 (847 instead of 813), so it would not change the picture.
-- Gate G2 (end of M3) and the M1.5 spike still decide whether this subset holds enough distinct positions.
+## Consequências
+- **Cerca de 25 a 30 acórdãos por ano**, com uma descida para 16 em 2020. A deteção por janelas (M5) trabalha com contagens pequenas; os limiares do SPEC §6 aplicam-se como estão escritos e o sítio mostra as contagens de cada janela.
+- **Custo:** 813 descargas ≈ 40 a 45 minutos de crawl educado, muito abaixo da estimativa antiga de 1 a 2 horas.
+- **Limite de cobertura:** acórdãos que tratam uma promessa mas não têm esse descritor (ou nenhum) ficam de fora. É uma limitação declarada do método, não afinada depois.
+- **Não incluídos:** os descritores `SINAL`, `EXECUÇÃO ESPECÍFICA`, `TRADIÇÃO DA COISA` e `CLÁUSULA PENAL` sozinhos (também aparecem fora da promessa). O alargamento do SPEC §2 (família `SINAL` exata e `EXECUÇÃO ESPECÍFICA`) acrescentaria só 34 acórdãos em 2000–2025 (847 em vez de 813), por isso não mudaria o quadro.
+- O Gate G2 (fim do M3) e o *spike* do M1.5 continuam a decidir se este subconjunto tem posições distintas suficientes.

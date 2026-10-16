@@ -1,17 +1,17 @@
-# ADR 0003 — Quote grounding as a hard gate
+# ADR 0003 — Verificação das citações como condição obrigatória
 
-Status: accepted (2026-10-12; locating rules added 2026-10-15). Recorded retroactively on 2026-10-15; the decision is in SPEC §6.1 and AGENTS.md rule 4.
+Estado: aceite (2026-10-12; regras de localização acrescentadas em 2026-10-15). Registado retroativamente em 2026-10-15; a decisão está no SPEC §6.1 e na regra 4 do AGENTS.md.
 
-## Context
-Every claim on the site must be checkable against the judgment. A model can paraphrase or invent a passage that reads like a quote.
+## Contexto
+Cada afirmação do sítio tem de poder ser confirmada no acórdão. Um modelo pode parafrasear ou inventar uma passagem com ar de citação.
 
-## Decision
-- The model must return the passage that supports its position, at most 400 characters.
-- The passage is located in the stored text (`juris.classify.grounding.ground`). What is stored and shown is **the text's own span**, never the model's string.
-- Locating allows only named repairs, each counted in the report: typography, a paragraph number left out, spacing or hyphens broken in the source, a missing final full stop, and "..." joins where every piece is found in order (only the longest piece is kept).
-- Anything not found is rejected, stored as `quote_ok=false` and counted. Accepted fabrications must be 0.
-- `make data-check` checks published quotes. CI checks grounding on fixtures only, because the full texts are never committed.
+## Decisão
+- O modelo tem de devolver a passagem que sustenta a posição, com 400 caracteres no máximo.
+- A passagem é procurada no texto guardado (`juris.classify.grounding.ground`). O que se guarda e mostra é **o excerto do próprio texto**, nunca a cadeia escrita pelo modelo.
+- Para a encontrar só se aceitam reparações nomeadas, cada uma contada no relatório: tipografia, número de parágrafo omitido, espaços ou hifenização partidos no original, ponto final em falta, e junções com "..." em que cada parte aparece pela ordem (guarda-se só a parte mais longa).
+- O que não for encontrado é rejeitado, guardado com `quote_ok=false` e contado. Citações inventadas aceites: tem de ser 0.
+- `make data-check` verifica as citações publicadas. A CI verifica-as só nas *fixtures*, porque os textos integrais nunca são comitados.
 
-## Consequences
-- In the live run, 11 of 695 answers were rejected and none was published. Their positions are lost to detection.
-- The locating rules were added after the first run. They change no threshold and no prompt, and they are re-applied offline from the recorded answers (`--reground`).
+## Consequências
+- Na corrida real, 11 de 695 respostas foram rejeitadas e nenhuma foi publicada; essas posições ficam fora da deteção.
+- As regras de localização foram acrescentadas depois da primeira corrida. Não alteram nenhum limiar nem o prompt e são reaplicadas sem custo a partir das respostas gravadas (`--reground`).
