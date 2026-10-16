@@ -3,6 +3,7 @@
 Alterações relevantes, das mais recentes para as mais antigas. As mensagens de commit seguem o formato Conventional Commits; o pormenor de cada passo está no [AI_LOG.md](AI_LOG.md) (em inglês) e o resumo em [IA.md](IA.md).
 
 ## Por publicar
+- docs: README, NOTA e IA dizem "verificador", como o sítio; o README e o IA dizem que a narração dos vídeos é uma voz sintetizada; IA.md atualizado com o trabalho de 16/10 (visitante, guia, vídeos)
 - docs: vídeos no README (`docs/video/`): anúncio de 45 s e demonstrações de 41 s e de 3 min 33 s, com narração e legendas em português
 - feat(web): as uniformizações dizem em que sentido decidiram; as perguntas sem divergência explicam porquê; as mudanças mostram o que veio depois; "verificador" em vez de "juiz"
 - feat(web): "Como ler" na página inicial explica pergunta, posições, divergência e uniformização, com exemplos; as perguntas sem divergência dizem-no; cada página diz se é uma pergunta ou uma divergência

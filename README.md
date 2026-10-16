@@ -17,7 +17,7 @@ Agrupa acórdãos do Supremo Tribunal de Justiça (STJ), publicados no [dgsi.pt]
 | [Demonstração curta](docs/video/demo-60s.mp4) | 41 s | Um exemplo, o gráfico e o método |
 | [Demonstração completa](docs/video/demo-3min.mp4) | 3 min 33 s | Todas as páginas, passo a passo ([guião](docs/guiao-video.md)) |
 
-Cada ligação abre o vídeo no leitor do GitHub. Têm narração e legendas em português na imagem; as legendas também estão em `.srt` ao lado de cada vídeo. Foram gravados no sítio local, sem abrir o dgsi.pt.
+Cada ligação abre o vídeo no leitor do GitHub. A narração é uma voz sintetizada em português de Portugal (edge-tts, voz "Raquel"), não a voz do autor; têm legendas na imagem, e as legendas também estão em `.srt` ao lado de cada vídeo. Foram gravados no sítio local, sem abrir o dgsi.pt.
 
 > [!TIP]
 > **Arquitetura em duas imagens:** [como o MVP foi construído e como deve continuar](docs/arquitetura.md). Recolha, classificação com a citação como prova, deteção, publicação; e a seguir: vários tribunais, texto integral, atualização automática e um produto para advogados.
@@ -38,7 +38,7 @@ Nenhuma citação inventada é publicada: cada excerto é texto do próprio acó
 2. **Perguntas:** taxonomia aprovada por uma pessoa, com as posições escritas antes de classificar ([ADR 0002](docs/adr/0002-supervised-taxonomy.md)).
 3. **Classificação:** um modelo pequeno lê o sumário e indica a posição e o excerto; o excerto só fica se estiver no texto ([ADR 0003](docs/adr/0003-quote-grounding.md)).
 4. **Deteção:** regras fixas em janelas de 3 anos (`detect.toml`).
-5. **Juiz:** um segundo modelo vê só a pergunta e os dois excertos; só se mostram as divergências que confirma.
+5. **Verificador** (*judge* no código): um segundo modelo vê só a pergunta e os dois excertos; só se mostram as divergências que confirma.
 
 Requisitos e decisões: [SPEC.md](SPEC.md), [docs/adr/](docs/adr/). Plano: [ROADMAP.md](ROADMAP.md).
 
@@ -56,7 +56,7 @@ Reproduzir os dados do site sem crawl nem chave de API (o resultado é igual, by
 
 ```bash
 make snapshot-load   # base local a partir de data/classifications/
-make detect          # divergências (mantém os veredictos do juiz)
+make detect          # divergências (mantém os veredictos do verificador)
 make export          # web/public/data/*.json
 make data-check      # esquemas, ligações e citações
 ```
@@ -68,7 +68,7 @@ make data-check      # esquemas, ligações e citações
 | `make setup` / `make verify` | qualquer | instalar / validar tudo |
 | `make snapshot-load` / `make snapshot` | qualquer | carregar / gravar `data/classifications/` |
 | `make detect` / `make export` / `make data-check` | qualquer | deteção, exportação e validação |
-| `make classify-replay` / `make judge-replay` | qualquer | repetir classificação e juiz com respostas gravadas, sem custo |
+| `make classify-replay` / `make judge-replay` | qualquer | repetir classificação e verificação com respostas gravadas, sem custo |
 | `make evaluate` | qualquer, com a base local | `data/eval/report.md` e `evaluation.json` |
 | `make index` / `make fetch` | **só uma pessoa** | crawl do dgsi.pt; precisa de `JURIS_CONTACT` ([ADR 0004](docs/adr/0004-polite-crawl.md)) |
 | `make classify` / `make judge` | **só uma pessoa** | chamadas reais ao modelo; precisa de `LLM_API_KEY` ([runbook](docs/llm-runbook.md)) |

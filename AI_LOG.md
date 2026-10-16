@@ -15,6 +15,13 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-16 — Deliverables check; docs aligned
+- Tool: Claude Code (Opus 5.5) as team lead; two verifier agents (one checked the live site and the public repo over HTTP, one read README, NOTA and IA against the brief).
+- Task: owner asked whether the five deliverables are in place (live app, repo with run instructions, decisions note, AI-usage note, narrated demo video). Findings: repo, README and NOTA complete; live site up but built from main at M11 (m12-m16 not merged, so none of the newer UI is live and main has no videos); IA.md missing the 2026-10-16 work; the videos' voice is synthetic while the brief asks for the candidate's own narration, and the README did not say so; docs said "juiz" while the UI says "verificador". The owner decided not to record their own voice.
+- Failed: none in the edits. The verifier flagged meta.json (5 shown + 19 hidden = 24) against evaluation.json (23 judged, 4 shown); traced: meta counts the q8 "uniformizada" (resolved) record, which is not judged, so both are right.
+- Fix: README and IA disclose the synthetic voice (edge-tts, "Raquel"); "juiz" -> "verificador" (with *judge* in the code) in README, NOTA, IA; IA.md gains the video tools, the deliverables check, the second visitor round, the video failures, and current test counts (201 Python, 93 web, both run). Merging m12-m16 into main is left to the owner (AGENTS.md §6; no gh CLI here).
+- Human check: pending.
+
 ### 2026-10-16 — Demo videos and an ad, in the README
 - Tool: Claude Code (Opus 5.5); Playwright (Chromium, CDP screencast), edge-tts (pt-PT-RaquelNeural), ffmpeg. All installed outside the repo; no project dependency added.
 - Task: the owner asked for the script recorded as a simulated user with a voice-over, then for an ad, subtitles, and the videos in the README. A script drove the local site scene by scene following `docs/guiao-video.md`, each scene held for its narration; frames and audio were joined with ffmpeg, subtitles split into short lines and burned in. Outputs in `docs/video/`: `anuncio.mp4` (45 s, title cards drawn over the site with its own fonts and colours), `demo-60s.mp4` (41 s), `demo-3min.mp4` (3 min 33 s), each with an `.srt` and a poster; README section "Vídeos"; the ad's script added to the guião.
