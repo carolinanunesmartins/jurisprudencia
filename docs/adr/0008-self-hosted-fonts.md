@@ -1,20 +1,20 @@
-# ADR 0008 — Self-hosted typefaces for the site's identity
+# ADR 0008 — Tipos de letra alojados no próprio sítio
 
-Status: accepted (2026-10-15, owner asked for a visual revamp with an identity).
+Estado: aceite (2026-10-15, o responsável pediu uma renovação visual com identidade).
 
-## Context
-The site used the browser's default sans-serif. The revamp gives it a reading voice for quoted judgments and a quieter interface face. The CSP is `default-src 'self'` (SPEC §8), so fonts cannot come from a third-party CDN at runtime, and AGENTS.md rule 9 asks for an ADR for every new runtime dependency.
+## Contexto
+O sítio usava a letra sem serifa por omissão do navegador. A renovação dá-lhe uma voz de leitura para as citações dos acórdãos e uma letra mais discreta para a interface. A CSP é `default-src 'self'` (SPEC §8), por isso os tipos de letra não podem vir de um CDN externo, e a regra 9 do AGENTS.md pede um ADR para cada nova dependência de execução.
 
-## Decision
-- Add `@fontsource-variable/literata` (serif, designed for long-form screen reading; quotes, headings) and `@fontsource-variable/hanken-grotesk` (sans; interface text and numbers).
-- Both are bundled by Vite into `web/dist` and served from the site's own origin, so the CSP is unchanged.
-- Licence: SIL Open Font License 1.1 for both (redistribution in the bundle is allowed).
-- Fallbacks in the font stack (`Iowan Old Style`, `Georgia`, `system-ui`) keep the text readable if a font fails to load.
+## Decisão
+- Acrescentar `@fontsource-variable/literata` (serifada, desenhada para leitura longa em ecrã; citações e títulos) e `@fontsource-variable/hanken-grotesk` (sem serifa; texto da interface e números).
+- Ambos são incluídos pelo Vite em `web/dist` e servidos a partir da origem do próprio sítio, por isso a CSP não muda.
+- Licença: SIL Open Font License 1.1 nos dois (a redistribuição no pacote é permitida).
+- As alternativas na pilha de letras (`Iowan Old Style`, `Georgia`, `system-ui`) mantêm o texto legível se um tipo de letra não carregar.
 
-## Alternatives considered
-- System font stacks only: no dependency, but no identity, and the result differs a lot between platforms.
-- Google Fonts at runtime: would need a CSP exception and sends every visitor's IP to a third party.
+## Alternativas consideradas
+- Só letras do sistema: sem dependência, mas sem identidade, e o resultado varia muito entre plataformas.
+- Google Fonts em tempo de execução: exigiria uma exceção na CSP e enviaria o IP de cada visitante a terceiros.
 
-## Consequences
-- About 100–200 KB of woff2 per visitor, cached; only the subsets the page's text needs are downloaded (`unicode-range`).
-- Two more packages to keep up to date (Dependabot covers `web/`).
+## Consequências
+- Cerca de 100 a 200 KB de woff2 por visitante, em cache; só se descarregam os subconjuntos de caracteres que o texto da página usa (`unicode-range`).
+- Mais dois pacotes para manter atualizados (o Dependabot cobre `web/`).

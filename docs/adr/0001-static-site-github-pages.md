@@ -1,17 +1,17 @@
-# ADR 0001 — Static site on GitHub Pages
+# ADR 0001 — Sítio estático no GitHub Pages
 
-Status: accepted (2026-10-12). Recorded retroactively on 2026-10-15; the decision is in SPEC §8 and §12.
+Estado: aceite (2026-10-12). Registado retroativamente em 2026-10-15; a decisão está no SPEC §8 e §12.
 
-## Context
-The output is a read-only view of a fixed, published dataset. SPEC §1 rules out search, chat/RAG and accounts, so nothing needs a server at request time.
+## Contexto
+O resultado é uma vista só de leitura sobre um conjunto de dados fixo e publicado. O SPEC §1 exclui pesquisa livre, chat/RAG e contas, por isso nada precisa de um servidor no momento do pedido.
 
-## Decision
-- Vite + React + TypeScript build to static files. The pipeline writes `web/public/data/*.json` (`make export`), and the site only reads them.
-- HashRouter, so every route works on a host without server rewrites.
-- Hosting on GitHub Pages, deployed by GitHub Actions after `make data-check` passes (`.github/workflows/deploy.yml`).
-- Security headers cannot be set on Pages, so the CSP is a `<meta http-equiv>` in `web/index.html` (`frame-ancestors` is not enforceable there).
+## Decisão
+- Vite + React + TypeScript compilados para ficheiros estáticos. O pipeline escreve `web/public/data/*.json` (`make export`) e o sítio só os lê.
+- HashRouter, para que todas as rotas funcionem num alojamento sem reescritas no servidor.
+- Alojamento no GitHub Pages, publicado pelo GitHub Actions depois de `make data-check` passar (`.github/workflows/deploy.yml`).
+- O Pages não permite definir cabeçalhos de segurança, por isso a CSP é um `<meta http-equiv>` em `web/index.html` (aí, `frame-ancestors` não tem efeito).
 
-## Consequences
-- No backend, cookies or analytics, and no request leaves the site's origin.
-- Hash routes are not indexed separately by search engines.
-- A Pages project site cannot serve `robots.txt` at the origin root.
+## Consequências
+- Sem servidor, sem cookies, sem *analytics*, e nenhum pedido sai da origem do sítio.
+- As rotas com `#` não são indexadas em separado pelos motores de pesquisa.
+- Um sítio de projeto no Pages não pode servir `robots.txt` na raiz do domínio.

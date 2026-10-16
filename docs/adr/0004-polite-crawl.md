@@ -1,18 +1,18 @@
-# ADR 0004 — Polite-crawl policy
+# ADR 0004 — Política de crawl educado
 
-Status: accepted (2026-10-12). Recorded retroactively on 2026-10-15; the rules are in SPEC §3 and AGENTS.md rules 1–2.
+Estado: aceite (2026-10-12). Registado retroativamente em 2026-10-15; as regras estão no SPEC §3 e nas regras 1 e 2 do AGENTS.md.
 
-## Context
-dgsi.pt is a public service with no robots.txt (checked by the owner on 2026-10-12). Having no robots.txt is not permission, and the crawl must cost the site as little as possible.
+## Contexto
+O dgsi.pt é um serviço público sem robots.txt (verificado pelo responsável em 2026-10-12). Não ter robots.txt não é autorização, e a recolha tem de custar o mínimo possível ao sítio.
 
-## Decision
-- One connection and one request at a time, with at least 2.5 s (plus 0–1 s jitter) between requests and a 30 s timeout.
-- An identifying `User-Agent` that carries the owner's contact (`JURIS_CONTACT`).
-- Every response is cached on disk (`data/raw/`, gitignored) by canonical URL. No URL is requested twice, and runs resume from the cache.
-- A run stops at the first HTTP 429/503 or after 3 consecutive errors. There are no retry loops and no workarounds. Each run has a request cap (`--max-requests`, default 800) and runs off-peak.
-- A host allowlist is checked before every request.
-- Only a person runs `make index` and `make fetch`. AI agents never contact dgsi.pt and work from saved fixtures.
+## Decisão
+- Uma ligação e um pedido de cada vez, com pelo menos 2,5 s (mais 0–1 s aleatórios) entre pedidos e 30 s de limite de espera.
+- Um `User-Agent` identificável, com o contacto do responsável (`JURIS_CONTACT`).
+- Cada resposta fica em cache no disco (`data/raw/`, ignorado pelo git) pelo URL canónico. Nenhum URL é pedido duas vezes e as corridas retomam a partir da cache.
+- Uma corrida para no primeiro HTTP 429/503 ou após 3 erros seguidos. Sem repetições em ciclo e sem contornos. Cada corrida tem um limite de pedidos (`--max-requests`, 800 por omissão) e corre fora das horas de ponta.
+- Antes de cada pedido verifica-se uma lista de anfitriões permitidos.
+- Só uma pessoa corre `make index` e `make fetch`. Os agentes de IA nunca contactam o dgsi.pt e trabalham sobre páginas guardadas.
 
-## Consequences
-- The full index takes about 740 requests (about 40 min). With the subset's documents, the whole crawl is about 1.3–2.5 h.
-- Tests run offline on HTML fixtures in `pipeline/tests/fixtures/`.
+## Consequências
+- O índice completo leva cerca de 740 pedidos (cerca de 40 min). Com os documentos do subconjunto, a recolha toda leva cerca de 1,3 a 2,5 h.
+- Os testes correm sem rede, sobre *fixtures* HTML em `pipeline/tests/fixtures/`.
