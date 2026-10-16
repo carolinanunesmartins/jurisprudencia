@@ -62,6 +62,42 @@ describe("App (unit)", () => {
     expect(screen.getAllByText(whole("Relativo e Absoluto nos mesmos anos")).length).toBeGreaterThan(0);
   });
 
+  // regression: a first-time reader could not tell a question from a divergence
+  it("explains the four terms on the home page, in the order they nest", async () => {
+    at("/");
+    const guide = await screen.findByRole("region", { name: messages.home.guide.label });
+    const g = messages.home.guide;
+    const terms = [...guide.querySelectorAll("li > div > p:first-child > strong")].map((el) => el.textContent);
+    expect(terms).toEqual([g.question.term, g.positions.term, g.divergence.term, g.auj.term]);
+    // the examples come from the example question shown below
+    expect(guide).toHaveTextContent(fixture.questions[0]!.description);
+  });
+
+  it("says when a question has no confirmed divergence, and why that can happen", async () => {
+    at("/perguntas/q6", { ...fixture, divergences: [] });
+    expect(await screen.findByText(messages.eyebrow.question)).toBeInTheDocument();
+    expect(screen.getByText(`${messages.noDivergenceShort}.`)).toBeInTheDocument();
+    expect(screen.getByText(messages.noDivergenceWhy, { exact: false })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: messages.howLink })).toHaveAttribute("href", "/metodo");
+  });
+
+  // regression: a visitor could not tell which answer a uniformização fixed
+  it("names the position a uniformização takes, in the note and on its card", async () => {
+    // the AUJ is judgment "a" (2010, Relativo), inside the 2009-2012 split
+    const auj = { ...fixture.aujs[0]!, doc_id: "a", date: "2010-03-01" };
+    const { unmount } = at("/perguntas/q6", { ...fixture, aujs: [auj] });
+    const note = await screen.findByText(whole(`${messages.aujShort(["1 mar. 2010"])}${messages.inSense}Relativo. ${messages.aujWhy}`));
+    expect(note.querySelector("strong")).toHaveStyle({ color: "var(--pos-0)" });
+    unmount();
+    at("/uniformizacoes", { ...fixture, aujs: [auj] });
+    expect(await screen.findByText(whole(`${messages.inSense}Relativo`))).toBeInTheDocument();
+  });
+
+  it("says when a uniformização is about none of the questions", async () => {
+    at("/uniformizacoes", { ...fixture, aujs: [{ ...fixture.aujs[0]!, related_questions: [] }] });
+    expect(await screen.findByText(messages.auj.noQuestion)).toBeInTheDocument();
+  });
+
   it("shows position names in bold, in their colour", async () => {
     at("/");
     const [name] = await screen.findAllByText("Relativo", { selector: "strong" });
@@ -79,6 +115,9 @@ describe("App (unit)", () => {
     // the evidence: Relativo 2, Absoluto 0 in 2004-2006; Relativo 0, Absoluto 2 in 2007-2009
     expect(screen.getByText("2004–2006")).toBeInTheDocument();
     expect(screen.getByText("2007–2009")).toBeInTheDocument();
+    // regression: a visitor could not tell whether the change held; the years after it are shown
+    expect(screen.getByText(messages.divergence.later)).toBeInTheDocument();
+    expect(screen.getByText("2010–2025")).toBeInTheDocument();
     // regression: the judge's confidence and the detection's read as one contradicting number
     expect(screen.getByText(messages.divergence.judgeConfidence).nextElementSibling).toHaveTextContent("baixa");
     expect(screen.getByText(messages.divergence.ruleConfidence).nextElementSibling).toHaveTextContent("alta");
@@ -95,7 +134,7 @@ describe("App (unit)", () => {
       ],
     });
     expect(
-      await screen.findByText(`${messages.aujShort(["15 jan. 2010", "2 mai. 2011"])} ${messages.aujWhy}`),
+      await screen.findByText(whole(`${messages.aujShort(["15 jan. 2010", "2 mai. 2011"])}. ${messages.aujWhy}`)),
     ).toBeInTheDocument();
     // a shift is scoped to its own years, so a later reversal is not hidden
     expect(screen.getByText(messages.shiftScope)).toBeInTheDocument();

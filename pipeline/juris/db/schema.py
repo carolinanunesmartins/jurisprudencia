@@ -52,7 +52,8 @@ CREATE TABLE IF NOT EXISTS divergence (
 _ADDED = {
     # quote_match: how grounding located the quote (SPEC §6.1), e.g. "exact", "ellipsis+typography"
     "classification": ("note TEXT", "text_source TEXT", "quote_match TEXT"),
-    "acordao": ("uniformizacao INTEGER",),
+    # sumario_terms: JSON {term: tf} of the sumário, so search.json survives a snapshot (ADR 0009)
+    "acordao": ("uniformizacao INTEGER", "sumario_terms TEXT"),
 }
 
 

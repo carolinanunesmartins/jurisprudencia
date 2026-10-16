@@ -7,6 +7,18 @@ Agrupa acórdãos do Supremo Tribunal de Justiça (STJ), publicados no [dgsi.pt]
 **Sítio:** https://carolinanunesmartins.github.io/jurisprudencia/
 **Ler primeiro:** [NOTA.md](NOTA.md) (uma página) · [IA.md](IA.md) (uso de IA) · [relatório de avaliação](data/eval/report.md)
 
+## Vídeos
+
+[![Anúncio do Jurisprudência: o Supremo decidiu num sentido e no sentido oposto](docs/video/anuncio.jpg)](docs/video/anuncio.mp4)
+
+| Vídeo | Duração | O que mostra |
+|---|---|---|
+| [Anúncio](docs/video/anuncio.mp4) | 45 s | A ideia em cinco frases |
+| [Demonstração curta](docs/video/demo-60s.mp4) | 41 s | Um exemplo, o gráfico e o método |
+| [Demonstração completa](docs/video/demo-3min.mp4) | 3 min 33 s | Todas as páginas, passo a passo ([guião](docs/guiao-video.md)) |
+
+Cada ligação abre o vídeo no leitor do GitHub. A narração é uma voz sintetizada em português de Portugal (edge-tts, voz "Raquel"), não a voz do autor; têm legendas na imagem, e as legendas também estão em `.srt` ao lado de cada vídeo. Foram gravados no sítio local, sem abrir o dgsi.pt.
+
 > [!TIP]
 > **Arquitetura em duas imagens:** [como o MVP foi construído e como deve continuar](docs/arquitetura.md). Recolha, classificação com a citação como prova, deteção, publicação; e a seguir: vários tribunais, texto integral, atualização automática e um produto para advogados.
 
@@ -15,6 +27,7 @@ Agrupa acórdãos do Supremo Tribunal de Justiça (STJ), publicados no [dgsi.pt]
 - **813 acórdãos** do STJ sobre contrato-promessa (2000–2025), em **7 perguntas**, com as posições ano a ano.
 - **Divergências confirmadas**: *divisões* (as duas posições nos mesmos anos) e *mudanças* (uma posição substitui a outra), com os dois excertos lado a lado.
 - **Uniformizações**: divergências reconhecidas pelo próprio STJ, só com citações.
+- **Pesquisa** por relevância nas perguntas, nas citações e nas palavras dos sumários (os sumários não são publicados, só um índice de palavras: [ADR 0009](docs/adr/0009-search-word-index.md)).
 - **Método e números medidos**, com as limitações.
 
 Nenhuma citação inventada é publicada: cada excerto é texto do próprio acórdão, verificado palavra a palavra.
@@ -25,7 +38,7 @@ Nenhuma citação inventada é publicada: cada excerto é texto do próprio acó
 2. **Perguntas:** taxonomia aprovada por uma pessoa, com as posições escritas antes de classificar ([ADR 0002](docs/adr/0002-supervised-taxonomy.md)).
 3. **Classificação:** um modelo pequeno lê o sumário e indica a posição e o excerto; o excerto só fica se estiver no texto ([ADR 0003](docs/adr/0003-quote-grounding.md)).
 4. **Deteção:** regras fixas em janelas de 3 anos (`detect.toml`).
-5. **Juiz:** um segundo modelo vê só a pergunta e os dois excertos; só se mostram as divergências que confirma.
+5. **Verificador** (*judge* no código): um segundo modelo vê só a pergunta e os dois excertos; só se mostram as divergências que confirma.
 
 Requisitos e decisões: [SPEC.md](SPEC.md), [docs/adr/](docs/adr/). Plano: [ROADMAP.md](ROADMAP.md).
 
@@ -43,7 +56,7 @@ Reproduzir os dados do site sem crawl nem chave de API (o resultado é igual, by
 
 ```bash
 make snapshot-load   # base local a partir de data/classifications/
-make detect          # divergências (mantém os veredictos do juiz)
+make detect          # divergências (mantém os veredictos do verificador)
 make export          # web/public/data/*.json
 make data-check      # esquemas, ligações e citações
 ```
@@ -55,7 +68,7 @@ make data-check      # esquemas, ligações e citações
 | `make setup` / `make verify` | qualquer | instalar / validar tudo |
 | `make snapshot-load` / `make snapshot` | qualquer | carregar / gravar `data/classifications/` |
 | `make detect` / `make export` / `make data-check` | qualquer | deteção, exportação e validação |
-| `make classify-replay` / `make judge-replay` | qualquer | repetir classificação e juiz com respostas gravadas, sem custo |
+| `make classify-replay` / `make judge-replay` | qualquer | repetir classificação e verificação com respostas gravadas, sem custo |
 | `make evaluate` | qualquer, com a base local | `data/eval/report.md` e `evaluation.json` |
 | `make index` / `make fetch` | **só uma pessoa** | crawl do dgsi.pt; precisa de `JURIS_CONTACT` ([ADR 0004](docs/adr/0004-polite-crawl.md)) |
 | `make classify` / `make judge` | **só uma pessoa** | chamadas reais ao modelo; precisa de `LLM_API_KEY` ([runbook](docs/llm-runbook.md)) |

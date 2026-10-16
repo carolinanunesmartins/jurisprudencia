@@ -3,6 +3,14 @@
 Alterações relevantes, das mais recentes para as mais antigas. As mensagens de commit seguem o formato Conventional Commits; o pormenor de cada passo está no [AI_LOG.md](AI_LOG.md) (em inglês) e o resumo em [IA.md](IA.md).
 
 ## Por publicar
+- docs: README, NOTA e IA dizem "verificador", como o sítio; o README e o IA dizem que a narração dos vídeos é uma voz sintetizada; IA.md atualizado com o trabalho de 16/10 (visitante, guia, vídeos)
+- docs: vídeos no README (`docs/video/`): anúncio de 45 s e demonstrações de 41 s e de 3 min 33 s, com narração e legendas em português
+- feat(web): as uniformizações dizem em que sentido decidiram; as perguntas sem divergência explicam porquê; as mudanças mostram o que veio depois; "verificador" em vez de "juiz"
+- feat(web): "Como ler" na página inicial explica pergunta, posições, divergência e uniformização, com exemplos; as perguntas sem divergência dizem-no; cada página diz se é uma pergunta ou uma divergência
+- docs: `docs/guiao-video.md`, guião do vídeo de demonstração
+- feat(web): os pontos do gráfico "Ano a ano" abrem uma caixa com a data, a posição e a ligação ao acórdão no dgsi.pt
+- feat(web): botão para alternar entre modo claro e escuro; segue o sistema até o leitor escolher e guarda a escolha
+- feat(search): pesquisa por relevância (BM25) nas perguntas, nas citações e num índice de palavras dos sumários, sem publicar o texto (ADR 0009); caixa grande na página inicial com exemplos, entrada no cabeçalho e em `/pesquisa`
 - docs: documentos para leitura em português (ADRs, guia dos passos com o modelo, este histórico)
 - docs: `docs/arquitetura.md`, a arquitetura do MVP e da sua continuação (diagramas Mermaid, quatro fases), em destaque no README
 - chore: arrumação do repositório; ADRs 0001–0004 (exigidos pelo SPEC §11, registados retroativamente); README e AI_LOG mais curtos; `DgsiLink` só cria ligações para o dgsi.pt (reforço de segurança)

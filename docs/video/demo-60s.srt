@@ -1,0 +1,43 @@
+1
+00:00:00,500 --> 00:00:04,096
+813 acórdãos do Supremo sobre contrato-promessa,
+
+2
+00:00:04,096 --> 00:00:08,816
+agrupados em 7 perguntas: onde foram decididos num sentido e no
+
+3
+00:00:08,816 --> 00:00:09,940
+sentido oposto?
+
+4
+00:00:10,916 --> 00:00:15,199
+Em outubro de 2019, dois acórdãos com doze dias de intervalo
+
+5
+00:00:15,199 --> 00:00:18,053
+respondem ao contrário à mesma pergunta,
+
+6
+00:00:18,053 --> 00:00:20,551
+nas palavras dos próprios acórdãos.
+
+7
+00:00:21,522 --> 00:00:24,399
+Cada ponto é um acórdão.
+
+8
+00:00:24,399 --> 00:00:28,605
+Um clique leva ao original no dgsi.pt.
+
+9
+00:00:29,588 --> 00:00:32,470
+Citações verificadas palavra a palavra,
+
+10
+00:00:32,470 --> 00:00:35,942
+divergências confirmadas por um segundo modelo.
+
+11
+00:00:35,942 --> 00:00:39,692
+Um sinal para revisão, não um parecer.

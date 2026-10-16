@@ -1,0 +1,231 @@
+1
+00:00:00,500 --> 00:00:04,517
+Um advogado que pega num processo sobre contrato-promessa quer
+
+2
+00:00:04,517 --> 00:00:08,598
+saber duas coisas: o que diz o Supremo e se diz sempre o mesmo.
+
+3
+00:00:08,598 --> 00:00:11,789
+Este protótipo responde à segunda.
+
+4
+00:00:11,789 --> 00:00:15,097
+Juntou 813 acórdãos do Supremo,
+
+5
+00:00:15,097 --> 00:00:19,471
+de 2000 a 2025, em 7 perguntas jurídicas.
+
+6
+00:00:19,471 --> 00:00:24,341
+Cada pergunta tem duas respostas possíveis, as posições.
+
+7
+00:00:24,341 --> 00:00:28,288
+Há divergência quando o Supremo deu as duas respostas à mesma
+
+8
+00:00:28,288 --> 00:00:32,687
+pergunta, e uniformização quando o próprio Supremo fixou a resposta.
+
+9
+00:00:33,660 --> 00:00:36,615
+Este é o exemplo mais claro.
+
+10
+00:00:36,615 --> 00:00:40,822
+A pergunta é se o direito de retenção do promitente-comprador
+
+11
+00:00:40,822 --> 00:00:42,891
+exige que ele seja consumidor.
+
+12
+00:00:42,891 --> 00:00:47,357
+Em outubro de 2019 um acórdão diz que sim.
+
+13
+00:00:47,357 --> 00:00:52,149
+Doze dias depois, outro acórdão do mesmo Supremo diz que não.
+
+14
+00:00:52,149 --> 00:00:56,745
+São as palavras dos próprios acórdãos, sem resumo.
+
+15
+00:00:56,745 --> 00:01:00,931
+Cada citação foi confirmada palavra a palavra no texto,
+
+16
+00:01:00,931 --> 00:01:03,139
+e cada data leva ao processo.
+
+17
+00:01:04,112 --> 00:01:07,825
+O sistema confirmou quatro divergências,
+
+18
+00:01:07,825 --> 00:01:09,125
+de dois tipos.
+
+19
+00:01:09,125 --> 00:01:14,112
+Numa divisão, as duas posições convivem nos mesmos anos.
+
+20
+00:01:14,112 --> 00:01:18,252
+Numa mudança, uma posição substitui a outra.
+
+21
+00:01:18,252 --> 00:01:20,882
+Vejamos uma mudança.
+
+22
+00:01:21,850 --> 00:01:26,362
+O promitente-comprador a quem o imóvel foi entregue é possuidor
+
+23
+00:01:26,362 --> 00:01:27,579
+ou mero detentor?
+
+24
+00:01:27,579 --> 00:01:32,052
+Até 2006 o Supremo inclinava-se para possuidor:
+
+25
+00:01:32,052 --> 00:01:34,050
+10 acórdãos contra 5.
+
+26
+00:01:34,050 --> 00:01:36,996
+Entre 2007 e 2009 inverte-se:
+
+27
+00:01:36,996 --> 00:01:40,652
+12 dizem mero detentor, 6 possuidor.
+
+28
+00:01:40,652 --> 00:01:45,117
+O site mostra o último acórdão da posição antiga e o primeiro da
+
+29
+00:01:45,117 --> 00:01:49,024
+nova, e diz o que não sabe: isto descreve só estes anos.
+
+30
+00:01:50,006 --> 00:01:54,362
+Cada ponto é um acórdão: uma posição acima do eixo,
+
+31
+00:01:54,362 --> 00:01:55,644
+a outra abaixo.
+
+32
+00:01:55,644 --> 00:01:59,888
+A faixa tracejada marca os anos da divergência.
+
+33
+00:01:59,888 --> 00:02:02,502
+Ao passar num ponto vemos a data,
+
+34
+00:02:02,502 --> 00:02:07,492
+a posição e o processo, e um clique leva ao acórdão no dgsi.pt.
+
+35
+00:02:07,492 --> 00:02:10,059
+Nada aqui pede confiança cega:
+
+36
+00:02:10,059 --> 00:02:12,284
+tudo se confirma na fonte.
+
+37
+00:02:13,262 --> 00:02:17,417
+Os pontos com anel são acórdãos de uniformização de
+
+38
+00:02:17,417 --> 00:02:18,639
+jurisprudência.
+
+39
+00:02:18,639 --> 00:02:23,939
+Aqui houve dois, em 2014 e em 2019.
+
+40
+00:02:23,939 --> 00:02:28,103
+Mesmo assim continuam a aparecer acórdãos com a outra posição,
+
+41
+00:02:28,103 --> 00:02:31,126
+e o site diz isso sem tentar explicar porquê.
+
+42
+00:02:31,126 --> 00:02:34,056
+Essa leitura cabe ao jurista.
+
+43
+00:02:35,022 --> 00:02:38,238
+Também se pode partir de uma palavra.
+
+44
+00:02:38,238 --> 00:02:40,798
+A pesquisa procura nas perguntas,
+
+45
+00:02:40,798 --> 00:02:43,980
+nas citações e nas palavras dos sumários,
+
+46
+00:02:43,980 --> 00:02:45,842
+e ordena por relevância.
+
+47
+00:02:45,842 --> 00:02:49,917
+Cada resultado diz onde a palavra foi encontrada.
+
+48
+00:02:49,917 --> 00:02:54,084
+Com um número de processo, vai direto ao acórdão.
+
+49
+00:02:55,465 --> 00:02:58,004
+Lê-se em modo claro ou escuro,
+
+50
+00:02:58,004 --> 00:03:00,035
+e funciona no telemóvel.
+
+51
+00:03:01,013 --> 00:03:05,088
+Por fim, o método, com os números à vista.
+
+52
+00:03:05,088 --> 00:03:08,703
+684 citações confirmadas palavra a palavra;
+
+53
+00:03:08,703 --> 00:03:13,916
+11 foram rejeitadas e nenhuma citação inventada chega ao ecrã.
+
+54
+00:03:13,916 --> 00:03:16,650
+De 23 divergências candidatas,
+
+55
+00:03:16,650 --> 00:03:19,385
+um segundo modelo confirmou 4.
+
+56
+00:03:19,385 --> 00:03:24,828
+A classificação dos 813 acórdãos custou menos de 4 dólares.
+
+57
+00:03:24,828 --> 00:03:28,356
+É um sinal para revisão, não um parecer jurídico:
+
+58
+00:03:28,356 --> 00:03:31,885
+aponta onde olhar, e o jurista confirma na fonte.

@@ -1,0 +1,19 @@
+{
+ "about": "Search normaliser v2 golden cases, read by pipeline/tests (Python) and web/src (TypeScript): both must produce exactly these tokens. v2: º and ª are separators (442º = 442.º = 442); combining marks are removed by Unicode category M on both sides.",
+ "cases": [
+  {"input": "Execução específica", "tokens": ["execucao", "especifica"]},
+  {"input": "o promitente-comprador NÃO é possuidor", "tokens": ["promitente", "comprador", "possuidor"]},
+  {"input": "art. 442.º, n.º 2, do CC", "tokens": ["art", "442", "2", "cc"]},
+  {"input": "artigo 442º e 830ª", "tokens": ["artigo", "442", "830"]},
+  {"input": "«Sinal» e mora: basta a mora?", "tokens": ["sinal", "mora", "basta", "mora"]},
+  {"input": "1748/25.2T8OAZ.P1.S1", "tokens": ["1748", "25", "2t8oaz", "p1", "s1"]},
+  {"input": "882/14.9TJVNF-G.G1.G1.S1", "tokens": ["882", "14", "9tjvnf", "g1", "g1", "s1"]},
+  {"input": "Tradição da coisa — posse em nome próprio", "tokens": ["tradicao", "coisa", "posse", "nome", "proprio"]},
+  {"input": "execução (NFD)", "tokens": ["execucao", "nfd"]},
+  {"input": "ab͏cd fé", "tokens": ["abcd", "fe"]},
+  {"input": "  ", "tokens": []},
+  {"input": "x y 7", "tokens": ["7"]},
+  {"input": "abcdefghijklmnopqrstuvwxyzabcdefghij curto", "tokens": ["curto"]},
+  {"input": "Ação, acção, AÇÃO", "tokens": ["acao", "accao", "acao"]}
+ ]
+}

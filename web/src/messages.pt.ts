@@ -7,12 +7,14 @@ export const messages = {
   homeTitle: "Jurisprudência: a mesma questão, decidida num sentido e no sentido oposto",
   disclaimer: "Sinal para revisão, não é parecer jurídico.",
   skip: "Saltar para o conteúdo",
+  theme: { toLight: "Mudar para o modo claro", toDark: "Mudar para o modo escuro" },
   months: ["jan.", "fev.", "mar.", "abr.", "mai.", "jun.", "jul.", "ago.", "set.", "out.", "nov.", "dez."],
   nav: {
     label: "Navegação principal",
     questions: "Perguntas",
     aujs: "Uniformizações",
     method: "Método",
+    search: "Pesquisa",
   },
   home: {
     // "A mesma questão, decidida [num sentido] e [no sentido oposto]."
@@ -20,11 +22,29 @@ export const messages = {
     leadCount: (n: number) => `${n} acórdãos do Supremo`,
     leadMiddle: " sobre contrato-promessa, de 2000 a 2025, agrupados em ",
     leadQuestions: (n: number) => `${n} perguntas`,
-    kindsLabel: "Dois tipos de divergência",
     kindDef: {
       shift: "uma posição substitui a outra",
       split: "as duas posições nos mesmos anos",
     },
+    // the four terms in the order they nest: a question has positions; a divergence is the two
+    // positions given in some years; a uniformização is the Supremo itself settling one
+    guide: {
+      label: "Como ler",
+      question: { term: "Pergunta", def: "uma questão de direito que o Supremo decidiu muitas vezes." },
+      positions: { term: "Posições", def: "as duas respostas possíveis, cada uma com a sua cor." },
+      divergence: { term: "Divergência", def: "anos em que o Supremo deu as duas respostas à mesma pergunta." },
+      auj: { term: "Uniformização", def: "o próprio Supremo fixou a resposta." },
+      example: "Ex.:",
+      more: "Mais sobre estes termos",
+      moreText: [
+        ["Pergunta.", " Cada acórdão é ligado às perguntas que decide. As perguntas foram fixadas antes de classificar os acórdãos: umas vêm de um levantamento anterior da jurisprudência, outras foram propostas por um modelo numa amostra e aprovadas por uma pessoa."],
+        ["Posição.", " Um modelo lê o sumário e atribui ao acórdão a posição que toma, com a citação que o mostra. Só conta se a citação existir palavra a palavra no acórdão."],
+        ["Divergência.", " Nem todas as perguntas têm uma. Procuram-se anos com as duas posições (divisão) ou com uma posição que deixa de dominar (mudança), e um segundo modelo confirma se a oposição é real. Só se mostram as confirmadas."],
+        ["Uniformização.", " Um acórdão de uniformização de jurisprudência: o Supremo reconhece que decidiu a mesma questão em sentidos opostos e fixa a resposta. No gráfico, é um ponto com anel."],
+      ],
+    },
+    divergencesIntro: "Perguntas em que o Supremo deu as duas respostas.",
+    questionsIntro: "Todas as perguntas, com ou sem divergência. A barra mostra os acórdãos de cada posição, ano a ano.",
     heroCaption: "Exemplo",
     divergencesHeading: "Divergências confirmadas",
     aujs: (n: number) => `${n} vezes o próprio Supremo reconheceu e resolveu uma divergência`,
@@ -39,7 +59,7 @@ export const messages = {
       ["Perguntas.", " Cada pergunta jurídica tem duas posições, definidas antes de ler qualquer acórdão."],
       ["Classificação.", " Um modelo lê o sumário, escolhe a posição e cita o excerto. Só fica se a citação existir palavra a palavra."],
       ["Deteção.", " Em janelas de 3 anos procuram-se divisões e mudanças."],
-      ["Confirmação.", " Um segundo modelo, o juiz, vê só os dois excertos e diz se a oposição é real. Só se mostram as confirmadas."],
+      ["Confirmação.", " Um segundo modelo, o verificador, vê só os dois excertos e diz se a oposição é real. Só se mostram as confirmadas."],
       ["Uniformizações.", " Aparecem só com citações, sem passar por nenhum modelo."],
     ],
     numbersHeading: "O que foi medido",
@@ -47,10 +67,10 @@ export const messages = {
       quotes: "citações verificadas palavra a palavra",
       quotesSub: (rejected: number) => `${rejected} rejeitadas. Nenhuma citação inventada é mostrada.`,
       divergences: "divergências confirmadas",
-      divergencesSub: (judged: number) => `de ${judged} avaliadas pelo juiz.`,
+      divergencesSub: (judged: number) => `de ${judged} avaliadas pelo verificador.`,
       // the pair rule changed once (v1 -> v2); said plainly, behind the accuracy click
       pairRule: (v1: number, v2: number) =>
-        `A regra que escolhe os dois excertos a comparar mudou uma vez. Com a primeira, o juiz confirmava ${v1} divergências; com a atual, que prefere excertos completos e próximos no tempo, confirma ${v2}.`,
+        `A regra que escolhe os dois excertos a comparar mudou uma vez. Com a primeira, o verificador confirmava ${v1} divergências; com a atual, que prefere excertos completos e próximos no tempo, confirma ${v2}.`,
       // same arithmetic as report §6: `unclear` is left out of the denominator
       labels: (correct: number, decided: number) => `${correct} de ${decided}`,
       labelsTitle: "divergências mostradas consideradas corretas",
@@ -79,9 +99,9 @@ export const messages = {
     limitsHeading: "Limitações",
     limits: [
       "As etiquetas de avaliação foram feitas por IA, da mesma família do classificador.",
-      "As divergências são confirmadas por um modelo, o juiz, e não por um jurista.",
+      "As divergências são confirmadas por um modelo, o verificador, e não por um jurista.",
       "A classificação usa o sumário. O que o sumário omite não é visto.",
-      "O classificador às vezes dá posição a acórdãos que só tocam a pergunta. O juiz filtra esses casos, mas também esconde algumas divergências reais.",
+      "O classificador às vezes dá posição a acórdãos que só tocam a pergunta. O verificador filtra esses casos, mas também esconde algumas divergências reais.",
       "Só entram acórdãos de 2000 a 2025 com os descritores escolhidos.",
     ],
     report: "Relatório completo de avaliação, no GitHub",
@@ -103,6 +123,10 @@ export const messages = {
     related: "O que o Supremo uniformizou",
     about: "Sobre",
     showRuling: "Ler a jurisprudência uniformizada",
+    noQuestion: "Não corresponde a nenhuma das perguntas do site.",
+    senseLead: "No sentido de ",
+    // the sides are the AUJ's own account of the conflict, not the question's positions
+    sidesNote: "Os lados são os que o acórdão descreve, nas suas palavras. Podem não coincidir com as posições da pergunta.",
   },
   loading: "A carregar os dados…",
   loadError: "Não foi possível carregar os dados. Recarregue a página.",
@@ -119,8 +143,14 @@ export const messages = {
   timelineHeading: "Ano a ano",
   timelineLabel: (title: string) => `Acórdãos por ano e por posição: ${title}`,
   // the chart's symbol key
-  legend: { dot: "um acórdão", ring: "uniformização", band: "anos de uma divergência" },
+  legend: { dot: "um acórdão (passe o rato ou toque para abrir)", ring: "uniformização", band: "anos de uma divergência" },
   timelineKey: "Legenda do gráfico",
+  // the chart's dots: hover or tap opens the judgment's date, position and link
+  timelineTip: {
+    label: (date: string) => `Acórdão de ${date}`,
+    open: "Abrir no dgsi.pt",
+    close: "Fechar",
+  },
   tableHeading: "Todos os acórdãos",
   table: {
     date: "Data",
@@ -144,19 +174,29 @@ export const messages = {
   direction: { from: "De ", to: " para ", both: " e ", same: " nos mesmos anos" },
   before: "Antes",
   after: "Depois",
+  // no final full stop: the position may follow ("..., no sentido de X.")
   aujShort: (dates: string[]) =>
-    `Uniformizada em ${dates.length === 1 ? dates[0] : `${dates.slice(0, -1).join(", ")} e ${dates[dates.length - 1]}`}.`,
+    `Uniformizada em ${dates.length === 1 ? dates[0] : `${dates.slice(0, -1).join(", ")} e ${dates[dates.length - 1]}`}`,
+  inSense: ", no sentido de ",
   aujWhy:
     "Os acórdãos com a outra posição continuam a ser assinalados depois disso; o sistema não diz porquê.",
   // a shift says who dominated in two windows, not that the change lasted
   shiftScope: "Descreve só estes anos. O gráfico mostra o que veio depois.",
-  legislative: "O juiz admite que a diferença venha de uma alteração legislativa.",
+  legislative: "O verificador admite que a diferença venha de uma alteração legislativa.",
   noDivergences: "Nenhuma divergência confirmada nesta pergunta.",
+  // small labels that name what a page or a list item is
+  eyebrow: { question: "Pergunta", divergence: "Divergência na pergunta" },
+  noDivergenceShort: "Sem divergência confirmada",
+  noDivergenceWhy:
+    "Ter acórdãos das duas posições não chega: é preciso cumprir a regra de deteção e a confirmação do verificador, que é prudente e também esconde algumas divergências reais.",
+  howLink: "Como funciona",
   divergence: {
     detail: "Ver detalhes",
     notFound: "Esta divergência não existe.",
     toChart: "Ver o gráfico",
-    evidence: "Acórdãos com posição",
+    // a shift's evidence adds the years after it, so a reversal is visible
+    later: "Mais tarde",
+    evidence: "Acórdãos com posição em cada período",
     how: "Como foi detetada",
     rule: {
       split:
@@ -167,18 +207,50 @@ export const messages = {
         "Há um acórdão de uniformização com posição nesta pergunta, dentro ou depois do período da divergência. Isso não quer dizer que a divergência tenha terminado.",
     },
     judge:
-      "Um segundo modelo, o juiz, leu só a pergunta, as posições e os dois excertos, sem saber que posição o classificador atribuiu, e concluiu que a oposição é real.",
-    rationale: "Justificação do juiz, escrita por um modelo e não verificada:",
+      "Um segundo modelo, o verificador, leu só a pergunta, as posições e os dois excertos, sem saber que posição o classificador atribuiu, e concluiu que a oposição é real.",
+    rationale: "Justificação do verificador, escrita por um modelo e não verificada:",
     // two different confidences: the judge's own, and the detection's (judge + support)
-    judgeConfidence: "Confiança do juiz",
+    judgeConfidence: "Confiança do verificador",
     ruleConfidence: "Confiança da deteção",
     ruleConfidenceNote:
-      "A confiança da deteção é alta quando o juiz confirma e a posição com menos acórdãos tem pelo menos 3, média com pelo menos 2, baixa nos outros casos.",
+      "A confiança da deteção é alta quando o verificador confirma e a posição com menos acórdãos tem pelo menos 3, média com pelo menos 2, baixa nos outros casos.",
     level: { alta: "alta", media: "média", baixa: "baixa" },
   },
   titles: {
     questions: "Perguntas",
     aujs: "Uniformizações",
     method: "Método e avaliação",
+    search: "Pesquisa",
+  },
+  search: {
+    formLabel: "Pesquisar nas perguntas e nos acórdãos",
+    placeholder: "Pesquisar acórdãos",
+    placeholderLarge: "Pesquisar acórdãos",
+    tryLabel: "Experimente:",
+    submit: "Pesquisar",
+    region: "Pesquisa",
+    heading: "Pesquisa",
+    loading: "A carregar o índice de pesquisa…",
+    noSummaryIndex:
+      "O índice dos sumários não está disponível: a pesquisa cobre só as perguntas e as citações.",
+    helpIntro: "Escreva palavras ou um número de processo. Pesquisa-se nas perguntas, nas citações verificadas e nas palavras dos sumários.",
+    examplesLabel: "Exemplos",
+    examples: ["execução específica", "possuidor", "art. 442"],
+    noResults: (q: string) => `Nenhum resultado para «${q}». Experimente outras palavras ou menos palavras.`,
+    count: (n: number) => (n === 1 ? "1 acórdão" : `${n} acórdãos`),
+    questionsHeading: "Perguntas",
+    judgmentsHeading: "Acórdãos",
+    showMore: "Mostrar mais",
+    shownOf: (shown: number, total: number) => `A mostrar ${shown} de ${total} resultados`,
+    where: {
+      label: "Encontrado em:",
+      quote: "citação",
+      question: "pergunta",
+      processo: "processo",
+      summary: "sumário",
+      // the only place the word is: the quote shown does not contain it
+      summaryOnly: "sumário (não publicado)",
+      summaryHint: "O sumário não é publicado: mostra-se a citação verificada.",
+    },
   },
 } as const;

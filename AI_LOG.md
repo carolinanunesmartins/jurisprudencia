@@ -15,6 +15,76 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-16 — Deliverables check; docs aligned
+- Tool: Claude Code (Opus 5.5) as team lead; two verifier agents (one checked the live site and the public repo over HTTP, one read README, NOTA and IA against the brief).
+- Task: owner asked whether the five deliverables are in place (live app, repo with run instructions, decisions note, AI-usage note, narrated demo video). Findings: repo, README and NOTA complete; live site up but built from main at M11 (m12-m16 not merged, so none of the newer UI is live and main has no videos); IA.md missing the 2026-10-16 work; the videos' voice is synthetic while the brief asks for the candidate's own narration, and the README did not say so; docs said "juiz" while the UI says "verificador". The owner decided not to record their own voice.
+- Failed: none in the edits. The verifier flagged meta.json (5 shown + 19 hidden = 24) against evaluation.json (23 judged, 4 shown); traced: meta counts the q8 "uniformizada" (resolved) record, which is not judged, so both are right.
+- Fix: README and IA disclose the synthetic voice (edge-tts, "Raquel"); "juiz" -> "verificador" (with *judge* in the code) in README, NOTA, IA; IA.md gains the video tools, the deliverables check, the second visitor round, the video failures, and current test counts (201 Python, 93 web, both run). Merging m12-m16 into main is left to the owner (AGENTS.md §6; no gh CLI here).
+- Human check: pending.
+
+### 2026-10-16 — Demo videos and an ad, in the README
+- Tool: Claude Code (Opus 5.5); Playwright (Chromium, CDP screencast), edge-tts (pt-PT-RaquelNeural), ffmpeg. All installed outside the repo; no project dependency added.
+- Task: the owner asked for the script recorded as a simulated user with a voice-over, then for an ad, subtitles, and the videos in the README. A script drove the local site scene by scene following `docs/guiao-video.md`, each scene held for its narration; frames and audio were joined with ffmpeg, subtitles split into short lines and burned in. Outputs in `docs/video/`: `anuncio.mp4` (45 s, title cards drawn over the site with its own fonts and colours), `demo-60s.mp4` (41 s), `demo-3min.mp4` (3 min 33 s), each with an `.srt` and a poster; README section "Vídeos"; the ad's script added to the guião.
+- Failed: Playwright's screencast ignores the device scale factor (frames came out at the CSS size); the first ad cards used Tailwind arbitrary classes that the site's CSS does not contain (tiny text); in scene 7 the typed case number was appended to "possuidor"; the burned subtitles first showed a faint strip above the box and two lines at once where the voice's sentence timings overlapped.
+- Fix: 1280 × 800 viewport with the root font at 118 % instead of a scale factor; inline sizes on the cards; select-all before typing; one background box per line (libass BorderStyle 4) and cues clamped so they never overlap. dgsi.pt was blocked at the network layer during recording (AGENTS.md rule 1); the tooltip link is only hovered. GitHub cannot play a repo video inline in a README, so each poster and link opens GitHub's file player. Checked: streams and loudness with ffprobe/volumedetect, frames of every scene, and one subtitle cue against the screen.
+- Human check: pending (watch and listen to the three videos).
+
+### 2026-10-16 — Fixes from the first-time visitor check (4/5)
+- Tool: Claude Code (Opus 5.5); a browser-only first-time-visitor subagent; Chrome DevTools MCP.
+- Task: the visitor understood the four terms unaided but was confused in four places; the owner asked for all four fixed. (1) Questions without a confirmed divergence say why having both positions is not enough (detection rule plus the verifier, which is cautious and hides some real ones), linking to Método. (2) A uniformização names the position it takes ("no sentido de X", coloured) in the divergence note, on its card and on `/uniformizacoes`; the position is the AUJ's own classification, named only when every AUJ in the window agrees. An AUJ about none of the questions says so; the AUJ's sides carry a note that they are the AUJ's own account and may not match the positions. (3) "o juiz" became "o verificador" in every UI string (a lawyer reads "juiz" as a magistrate). (4) A shift's evidence adds a "Mais tarde" period up to 2025, so a reversal is visible (q7: 34 Possuidor vs 27 Mero detentor after 2009); the header search placeholder is "Pesquisar acórdãos", no longer cut off.
+- Failed: the sides could not be coloured by position: on the 2019 AUJ, the judgment the AUJ puts on the opposite side is classified with the same position, so mapping sides to positions would mislead. The first standalone sense line on a question page began with a comma; the evidence heading said "nestes anos" while also showing later years. One run of the full suite had a timing failure in a search-page live-region test that passed on 3 reruns.
+- Fix: a note instead of colours for the sides; separate "No sentido de" wording; heading "em cada período". Not changed: question titles (part of the frozen taxonomy v1) and "juiz" in the recorded labeller name in `data/eval/` and in the docs. 4 new or extended tests; 93 web tests. Browser check at 1280 px and 360 px light.
+- Human check: pending.
+
+### 2026-10-16 — Guidance for first-time readers: what a question, a position, a divergence are
+- Tool: Claude Code (Opus 5.5); advisor review before editing; Chrome DevTools MCP.
+- Task: the owner found the site not intuitive for a newcomer and could not tell the questions from the divergences or how they relate. Home: a "Como ler" strip with the four terms in the order they nest (Pergunta, Posições, Divergência with the Divisão/Mudança badges, Uniformização), one line each, examples from the home page's own example question, fuller definitions behind "Mais sobre estes termos". One-line intros under "Divergências confirmadas" and "Perguntas". Question list and question page say "Sem divergência confirmada" (3 of 7 questions have none, which was invisible) or show the divergence badges at the top; question and divergence pages are labelled as such.
+- Failed: first test selector picked up a position name inside an example; the first draft of the "Posição" definition claimed judgments that only touch a question are excluded, which the Method page's own limitations contradict.
+- Fix: tighter selector; definition rewritten to what the pipeline guarantees (a verbatim quote). 2 new tests (terms in order with the example question; no-divergence marker); 91 web tests. Visible words on home 327 -> 437 (details closed). Browser check at 1280 px dark and 360 px light, no horizontal scroll. Video script scene 1 updated.
+- Human check: pending.
+
+### 2026-10-16 — Demo video script
+- Tool: Claude Code (Opus 5.5); Chrome DevTools MCP to read the live pages.
+- Task: owner asked for a short demo-video script with correct legal terms and a step-by-step that makes sense. `docs/guiao-video.md` (pt-PT): setup, a glossary (acórdão, sumário, processo, uniformização, posição, Divisão/Mudança), 9 scenes of about 3 min (screen, action, narration) and a 60 s cut. Every label, number and date was taken from the running site, not from memory.
+- Failed: the first draft said the 2007–2008 "Mero detentor" dots on q7 sit below the axis; they are above (first position).
+- Fix: checked against `judgments.json` and corrected; the uniformização rings on q8 (2014, 2019) and the 12 days between the two 2019 quotes were checked the same way.
+- Human check: pending (a dry run of the script against the site).
+
+### 2026-10-16 — Timeline dots open the judgment (tooltip with the dgsi.pt link)
+- Tool: Claude Code (Opus 5.5).
+- Task: owner asked for a tooltip on the timeline dots that reaches the dgsi.pt link. Hover shows date, position (in its colour), uniformização and "Abrir no dgsi.pt" with the processo; moving onto the tooltip keeps it open (250 ms grace) so the link can be clicked; a click or tap pins it until Escape, the close button or a click outside. `DgsiLink`/`fmtDate` moved to `links.tsx` so the chart can use them without a circular import (the dgsi.pt-only guard comes along). Keyboard and screen-reader users keep the "Todos os acórdãos" table as the chart's alternative, rather than 150 tab stops.
+- Failed: on a 360 px phone the dots are ~3 px apart, too small to tap; the processo wrapped awkwardly beside the link.
+- Fix: a tap anywhere on the chart opens the nearest dot within 24 px (a touch target); processo on its own line. 4 new tests (hover tooltip with dgsi.pt link in a new tab, grace period onto the tooltip, pin and close, no link for a non-dgsi.pt URL); 89 web tests. Browser check at 1280 px and 360 px.
+- Human check: pending.
+
+### 2026-10-16 — Light mode contrast check
+- Tool: Claude Code (Opus 5.5); Lighthouse via Chrome DevTools MCP.
+- Task: check light-mode contrast and colours. WCAG ratios for every token pair: all text passes (ink 15:1, graphite 5.9:1, position colours 5.0–6.9:1 on paper and surface, ink on search and headline marks ≥ 10.6:1). A script measured all 1 518 visible text nodes on 7 routes (details open) against their composited background: 0 failures. Lighthouse accessibility 100 on home and search.
+- Failed: one non-text failure: the compact header search field was outlined only by `--rule` (1.26:1; WCAG 1.4.11 asks 3:1 for a control's edge). `--surface` fills (1.07:1) are decorative or already outlined (chart band); the example chips are identified by their text.
+- Fix: the compact field's border uses `--graphite` (5.9:1).
+- Human check: pending.
+
+### 2026-10-16 — Light / dark toggle
+- Tool: Claude Code (Opus 5.5).
+- Task: a header switch between light and dark. The site follows the system until the reader chooses; the choice sets `data-theme` on `<html>` and is kept in localStorage (every access guarded). The dark tokens now apply under system-dark unless `data-theme="light"`, and under `data-theme="dark"`. `public/theme.js` applies the saved choice before paint (no flash); it is a separate same-origin file because the CSP blocks inline scripts.
+- Failed: ESLint lints `public/` and flagged the script's browser globals; the first tests failed because this jsdom has no localStorage and a crashing `afterEach` skipped cleanup.
+- Fix: `/* global */` and optional catch binding in the script; tests use an in-memory storage and explicit cleanup, including a blocked-storage case. 85 web tests. Browser check: system dark → one click → light; the choice survives a reload; no CSP error.
+- Human check: pending.
+
+### 2026-10-16 — Search as a main way in: large box on the home page
+- Tool: Claude Code (Opus 5.5).
+- Task: owner asked for more focus on search and chose "prominent on the home page". The search form became one component (`SearchBox`, compact or large); the home page opens with a large box under the headline plus three example queries as chips; the header box is hidden on the home page so there is only one.
+- Failed: at 360 px the long placeholder was cut ("Pesquisar pergu").
+- Fix: shorter placeholder ("Pesquisar acórdãos"), tighter padding and 16 px text on phones (no iOS zoom on focus). 2 new tests (one search form on the home page that submits to `/pesquisa`; each example links to its results); 81 web tests; checked at 1280 px light and 360 px dark.
+- Human check: pending.
+
+### 2026-10-16 — Deep search with relevance (team of agents)
+- Tool: Claude Code (Opus 5.5) as team lead with OMC `/team`: worker-1 (executor, pipeline), worker-2 (designer, web), then a verifier and a code reviewer in separate lanes.
+- Task: search on the site with relevance over questions, quotes and sumários. Sumários are never published (rule 3), so the owner chose a word index: export writes `search.json` (normalised single words → judgments, with counts); the snapshot stores per-judgment word counts, not text, so a fresh clone reproduces it byte for byte; data-check rejects any term outside `[a-z0-9]{1,30}`. BM25 per field in the browser (question > quote > sumário), prefix on the last word, exact processo first; lazy-loaded; `/pesquisa?q=` and a header box. Policy change recorded in ADR 0009, AGENTS rule 3 and SPEC §10/§12. Shared golden normaliser cases are read by both pytest and vitest.
+- Failed: the code review found 3 medium and 7 low issues: a processo with a repeated token never matched (query tokens were de-duplicated); "442º" and "442.º" became different words; results were not announced to screen readers; the count over-counted judgments under two questions; a failed or malformed index left the page loading forever; NFD accents fell outside `<mark>`; Python and TS stripped slightly different marks. The lead's browser check found the "where it matched" note too wordy and no nav link.
+- Fix: one fix round: normaliser v2 (º/ª as separators, marks by Unicode category, both sides; `version` 2; golden file 14 cases incl. NFD), processo lookup on the full token sequence, a live status line, distinct-judgment count, index validation and recovery, mark over trailing combining marks, one-line "Encontrado em", "Pesquisa" in the nav. Verified: Python/TS tokens identical on 200 real quotes; highlights rebuild all 664 quotes exactly; snapshot → export byte-identical; 201 pytest, 79 web tests, data-check 0 errors; checked in the browser at 1280 px and 360 px, light and dark.
+- Human check: pending (owner tries the search).
+
 ### 2026-10-16 — Reader-facing documents in pt-PT
 - Tool: Claude Code (Opus 5.5).
 - Task: owner asked that every document a reader sees be in Portuguese, internal ones in any language. Scanned every tracked `.md`: the 8 ADRs and their index, `docs/llm-runbook.md` and `CHANGELOG.md` were in English. Translated to pt-PT, file names kept so links and code references still work; the rule written into AGENTS.md (which files are pt-PT, which stay English).

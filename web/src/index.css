@@ -28,10 +28,14 @@
 :root {
   --pos-0-soft: color-mix(in srgb, var(--pos-0) 24%, transparent);
   --pos-1-soft: color-mix(in srgb, var(--pos-1) 24%, transparent);
+  /* search hits: neutral (colour is reserved for positions), a tint of the ink so it flips in dark */
+  --mark: color-mix(in srgb, var(--ink) 16%, transparent);
 }
 
+/* dark: the system's choice unless the reader picked light, or the reader's explicit choice
+   (data-theme on <html>, set by the header switch and by public/theme.js before paint) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --paper: #12171d;
     --surface: #1a2129;
     --ink: #e6e9ec;
@@ -43,6 +47,19 @@
     --pos-3: #d98aa6;
     color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --paper: #12171d;
+  --surface: #1a2129;
+  --ink: #e6e9ec;
+  --graphite: #a3adb8;
+  --rule: #2b333c;
+  --pos-0: #5fbac2;
+  --pos-1: #d9a55e;
+  --pos-2: #a99ad6;
+  --pos-3: #d98aa6;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -123,6 +140,16 @@
   }
   .hl-1 {
     background: linear-gradient(transparent 58%, var(--pos-1-soft) 58%);
+  }
+
+  /* the words a search found, inside a quote */
+  mark {
+    background: var(--mark);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 0.1em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
 
   /* <details> disclosure: one look everywhere, the marker turns when open */

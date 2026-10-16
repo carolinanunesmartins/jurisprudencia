@@ -12,3 +12,4 @@ Um ficheiro curto por decisão: `NNNN-titulo.md` (contexto, decisão, consequên
 | [0006](0006-summary-only-judgments.md) | Acórdãos sem texto integral: classificados pelo sumário e assinalados |
 | [0007](0007-classify-from-sumario.md) | Classificar primeiro pelo sumário; o texto integral é o recurso |
 | [0008](0008-self-hosted-fonts.md) | Tipos de letra alojados no próprio sítio |
+| [0009](0009-search-word-index.md) | Pesquisa: índice de palavras dos sumários, sem publicar o texto |

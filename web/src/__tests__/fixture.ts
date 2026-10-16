@@ -1,4 +1,4 @@
-import type { Data } from "../data";
+import type { Data, SearchFile } from "../data";
 
 const url = (id: string) => `https://www.dgsi.pt/jstj.nsf/x/${id}?OpenDocument`;
 
@@ -188,4 +188,17 @@ export const empty: Data = {
   divergences: [],
   aujs: [],
   evaluation: null,
+};
+
+// word index of the sumários: "possuidor" occurs only there (doc d), "prazo" also in doc a
+export const searchFixture: SearchFile = {
+  version: 2,
+  stopwords: ["de", "que", "do"],
+  docs: ["a", "b", "c", "c2", "d", "d2"],
+  lengths: [5, 4, 6, 3, 8, 3],
+  terms: {
+    possuidor: [[4, 2]],
+    prazo: [[0, 1]],
+    sinal: [[1, 1], [4, 1]],
+  },
 };

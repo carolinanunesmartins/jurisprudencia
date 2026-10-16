@@ -118,6 +118,15 @@ export type Data = {
   evaluation: Evaluation | null;
 };
 
+// Word index of the judgments' sumários (the sumários themselves are not published).
+export type SearchFile = {
+  version: number;
+  stopwords: string[];
+  docs: string[];
+  lengths: number[];
+  terms: Record<string, [number, number][]>;
+};
+
 async function getJson<T>(name: string): Promise<T> {
   // relative to the page: works with base "./", HashRouter and CSP connect-src 'self'
   const res = await fetch(`./data/${name}`);
@@ -136,4 +145,9 @@ export async function loadData(): Promise<Data> {
     getJson<Evaluation>("evaluation.json").catch(() => null),
   ]);
   return { meta, questions, judgments, divergences, aujs, evaluation };
+}
+
+/** Loaded only when the search page is first used (about 1 MB). */
+export function loadSearch(): Promise<SearchFile> {
+  return getJson<SearchFile>("search.json");
 }

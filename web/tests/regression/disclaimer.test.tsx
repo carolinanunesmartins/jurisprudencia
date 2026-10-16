@@ -5,7 +5,7 @@ import { App } from "../../src/App";
 import { fixture } from "../../src/__tests__/fixture";
 
 describe("disclaimer (regression)", () => {
-  it.each(["/", "/perguntas", "/perguntas/q6", "/uniformizacoes", "/metodo", "/divergencias/q6-split-2009-2012", "/perguntas/nao-existe"])(
+  it.each(["/", "/perguntas", "/perguntas/q6", "/uniformizacoes", "/metodo", "/divergencias/q6-split-2009-2012", "/perguntas/nao-existe", "/pesquisa"])(
     "is rendered on %s",
     async (path) => {
       render(
