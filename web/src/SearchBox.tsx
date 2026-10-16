@@ -50,10 +50,11 @@ export function SearchBox({ size = "compact" }: { size?: "compact" | "large" }) 
           onChange={(e) => setValue(e.target.value)}
           placeholder={large ? t.placeholderLarge : t.placeholder}
           autoComplete="off"
+          // the field's edge must read as a control (WCAG 1.4.11, 3:1): graphite, not the faint rule
           className={
             large
               ? "w-full border-2 border-ink bg-paper py-3.5 pl-10 pr-3 sm:pl-12 sm:pr-4 text-base sm:text-lg rounded-[4px] shadow-[0_1px_0_var(--rule)]"
-              : "w-full sm:w-64 border border-rule bg-paper px-3 py-1.5 text-[0.95rem] rounded-[3px]"
+              : "w-full sm:w-64 border border-graphite bg-paper px-3 py-1.5 text-[0.95rem] rounded-[3px]"
           }
         />
       </div>

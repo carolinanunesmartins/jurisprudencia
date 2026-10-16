@@ -15,6 +15,13 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-16 — Light mode contrast check
+- Tool: Claude Code (Opus 5.5); Lighthouse via Chrome DevTools MCP.
+- Task: check light-mode contrast and colours. WCAG ratios for every token pair: all text passes (ink 15:1, graphite 5.9:1, position colours 5.0–6.9:1 on paper and surface, ink on search and headline marks ≥ 10.6:1). A script measured all 1 518 visible text nodes on 7 routes (details open) against their composited background: 0 failures. Lighthouse accessibility 100 on home and search.
+- Failed: one non-text failure: the compact header search field was outlined only by `--rule` (1.26:1; WCAG 1.4.11 asks 3:1 for a control's edge). `--surface` fills (1.07:1) are decorative or already outlined (chart band); the example chips are identified by their text.
+- Fix: the compact field's border uses `--graphite` (5.9:1).
+- Human check: pending.
+
 ### 2026-10-16 — Light / dark toggle
 - Tool: Claude Code (Opus 5.5).
 - Task: a header switch between light and dark. The site follows the system until the reader chooses; the choice sets `data-theme` on `<html>` and is kept in localStorage (every access guarded). The dark tokens now apply under system-dark unless `data-theme="light"`, and under `data-theme="dark"`. `public/theme.js` applies the saved choice before paint (no flash); it is a separate same-origin file because the CSP blocks inline scripts.
