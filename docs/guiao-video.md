@@ -128,4 +128,4 @@ Abre e fecha com um cartão de título; pelo meio, o próprio sítio. Uma frase 
 
 ## Vídeos gravados
 
-Os três vídeos estão em [`docs/video/`](video/). Foram gravados com um browser automático no sítio local (1280 × 800, texto a 118 %), com a voz pt-PT "Raquel" (Microsoft, edge-tts), legendas na imagem e em `.srt`. O cursor e o círculo dos cliques são desenhados na página, porque o browser não grava o cursor. Na cena 5 o cursor só passa por "Abrir no dgsi.pt": a gravação bloqueia o dgsi.pt.
+Os três vídeos estão em [`web/public/video/`](../web/public/video/) e são servidos pelo sítio publicado, por exemplo https://carolinanunesmartins.github.io/jurisprudencia/video/demo-3min.mp4. Foram gravados com um browser automático no sítio local (1280 × 800, texto a 118 %), com a voz pt-PT "Raquel" (Microsoft, edge-tts), legendas na imagem e em `.srt`. O cursor e o círculo dos cliques são desenhados na página, porque o browser não grava o cursor. Na cena 5 o cursor só passa por "Abrir no dgsi.pt": a gravação bloqueia o dgsi.pt.

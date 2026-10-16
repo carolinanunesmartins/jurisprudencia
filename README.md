@@ -9,15 +9,17 @@ Agrupa acórdãos do Supremo Tribunal de Justiça (STJ), publicados no [dgsi.pt]
 
 ## Vídeos
 
-[![Anúncio do Jurisprudência: o Supremo decidiu num sentido e no sentido oposto](docs/video/anuncio.jpg)](docs/video/anuncio.mp4)
+Clique numa imagem para ver o vídeo no browser (também no telemóvel).
 
-| Vídeo | Duração | O que mostra |
-|---|---|---|
-| [Anúncio](docs/video/anuncio.mp4) | 45 s | A ideia em cinco frases |
-| [Demonstração curta](docs/video/demo-60s.mp4) | 41 s | Um exemplo, o gráfico e o método |
-| [Demonstração completa](docs/video/demo-3min.mp4) | 3 min 33 s | Todas as páginas, passo a passo ([guião](docs/guiao-video.md)) |
+<table>
+  <tr>
+    <td align="center"><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/anuncio.mp4"><img src="web/public/video/anuncio.jpg" width="260" alt="Anúncio"></a><br><b><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/anuncio.mp4">Anúncio</a></b><br>45 s · a ideia em cinco frases</td>
+    <td align="center"><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/demo-60s.mp4"><img src="web/public/video/demo-60s.jpg" width="260" alt="Demonstração curta"></a><br><b><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/demo-60s.mp4">Demonstração curta</a></b><br>41 s · um exemplo, o gráfico e o método</td>
+    <td align="center"><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/demo-3min.mp4"><img src="web/public/video/demo-3min.jpg" width="260" alt="Demonstração completa"></a><br><b><a href="https://carolinanunesmartins.github.io/jurisprudencia/video/demo-3min.mp4">Demonstração completa</a></b><br>3 min 33 s · todas as páginas, passo a passo</td>
+  </tr>
+</table>
 
-Cada ligação abre o vídeo no leitor do GitHub. A narração é uma voz sintetizada em português de Portugal (edge-tts, voz "Raquel"), não a voz do autor; têm legendas na imagem, e as legendas também estão em `.srt` ao lado de cada vídeo. Foram gravados no sítio local, sem abrir o dgsi.pt.
+Os vídeos são servidos pelo próprio sítio (GitHub Pages); os ficheiros estão em [`web/public/video/`](web/public/video/), com as legendas em `.srt`. O guião está em [`docs/guiao-video.md`](docs/guiao-video.md). A narração é uma voz sintetizada em português de Portugal (edge-tts, voz "Raquel"), não a voz do autor; as legendas estão na imagem. Foram gravados no sítio local, sem abrir o dgsi.pt.
 
 > [!TIP]
 > **Arquitetura em duas imagens:** [como o MVP foi construído e como deve continuar](docs/arquitetura.md). Recolha, classificação com a citação como prova, deteção, publicação; e a seguir: vários tribunais, texto integral, atualização automática e um produto para advogados.
