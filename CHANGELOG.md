@@ -3,6 +3,7 @@
 Alterações relevantes, das mais recentes para as mais antigas. As mensagens de commit seguem o formato Conventional Commits; o pormenor de cada passo está no [AI_LOG.md](AI_LOG.md) (em inglês) e o resumo em [IA.md](IA.md).
 
 ## Por publicar
+- feat(web): botão para alternar entre modo claro e escuro; segue o sistema até o leitor escolher e guarda a escolha
 - feat(search): pesquisa por relevância (BM25) nas perguntas, nas citações e num índice de palavras dos sumários, sem publicar o texto (ADR 0009); caixa grande na página inicial com exemplos, entrada no cabeçalho e em `/pesquisa`
 - docs: documentos para leitura em português (ADRs, guia dos passos com o modelo, este histórico)
 - docs: `docs/arquitetura.md`, a arquitetura do MVP e da sua continuação (diagramas Mermaid, quatro fases), em destaque no README

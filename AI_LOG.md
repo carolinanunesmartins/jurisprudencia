@@ -15,6 +15,13 @@ Entries up to 2026-10-15 were condensed on that date; the full original wording 
 
 ---
 
+### 2026-10-16 — Light / dark toggle
+- Tool: Claude Code (Opus 5.5).
+- Task: a header switch between light and dark. The site follows the system until the reader chooses; the choice sets `data-theme` on `<html>` and is kept in localStorage (every access guarded). The dark tokens now apply under system-dark unless `data-theme="light"`, and under `data-theme="dark"`. `public/theme.js` applies the saved choice before paint (no flash); it is a separate same-origin file because the CSP blocks inline scripts.
+- Failed: ESLint lints `public/` and flagged the script's browser globals; the first tests failed because this jsdom has no localStorage and a crashing `afterEach` skipped cleanup.
+- Fix: `/* global */` and optional catch binding in the script; tests use an in-memory storage and explicit cleanup, including a blocked-storage case. 85 web tests. Browser check: system dark → one click → light; the choice survives a reload; no CSP error.
+- Human check: pending.
+
 ### 2026-10-16 — Search as a main way in: large box on the home page
 - Tool: Claude Code (Opus 5.5).
 - Task: owner asked for more focus on search and chose "prominent on the home page". The search form became one component (`SearchBox`, compact or large); the home page opens with a large box under the headline plus three example queries as chips; the header box is hidden on the home page so there is only one.

@@ -7,6 +7,7 @@ export const messages = {
   homeTitle: "Jurisprudência: a mesma questão, decidida num sentido e no sentido oposto",
   disclaimer: "Sinal para revisão, não é parecer jurídico.",
   skip: "Saltar para o conteúdo",
+  theme: { toLight: "Mudar para o modo claro", toDark: "Mudar para o modo escuro" },
   months: ["jan.", "fev.", "mar.", "abr.", "mai.", "jun.", "jul.", "ago.", "set.", "out.", "nov.", "dez."],
   nav: {
     label: "Navegação principal",

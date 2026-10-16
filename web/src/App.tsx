@@ -4,6 +4,7 @@ import { type Data, loadData, loadSearch, type SearchFile } from "./data";
 import { messages } from "./messages.pt";
 import { createIndex, type SearchIndex, validSearchFile } from "./search";
 import { SearchBox } from "./SearchBox";
+import { ThemeToggle } from "./ThemeToggle";
 import { SearchPage } from "./SearchPage";
 import { AujPage, DivergencePage, Home, MethodPage, QuestionPage, Questions } from "./pages";
 
@@ -112,6 +113,7 @@ export function App({
               {messages.appTitle}
             </Link>
           </h1>
+          <div className="flex items-center gap-x-4">
           <nav aria-label={messages.nav.label}>
             <ul className="flex flex-wrap gap-x-6 gap-y-1 text-[0.95rem]">
               {NAV.map((n) => (
@@ -130,6 +132,8 @@ export function App({
               ))}
             </ul>
           </nav>
+          <ThemeToggle />
+          </div>
           {pathname !== "/" && <SearchBox />}
         </div>
         <p role="note" className="mt-3 text-sm text-graphite">
