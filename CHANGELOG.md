@@ -3,6 +3,7 @@
 Alterações relevantes, das mais recentes para as mais antigas. As mensagens de commit seguem o formato Conventional Commits; o pormenor de cada passo está no [AI_LOG.md](AI_LOG.md) (em inglês) e o resumo em [IA.md](IA.md).
 
 ## Por publicar
+- docs: README com a secção "O subconjunto escolhido" (o quê, porquê, como se seleciona, o que fica de fora)
 - docs: os vídeos passam para `web/public/video/` e são servidos pelo GitHub Pages; o README mostra as três imagens, cada uma abre o vídeo no browser
 - docs: README, NOTA e IA dizem "verificador", como o sítio; o README e o IA dizem que a narração dos vídeos é uma voz sintetizada; IA.md atualizado com o trabalho de 16/10 (visitante, guia, vídeos)
 - docs: vídeos no README (`docs/video/`): anúncio de 45 s e demonstrações de 41 s e de 3 min 33 s, com narração e legendas em português

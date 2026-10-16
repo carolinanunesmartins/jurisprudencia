@@ -34,6 +34,28 @@ Os vídeos são servidos pelo próprio sítio (GitHub Pages); os ficheiros estã
 
 Nenhuma citação inventada é publicada: cada excerto é texto do próprio acórdão, verificado palavra a palavra.
 
+## O subconjunto escolhido
+
+**Acórdãos do STJ sobre contrato-promessa, de 2000 a 2025: 813 acórdãos**, de um índice de 71 760 acórdãos do STJ no dgsi.pt ([ADR 0005](docs/adr/0005-subset.md)).
+
+**Porquê contrato-promessa**
+- **Há divergências conhecidas para confirmar:** existe um levantamento prévio de divergências neste tema, junto de profissionais. Dele saíram as perguntas-semente, o que permite ver se o sistema encontra o que os juristas já conhecem.
+- **O próprio STJ uniformizou aqui:** a pesquisa no índice confirmou que é dos temas substantivos com mais acórdãos de uniformização de jurisprudência. É, portanto, um tema onde o Supremo reconheceu que decidia de formas diferentes.
+- **O tamanho cabe num protótipo:** o objetivo era 600 a 1 500 acórdãos. 813 chega para ver tendências por ano (cerca de 25 a 30 acórdãos por ano) e custa pouco: cerca de 45 minutos de recolha e cerca de 4 USD de classificação.
+- **Ficou sujeito a pontos de decisão, com alternativa:** uma prova inicial com as três perguntas-semente não encontrou posições opostas suficientes, mas a passagem de descoberta encontrou cerca de 5 perguntas com dois lados (*gate* G2). Depois da deteção, a regra era: pelo menos uma divergência confirmada numa pergunta de teste, ou mudar para arrendamento urbano. Houve confirmações, e o tema ficou (*gate* G3, 2026-10-15).
+
+**Como se seleciona**
+- **A regra:** um acórdão entra se tiver data entre 2000 e 2025 e pelo menos um **descritor** do dgsi.pt que nomeie um contrato-promessa (`CONTRATO-PROMESSA` e as suas grafias, ou um descritor que comece por `PROMESSA DE COMPRA`, `PROMESSA DE VENDA`, `PROMESSA UNILATERAL` ou `PROMESSA BILATERAL`).
+- **Compara-se o descritor inteiro, não pedaços de palavra.** Procurar `PROMESSA` ou `TRADIÇÃO` dentro do texto apanharia `PROMESSA DE CASAMENTO` ou `EXTRADIÇÃO` (267 casos). As duas listas estão fixadas em testes.
+- **Onde está:** `pipeline/juris/db/subset.py`. A recolha (`make fetch`) só descarrega estes acórdãos.
+- **O que se lê de cada acórdão:** o sumário, ou o texto integral quando não há sumário ([ADR 0007](docs/adr/0007-classify-from-sumario.md)). 736 dos 813 têm os dois; os restantes têm só um deles ([ADR 0006](docs/adr/0006-summary-only-judgments.md)).
+
+**O que fica de fora, e porquê**
+- **2000 é uma escolha de âmbito, não dos dados.** Fica de fora o acórdão uniformizador de 1998 sobre a primeira pergunta-semente, e com ele o "antes" dessa mudança. Alargar a 1995–2025 daria 1 144 acórdãos; o responsável rejeitou-o (2026-10-14).
+- **Ficam de fora os acórdãos sobre uma promessa que não têm esse descritor**, ou que não têm descritores.
+- **Ficam de fora os descritores `SINAL`, `EXECUÇÃO ESPECÍFICA`, `TRADIÇÃO DA COISA` e `CLÁUSULA PENAL` sozinhos,** porque também aparecem fora da promessa. Juntar `SINAL` e `EXECUÇÃO ESPECÍFICA` só acrescentaria 34 acórdãos.
+- **Só o STJ**, sem as Relações nem outros tribunais.
+
 ## Como funciona
 
 1. **Subconjunto:** acórdãos do STJ com descritores de contrato-promessa ([ADR 0005](docs/adr/0005-subset.md)).
