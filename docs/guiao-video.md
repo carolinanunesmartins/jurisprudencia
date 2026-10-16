@@ -113,3 +113,19 @@ Use as cenas 1, 2, 5 e 9, com uma frase de narração cada:
 2. "Em outubro de 2019, dois acórdãos com doze dias de intervalo respondem ao contrário à mesma pergunta, nas palavras dos próprios acórdãos."
 3. "Cada ponto é um acórdão. Um clique leva ao original no dgsi.pt."
 4. "Citações verificadas palavra a palavra, divergências confirmadas por um segundo modelo. Um sinal para revisão, não um parecer."
+
+---
+
+## Anúncio (45 segundos)
+
+Abre e fecha com um cartão de título; pelo meio, o próprio sítio. Uma frase de narração por plano:
+
+1. **Cartão:** *O Supremo decidiu num sentido e no sentido oposto. Sabe onde?* "O Supremo decidiu a mesma questão num sentido e no sentido oposto. Sabe onde?"
+2. **O exemplo da página inicial**, as duas citações: "Em outubro de 2019, dois acórdãos, com doze dias de intervalo, responderam ao contrário."
+3. **O gráfico Ano a ano da pergunta sobre o possuidor ou detentor**, o cursor pelos pontos: "O Jurisprudência junta 813 acórdãos do Supremo em 7 perguntas e mostra, ano a ano, onde a jurisprudência se dividiu ou mudou."
+4. **A caixa de um ponto e a citação da mudança**, até à ligação do processo: "Cada sinal traz a citação literal, verificada palavra a palavra, e a ligação ao acórdão original."
+5. **Cartão final:** logótipo, *Veja onde o Supremo divergiu.*, o endereço do sítio e *Protótipo · sinal para revisão, não é parecer jurídico.* "Jurisprudência. Veja onde o Supremo divergiu, e confirme na fonte."
+
+## Vídeos gravados
+
+Os três vídeos estão em [`docs/video/`](video/). Foram gravados com um browser automático no sítio local (1280 × 800, texto a 118 %), com a voz pt-PT "Raquel" (Microsoft, edge-tts), legendas na imagem e em `.srt`. O cursor e o círculo dos cliques são desenhados na página, porque o browser não grava o cursor. Na cena 5 o cursor só passa por "Abrir no dgsi.pt": a gravação bloqueia o dgsi.pt.

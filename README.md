@@ -7,6 +7,18 @@ Agrupa acórdãos do Supremo Tribunal de Justiça (STJ), publicados no [dgsi.pt]
 **Sítio:** https://carolinanunesmartins.github.io/jurisprudencia/
 **Ler primeiro:** [NOTA.md](NOTA.md) (uma página) · [IA.md](IA.md) (uso de IA) · [relatório de avaliação](data/eval/report.md)
 
+## Vídeos
+
+[![Anúncio do Jurisprudência: o Supremo decidiu num sentido e no sentido oposto](docs/video/anuncio.jpg)](docs/video/anuncio.mp4)
+
+| Vídeo | Duração | O que mostra |
+|---|---|---|
+| [Anúncio](docs/video/anuncio.mp4) | 45 s | A ideia em cinco frases |
+| [Demonstração curta](docs/video/demo-60s.mp4) | 41 s | Um exemplo, o gráfico e o método |
+| [Demonstração completa](docs/video/demo-3min.mp4) | 3 min 33 s | Todas as páginas, passo a passo ([guião](docs/guiao-video.md)) |
+
+Cada ligação abre o vídeo no leitor do GitHub. Têm narração e legendas em português na imagem; as legendas também estão em `.srt` ao lado de cada vídeo. Foram gravados no sítio local, sem abrir o dgsi.pt.
+
 > [!TIP]
 > **Arquitetura em duas imagens:** [como o MVP foi construído e como deve continuar](docs/arquitetura.md). Recolha, classificação com a citação como prova, deteção, publicação; e a seguir: vários tribunais, texto integral, atualização automática e um produto para advogados.
 
