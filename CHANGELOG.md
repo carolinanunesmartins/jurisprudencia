@@ -3,6 +3,7 @@
 Alterações relevantes, das mais recentes para as mais antigas. As mensagens de commit seguem o formato Conventional Commits; o pormenor de cada passo está no [AI_LOG.md](AI_LOG.md) (em inglês) e o resumo em [IA.md](IA.md).
 
 ## Por publicar
+- feat(web): as uniformizações dizem em que sentido decidiram; as perguntas sem divergência explicam porquê; as mudanças mostram o que veio depois; "verificador" em vez de "juiz"
 - feat(web): "Como ler" na página inicial explica pergunta, posições, divergência e uniformização, com exemplos; as perguntas sem divergência dizem-no; cada página diz se é uma pergunta ou uma divergência
 - docs: `docs/guiao-video.md`, guião do vídeo de demonstração
 - feat(web): os pontos do gráfico "Ano a ano" abrem uma caixa com a data, a posição e a ligação ao acórdão no dgsi.pt
